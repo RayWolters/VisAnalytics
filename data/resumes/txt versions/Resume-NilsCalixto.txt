@@ -1,0 +1,49 @@
+Nils Calixto
+
+IT Technician
+
+Abila, Kronos
+
+Qualifications
+
+-   Strong system administration and database management skills.
+
+-   Proficiency in various programs, operating systems and applications.
+
+-   Expert at finding and resolving malfunctions, using exceptional
+    technical and communication skills to ensure minimization of
+    downtime and optimal computer performance.
+
+Professional Experience
+
+GASTech – Kronos Information Technology Technician 2004-Present
+
+-   Support business information systems by maintaining transaction
+    schedules, monitoring logs, and balancing resources
+
+-   Plan and maintain system availability including planning for system
+    outages and upgrades
+
+-   Revised designs for data warehouse schemas supporting new business
+    processing resulting in improved query performance.
+
+-   In-depth understanding of security and backup procedures to ensure
+    database integrity. Background in developing backup and disaster
+    recovery plans for satellite offices.
+
+-   Superior communication, presentation, analytical and problem solving
+    skill. Work well with all levels of business.
+
+-   Handled database server tuning, application tuning, maintaining
+    documentation, capacity planning and database security
+
+Education
+
+Bachelor of Science, Computer and Information Technology Tethys
+University, 2004
+
+MSCE – Microsoft Certified Systems Engineer
+
+Oracle Database Administrator
+
+Member – International Community for Database Management

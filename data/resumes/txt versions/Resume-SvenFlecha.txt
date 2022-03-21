@@ -1,0 +1,54 @@
+Sven Flecha
+
+Abila, Kronos
+
+Qualifications
+
+-   6 years of cross-platform experience in systems administration,
+    including analyzing, designing, installing, maintaining, and
+    repairing hardware, software, peripherals, and networks.
+
+-   Superior troubleshooting and technical support abilities with
+    migrations, network connectivity, and security and database
+    applications.
+
+-   Develop exceptional relationships with co-workers, management and
+    end users.
+
+-   Excellent communication and problem solving skills.
+
+Professional Experience
+
+GASTech – Kronos Information Technology Technician 2010-Present
+
+-   Administer core business servers (Active Directory), client
+    workstations, and network security devices.
+
+-   Lowered spam by 75% using firewall filtering with real-time spam
+    black lists for incoming email: scripted custom rules in Perl.
+
+-   Responsible for security equipment, including WatchFire X102
+    firewall with VPN users and spam blocking utility, as well as
+    Symantec Antivirus System Center and Central Quarantine Server 8.0.
+
+-   Enhanced backup and restore procedures to reduce down time.
+
+Department of Commerce, Tethys IT Technician 2007-2010
+
+-   Supported 125 total users in 5 locations nationwide.
+
+-   Performed desktop migration of in-house software during workstation
+    upgrades.
+
+-   Provided technical support for corporate client/server systems.
+
+-   Responsible for hardware and software applications for workstations,
+    servers, and network data communications.
+
+-   Administered all local and remote server backups.
+
+Education
+
+Bachelor of Science, Information Technology Tethys University, 2007
+
+MSCE – Microsoft Certified Systems Engineer
