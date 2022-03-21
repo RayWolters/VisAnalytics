@@ -9,7 +9,6 @@ fig = px.histogram(df_email, x=df_email["Subject"])
 
 app.layout = html.Div(
     children = [
-        html.P(children="/assets/favicon.ico", className="header-emoji"),
         html.H1(
             children="Visual Analytics - GROUP 30 - Dashboard",
             className="header-title",
