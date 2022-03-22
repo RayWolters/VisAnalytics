@@ -1,4 +1,11 @@
-.header-title {
-    font-size: 48px;
-    color: red;
+/* Back-ground of application */
+body {
+    font-family: "Times New Roman", Times, serif;
+    margin: 0;
+    background-color: #f1f0f0;
+    overflow: hidden;
+}
+
+.bl {
+    border-left: None !important;
 }
