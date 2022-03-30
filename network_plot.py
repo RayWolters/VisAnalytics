@@ -1,4 +1,3 @@
-###########################################
 import dash
 import pandas as pd
 import dash_cytoscape as cyto
@@ -7,7 +6,15 @@ from dash import dcc
 from pprint import pprint
 from dash.dependencies import Input, Output
 import json
-###########################################
+
+#TODO overall todo: implement as many filter/classification functions to the plot. Think of: -visualize per day, -per departement, -per subject,  -let user type in a name and show network of this name
+#TODO add more functionalities of cytoscape: -highlight networks of users when clicked on -show other networks when clicked
+
+#Cytoscape Callbacks
+#https://dash.plotly.com/cytoscape/callbacks
+
+#Cytoscape User Interactions
+#https://dash.plotly.com/cytoscape/events
 
 def create_elements(df):
     l = df.values.tolist()
