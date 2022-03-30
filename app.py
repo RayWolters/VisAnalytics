@@ -84,7 +84,7 @@ app.layout = html.Div(
                                         dcc.Graph(figure=sunburst_departments(), className = "h-75"),
                                     ], width = {'size': 6},
                                 ),
-                            ], className = "g-0 h-25",
+                            ], className = "g-0 customheight",
                         ),
                         dbc.Row(
                             [
@@ -94,7 +94,7 @@ app.layout = html.Div(
                                         dcc.Graph(figure=sunburst_departments(), className = "h-75"),
                                     ], 
                                 ),
-                            ], className = "g-0 h-75",
+                            ], className = "g-0 customheight2",
                         ),
                     ], width = {'size': 4}, className = "h-100"
                 ),

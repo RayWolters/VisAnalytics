@@ -94,7 +94,7 @@ def sunburst_executive():
         parents=parents,
         marker=dict(colors=colors1),
             maxdepth=3,
-            insidetextorientation='horizontal'
+            insidetextorientation='tangential'
 
         ),
         layout = layout,

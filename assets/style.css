@@ -9,3 +9,11 @@ body {
 .bl {
     border-left: None !important;
 }
+
+.customheight {
+    height: 35%
+}
+
+.customheight2 {
+    height: 65%
+}
