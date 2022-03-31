@@ -20,7 +20,8 @@ elements = create_elements(filename)
 
 #function who maps indexes from slidebar to days
 def get_day(num):
-    dic = {1:'2014-01-06', 2:'2014-01-07', 3: '2014-01-08', 4:'2014-01-09',5:'2014-01-10', 6:'2014-01-13', 7: '2014-01-14', 8: '2014-01-15', 9:'2014-01-16', 10:'2014-01-17'}
+    dic = {1:'2014-01-06', 2:'2014-01-07', 3: '2014-01-08', 4:'2014-01-09',5:'2014-01-10',
+     6:'2014-01-13', 7: '2014-01-14', 8: '2014-01-15', 9:'2014-01-16', 10:'2014-01-17'}
     return dic[num]
 
 # TODO: Fix styling 
@@ -69,15 +70,31 @@ app.layout = html.Div(
                                     9: {'label':  '16'},
                                     10: {'label': '17'}},
                                 ),
-                    dcc.Dropdown(
-                                id='dropdown-update-departments',
-                                value='GAStech',
-                                clearable=False,
-                                options=[
-                                    {'label': name.capitalize(), 'value': name}
-                                    for name in ['GAStech', 'Administration', 'Engineering', 'Executive', 'Facilities', 'Information Technology', 'Security']
-                                ], className = "m-4",
-                                ),
+                            dbc.Row(
+                            [
+                                dbc.Col(
+                                        dcc.Dropdown(
+                                            id='dropdown-update-departments',
+                                            value='GAStech',
+                                            clearable=False,
+                                            options=[
+                                                {'label': name.capitalize(), 'value': name}
+                                                for name in ['GAStech', 'Administration', 'Engineering', 'Executive', 'Facilities', 'Information Technology', 'Security']
+                                            ], className = "m-4",
+                                            ),),
+                                dbc.Col(
+                                        dcc.Dropdown(
+                                            id='dropdown-update-dept_directions',
+                                            value='both',
+                                            clearable=False,
+                                            options=[
+                                                {'label': name.capitalize(), 'value': name}
+                                                for name in ['source', 'target', 'both']
+                                            ], className = "m-4",
+                                            ),),
+                            ], className = "g-0 customheight justify-content-center",
+                        ),
+                    
                 ], width = {'size': 2}, className="border bl border-top-0 border-bottom-0"),
                 dbc.Col(
                     [
@@ -137,26 +154,20 @@ def update_layout(layout):
 
 @app.callback(Output('cytoscape-update-layout', 'elements'),
               Input('slider-update-day', 'value'),
-              Input('dropdown-update-departments', 'value'))
-def update_layout(x1,x2):
-    d = round(x1)
-    if x2 == 'GAStech':
+              Input('dropdown-update-departments', 'value'),
+              Input('dropdown-update-dept_directions', 'value')
+              )
+def update_layout(day,dept,direction):
+    d = round(day)
+    if dept == 'GAStech':
         file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}.csv".format(get_day(d),get_day(d))
     else:
-        file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}_{}_source.csv".format(get_day(d),get_day(d), x2)
+        file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}_{}_{}.csv".format(get_day(d),get_day(d), dept, direction)
     elements = create_elements(file)
     return (      
         elements
     )
 
-# @app.callback(Output('cytoscape-update-layout', 'layout'),
-#               Input('dropdown-update-departments', 'value'),
-#               Input('dropdown-update-departments', 'value'))
-# def update_dept(layout):
-#     return {
-#         'name': layout,
-#         'animate': True
-#     }
 
 if __name__ == "__main__":
     app.run_server(debug=True)
