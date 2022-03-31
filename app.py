@@ -43,7 +43,7 @@ app.layout = html.Div(
         ], className = "bg-dark text-white"),
             dbc.Row([
                 dbc.Col([
-                    html.H2("Settings", className="text-center bg-danger text-white p-0 mt-0 ml-0 mr-0"),
+                    html.H4("Settings", className="text-center bg-danger text-white p-0 m-0"),
                     dcc.Dropdown(
                                 id='dropdown-update-layout',
                                 value='grid',
@@ -51,18 +51,17 @@ app.layout = html.Div(
                                 options=[
                                     {'label': name.capitalize(), 'value': name}
                                     for name in ['grid', 'random', 'circle', 'cose', 'concentric']
-                                ]
+                                ], className = "m-4",
                                 ),
-                    dcc.Dropdown(className = "m-4"),
                 ], width = {'size': 2}, className="border bl border-top-0 border-bottom-0"),
                 dbc.Col(
                     [
-                        html.H2("Plot", className = "text-center bg-danger text-white p-0 mt-0 ml-0 mr-0"),
+                        html.H4("Plot", className = "text-center bg-danger text-white p-0 m-0"),
                         html.Div([
                                     cyto.Cytoscape(
                                     id='cytoscape-update-layout',
                                     layout={'name': 'grid'},
-                                    style={'width': '100%', 'height': '900px'},
+                                    style={'width': '100%', 'height': '700px'},
                                     elements=elements
                                 )
                                 ])
@@ -74,23 +73,23 @@ app.layout = html.Div(
                             [
                                 dbc.Col(
                                     [
-                                        html.H2("Plot", className = "text-center bg-danger text-white p-0 mt-0 ml-0 mr-0"),
-                                        dcc.Graph(figure=sunburst_executive(), className = "h-75"),
+                                        html.H4("Plot", className = "text-center bg-danger text-white p-0 m-0"),
+                                        dcc.Graph(figure=sunburst_executive(), className = "h-75 mt-3"),
                                     ], width = {'size': 6},
                                 ),
                                 dbc.Col(
                                     [
-                                        html.H2("Plot", className = "text-center bg-danger text-white p-0 mt-0 ml-0 mr-0"),
-                                        dcc.Graph(figure=sunburst_departments(), className = "h-75"),
+                                        html.H4("Plot", className = "text-center bg-danger text-white p-0 m-0"),
+                                        dcc.Graph(figure=sunburst_departments(), className = "h-75 mt-3"),
                                     ], width = {'size': 6},
                                 ),
-                            ], className = "g-0 customheight",
+                            ], className = "g-0 customheight justify-content-center",
                         ),
                         dbc.Row(
                             [
                                 dbc.Col(
                                     [
-                                        html.H2("Plot", className = "text-center bg-danger text-white p-0 mt-0 ml-0 mr-0"),
+                                        html.H4("Plot", className = "text-center bg-danger text-white p-0 m-0"),
                                         dcc.Graph(figure=sunburst_departments(), className = "h-75"),
                                     ], 
                                 ),

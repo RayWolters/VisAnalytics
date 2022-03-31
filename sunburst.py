@@ -87,6 +87,8 @@ def sunburst_executive():
             t=0,
             pad=0,
         ),    
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     fig = go.Figure(
         go.Sunburst(
@@ -112,6 +114,8 @@ def sunburst_departments():
             t=0,
             pad = 0,
         ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
 
     fig2 = go.Figure(
