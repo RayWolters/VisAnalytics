@@ -1,0 +1,12 @@
+source,target,weight
+Sven Flecha,Nils Calixto,13
+Sven Flecha,Isak Baza,1
+Isak Baza,Nils Calixto,7
+Isak Baza,Birgitta Frente,6
+Isak Baza,Lucas Alcazar,1
+Linnea Bergen,Lucas Alcazar,3
+Linnea Bergen,Claudio Hawelon,4
+Lucas Alcazar,Linnea Bergen,1
+Nils Calixto,Sven Flecha,7
+Nils Calixto,Axel Calzas,6
+Nils Calixto,Lucas Alcazar,6

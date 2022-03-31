@@ -1,0 +1,25 @@
+source,target,weight
+Mat Bramar,Sven Flecha,5
+Mat Bramar,Isak Baza,5
+Mat Bramar,Linnea Bergen,5
+Mat Bramar,Lucas Alcazar,5
+Mat Bramar,Nils Calixto,5
+Sven Flecha,Lucas Alcazar,1
+Sven Flecha,Nils Calixto,4
+Sven Flecha,Isak Baza,1
+Ruscella Mies,Sven Flecha,4
+Ruscella Mies,Isak Baza,4
+Ruscella Mies,Linnea Bergen,4
+Ruscella Mies,Lucas Alcazar,4
+Ruscella Mies,Nils Calixto,4
+Dante Coginian,Lucas Alcazar,5
+Isak Baza,Lucas Alcazar,5
+Linnea Bergen,Sven Flecha,5
+Linnea Bergen,Isak Baza,5
+Linnea Bergen,Lucas Alcazar,5
+Linnea Bergen,Nils Calixto,5
+Lucas Alcazar,Nils Calixto,4
+Lucas Alcazar,Isak Baza,9
+Lucas Alcazar,Sven Flecha,4
+Kanon Herrero,Nils Calixto,12
+Nils Calixto,Sven Flecha,9

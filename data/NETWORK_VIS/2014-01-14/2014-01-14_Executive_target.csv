@@ -1,0 +1,56 @@
+source,target,weight
+Irene Nant,Ingrid Barranco,3
+Irene Nant,Orhan Strum,3
+Irene Nant,Sten Sanjorge Jr,3
+Irene Nant,Ada Campo-Corrente,3
+Irene Nant,Willem Vasco-Pais,3
+Ingrid Barranco,Orhan Strum,4
+Ingrid Barranco,Sten Sanjorge Jr,3
+Ingrid Barranco,Ada Campo-Corrente,4
+Ingrid Barranco,Willem Vasco-Pais,4
+Mat Bramar,Ingrid Barranco,4
+Mat Bramar,Orhan Strum,4
+Mat Bramar,Sten Sanjorge Jr,4
+Mat Bramar,Ada Campo-Corrente,4
+Mat Bramar,Willem Vasco-Pais,4
+Orhan Strum,Willem Vasco-Pais,7
+Ruscella Mies,Ingrid Barranco,1
+Ruscella Mies,Orhan Strum,1
+Ruscella Mies,Sten Sanjorge Jr,1
+Ruscella Mies,Ada Campo-Corrente,1
+Ruscella Mies,Willem Vasco-Pais,1
+Dante Coginian,Ingrid Barranco,3
+Dante Coginian,Orhan Strum,3
+Dante Coginian,Sten Sanjorge Jr,3
+Dante Coginian,Ada Campo-Corrente,3
+Dante Coginian,Willem Vasco-Pais,3
+Adan Morlun,Ingrid Barranco,1
+Adan Morlun,Orhan Strum,1
+Adan Morlun,Sten Sanjorge Jr,1
+Adan Morlun,Ada Campo-Corrente,1
+Adan Morlun,Willem Vasco-Pais,1
+Lucas Alcazar,Ingrid Barranco,3
+Lucas Alcazar,Orhan Strum,3
+Lucas Alcazar,Sten Sanjorge Jr,3
+Lucas Alcazar,Ada Campo-Corrente,3
+Lucas Alcazar,Willem Vasco-Pais,3
+Hennie Osvaldo,Ingrid Barranco,3
+Hennie Osvaldo,Orhan Strum,3
+Hennie Osvaldo,Sten Sanjorge Jr,3
+Hennie Osvaldo,Ada Campo-Corrente,3
+Hennie Osvaldo,Willem Vasco-Pais,3
+Loreto Bodrogi,Ingrid Barranco,3
+Loreto Bodrogi,Orhan Strum,3
+Loreto Bodrogi,Sten Sanjorge Jr,3
+Loreto Bodrogi,Ada Campo-Corrente,3
+Loreto Bodrogi,Willem Vasco-Pais,3
+Ada Campo-Corrente,Orhan Strum,1
+Ada Campo-Corrente,Ingrid Barranco,1
+Ada Campo-Corrente,Willem Vasco-Pais,1
+Willem Vasco-Pais,Ingrid Barranco,9
+Willem Vasco-Pais,Orhan Strum,12
+Willem Vasco-Pais,Ada Campo-Corrente,9
+Willem Vasco-Pais,Sten Sanjorge Jr (tethys),1
+Willem Vasco-Pais,Sten Sanjorge Jr,1
+Sten Sanjorge Jr (tethys),Willem Vasco-Pais,4
+Sten Sanjorge Jr (tethys),Sten Sanjorge Jr,4
