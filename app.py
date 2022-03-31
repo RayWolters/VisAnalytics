@@ -55,21 +55,29 @@ app.layout = html.Div(
                                     for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                                 ], className = "m-4",
                                 ),
-                                
-                                    dcc.Slider(1, 10, value=1,
-                                    id='slider-update-day',
-                                    marks={
-                                        1: {'label' :  '06'},# 'style': {'color': '#77b0b1'}},
-                                        2: {'label':  '07'},
-                                        3: {'label':  '08'},
-                                        4: {'label':  '09'},
-                                        5: {'label':  '10'},
-                                        6: {'label':  '13'},
-                                        7: {'label':  '14'},
-                                        8: {'label':  '15'},
-                                        9: {'label':  '16'},
-                                        10: {'label': '17'}},
-                                    ),
+                    dcc.Slider(1, 10, value=1,
+                                id='slider-update-day',
+                                marks={
+                                    1: {'label' : '06'},# 'style': {'color': '#77b0b1'}},
+                                    2: {'label':  '07'},
+                                    3: {'label':  '08'},
+                                    4: {'label':  '09'},
+                                    5: {'label':  '10'},
+                                    6: {'label':  '13'},
+                                    7: {'label':  '14'},
+                                    8: {'label':  '15'},
+                                    9: {'label':  '16'},
+                                    10: {'label': '17'}},
+                                ),
+                    dcc.Dropdown(
+                                id='dropdown-update-departments',
+                                value='GAStech',
+                                clearable=False,
+                                options=[
+                                    {'label': name.capitalize(), 'value': name}
+                                    for name in ['GAStech', 'Administration', 'Engineering', 'Executive', 'Facilities', 'Information Technology', 'Security']
+                                ], className = "m-4",
+                                ),
                 ], width = {'size': 2}, className="border bl border-top-0 border-bottom-0"),
                 dbc.Col(
                     [
@@ -128,14 +136,27 @@ def update_layout(layout):
     }
 
 @app.callback(Output('cytoscape-update-layout', 'elements'),
-              Input('slider-update-day', 'value'))
-def update_layout(day):
-    d = round(day)
-    file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}.csv".format(get_day(d),get_day(d))
+              Input('slider-update-day', 'value'),
+              Input('dropdown-update-departments', 'value'))
+def update_layout(x1,x2):
+    d = round(x1)
+    if x2 == 'GAStech':
+        file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}.csv".format(get_day(d),get_day(d))
+    else:
+        file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}_{}_source.csv".format(get_day(d),get_day(d), x2)
     elements = create_elements(file)
     return (      
         elements
     )
+
+# @app.callback(Output('cytoscape-update-layout', 'layout'),
+#               Input('dropdown-update-departments', 'value'),
+#               Input('dropdown-update-departments', 'value'))
+# def update_dept(layout):
+#     return {
+#         'name': layout,
+#         'animate': True
+#     }
 
 if __name__ == "__main__":
     app.run_server(debug=True)
