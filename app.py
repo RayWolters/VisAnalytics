@@ -89,7 +89,7 @@ app.layout = html.Div(
                                             clearable=False,
                                             options=[
                                                 {'label': name.capitalize(), 'value': name}
-                                                for name in ['source', 'target', 'both']
+                                                for name in ['source', 'target', 'both', 'whitin']
                                             ], className = "m-4",
                                             ),),
                             ], className = "g-0 customheight justify-content-center",
@@ -162,7 +162,10 @@ def update_layout(day,dept,direction):
     if dept == 'GAStech':
         file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}.csv".format(get_day(d),get_day(d))
     else:
-        file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}_{}_{}.csv".format(get_day(d),get_day(d), dept, direction)
+        if direction == 'whitin':
+            file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}_{}_{}.csv".format(get_day(d),get_day(d), dept, 'inner')
+        else:
+            file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}_{}_{}.csv".format(get_day(d),get_day(d), dept, direction)
     elements = create_elements(file)
     return (      
         elements
