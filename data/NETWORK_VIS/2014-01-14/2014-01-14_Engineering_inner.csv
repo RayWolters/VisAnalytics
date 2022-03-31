@@ -1,0 +1,13 @@
+source,target,weight
+Lars Azada,Lidelse Dedos,4
+Axel Calzas,Felix Balas,5
+Axel Calzas,Vira Frente,5
+Axel Calzas,Lidelse Dedos,4
+Lidelse Dedos,Axel Calzas,5
+Isande Borrasca,Felix Balas,1
+Isande Borrasca,Vira Frente,1
+Isande Borrasca,Axel Calzas,1
+Felix Balas,Vira Frente,1
+Felix Balas,Axel Calzas,1
+Vira Frente,Felix Balas,1
+Vira Frente,Axel Calzas,1

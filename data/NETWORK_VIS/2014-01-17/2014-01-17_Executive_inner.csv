@@ -1,0 +1,18 @@
+source,target,weight
+Ingrid Barranco,Orhan Strum,4
+Ingrid Barranco,Sten Sanjorge Jr,5
+Ingrid Barranco,Ada Campo-Corrente,5
+Ingrid Barranco,Sten Sanjorge Jr (tethys),1
+Ingrid Barranco,Willem Vasco-Pais,4
+Orhan Strum,Willem Vasco-Pais,5
+Ada Campo-Corrente,Sten Sanjorge Jr,13
+Ada Campo-Corrente,Ingrid Barranco,1
+Ada Campo-Corrente,Sten Sanjorge Jr (tethys),13
+Willem Vasco-Pais,Ingrid Barranco,1
+Willem Vasco-Pais,Orhan Strum,4
+Willem Vasco-Pais,Ada Campo-Corrente,1
+Willem Vasco-Pais,Sten Sanjorge Jr (tethys),1
+Willem Vasco-Pais,Sten Sanjorge Jr,1
+Sten Sanjorge Jr (tethys),Ada Campo-Corrente,17
+Sten Sanjorge Jr (tethys),Sten Sanjorge Jr,17
+Sten Sanjorge Jr (tethys),Ingrid Barranco,8
