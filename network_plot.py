@@ -16,7 +16,10 @@ import json
 #Cytoscape User Interactions
 #https://dash.plotly.com/cytoscape/events
 
-def create_elements(df):
+def create_elements(filename):
+    df = pd.read_csv(filename)
+    df = df.rename(columns={'source': 'Source', 'target': 'Target', 'weight': 'Weight'})
+
     l = df.values.tolist()
     lst =[]
     all_names = []
@@ -47,4 +50,5 @@ def create_elements(df):
         for source, target in edges_tuples
     ]
 
-    return nodes, edges
+    elements =  nodes + edges
+    return elements

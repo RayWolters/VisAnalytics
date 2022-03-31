@@ -15,12 +15,13 @@ import json
 from heatmap import heatmap
 
 
-filepath_main = 'remove-later/email network/Data/data_2014-01-06.csv'
-df = pd.read_csv(filepath_main)
-df = df.rename(columns={'source': 'Source', 'target': 'Target', 'weight': 'Weight'})
+filename = "data/NETWORK_VIS/{}/{}.csv".format('2014-01-06','2014-01-06')
+elements = create_elements(filename)
 
-nodes, edges = create_elements(df)
-elements = nodes + edges
+#function who maps indexes from slidebar to days
+def get_day(num):
+    dic = {1:'2014-01-06', 2:'2014-01-07', 3: '2014-01-08', 4:'2014-01-09',5:'2014-01-10', 6:'2014-01-13', 7: '2014-01-14', 8: '2014-01-15', 9:'2014-01-16', 10:'2014-01-17'}
+    return dic[num]
 
 # TODO: Fix styling 
 app.layout = html.Div(
@@ -54,6 +55,21 @@ app.layout = html.Div(
                                     for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                                 ], className = "m-4",
                                 ),
+                                
+                                    dcc.Slider(1, 10, value=1,
+                                    id='slider-update-day',
+                                    marks={
+                                        1: {'label' :  '06'},# 'style': {'color': '#77b0b1'}},
+                                        2: {'label':  '07'},
+                                        3: {'label':  '08'},
+                                        4: {'label':  '09'},
+                                        5: {'label':  '10'},
+                                        6: {'label':  '13'},
+                                        7: {'label':  '14'},
+                                        8: {'label':  '15'},
+                                        9: {'label':  '16'},
+                                        10: {'label': '17'}},
+                                    ),
                 ], width = {'size': 2}, className="border bl border-top-0 border-bottom-0"),
                 dbc.Col(
                     [
@@ -110,6 +126,16 @@ def update_layout(layout):
         'name': layout,
         'animate': True
     }
+
+@app.callback(Output('cytoscape-update-layout', 'elements'),
+              Input('slider-update-day', 'value'))
+def update_layout(day):
+    d = round(day)
+    file = "C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/Data/NETWORK_VIS/{}/{}.csv".format(get_day(d),get_day(d))
+    elements = create_elements(file)
+    return (      
+        elements
+    )
 
 if __name__ == "__main__":
     app.run_server(debug=True)
