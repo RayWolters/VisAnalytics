@@ -12,6 +12,7 @@ import dash_cytoscape as cyto
 from pprint import pprint
 from dash.dependencies import Input, Output
 import json
+from heatmap import heatmap
 
 
 filepath_main = 'remove-later/email network/Data/data_2014-01-06.csv'
@@ -90,7 +91,7 @@ app.layout = html.Div(
                                 dbc.Col(
                                     [
                                         html.H4("Plot", className = "text-center bg-danger text-white p-0 m-0"),
-                                        dcc.Graph(figure=sunburst_departments(), className = "h-75"),
+                                        dcc.Graph(figure=heatmap(), className = "h-75"),
                                     ], 
                                 ),
                             ], className = "g-0 customheight2",
