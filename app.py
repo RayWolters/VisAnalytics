@@ -199,9 +199,9 @@ def update_layout(layout):
               Input('slider-update-hour', 'value'),
               Input('dropdown-update-departments', 'value'),
               Input('dropdown-update-dept_directions', 'value'),
-            Input('submit-button', 'n_clicks'),
-            Input('cytoscape-update-layout', 'tapNodeData'),
-            State('username', 'value'))
+              Input('submit-button', 'n_clicks'),
+              Input('cytoscape-update-layout', 'tapNodeData'),
+              State('username', 'value'))
             
 def update_layout(day,hour,dept,direction, click, data, input_val):
     d = round(day)

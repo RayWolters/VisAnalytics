@@ -53,10 +53,7 @@ def create_elements(filename):
     nodes = [
         {'data': {'id': short, 'label': label},'classes' : color} for short, label, color in nodes_tuple]
 
-    edges = [
-        {'data': {'source': source, 'target': target}}
-        for source, target in edges_tuples
-    ]
+    edges = [{'data': {'source': source, 'target': target}} for source, target in edges_tuples]
 
     elements =  nodes + edges
     return elements
