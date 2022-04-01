@@ -13,10 +13,9 @@ import dash_cytoscape as cyto
 from pprint import pprint
 from dash.dependencies import Input, Output, State
 import json
-from heatmap import heatmap
 from histogram import create_histogram, create_histogram_department
 from subjects import get_subjects
-
+from lineplot import lineplot
 
 elements = prepare_data('2014-01-06', "08", '2014-01-17', '22')
 
@@ -192,7 +191,7 @@ app.layout = html.Div(
                                 dbc.Col(
                                     [
                                         html.H4("Plot", className = "text-center bg-danger text-white p-0 m-0"),
-                                        dcc.Graph(figure=heatmap(), className = "h-75"),
+                                        dcc.Graph(figure=lineplot(), className = "h-75"),
                                     ], 
                                 ),
                             ], className = "g-0 customheight2",
