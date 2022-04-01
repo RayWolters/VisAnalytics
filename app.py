@@ -61,7 +61,7 @@ app.layout = html.Div(
                                     for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                                 ], className = "m-4",
                                 ),
-                    html.H5('Choose day:', className="text-center"),
+                    html.H5('Slide through 6-17 January:', className="text-center"),
                     dcc.Slider(1, 10, value=1,
                                 id='slider-update-day',
                                 marks={
@@ -135,8 +135,18 @@ app.layout = html.Div(
                                     layout={'name': 'grid'},
                                     style={'width': '100%', 'height': '400px'},
                                     elements=elements
-                                )
-                                ]),
+                                    #deze hier onder uit commenten als we niet met kleurtjes willen
+                                    ,stylesheet=[
+                                                {'selector': 'node','style': {'content': 'data(label)'}},
+                                                {'selector': '.black','style': {'background-color': 'black','line-color': 'black'}},
+                                                {'selector': '.red','style': {'background-color': 'red','line-color': 'red'}},
+                                                {'selector': '.blue','style': {'background-color': 'blue','line-color': 'blue'}},
+                                                {'selector': '.orange','style': {'background-color': 'orange','line-color': 'orange'}},
+                                                {'selector': '.purple','style': {'background-color': 'purple','line-color': 'purple'}},
+                                                {'selector': '.green','style': {'background-color': 'green','line-color': 'green'}}
+                                            ]
+                                    #^^ tot en met hier
+                                 )]),
                         html.Div(id='cytoscape-tapNodeData-output', className = "h-75"),
                     ], width = {'size': 6}, className="border bl border-top-0 border-bottom-0",
                     ),
