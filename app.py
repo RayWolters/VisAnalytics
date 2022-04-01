@@ -14,6 +14,7 @@ from dash.dependencies import Input, Output, State
 import json
 from heatmap import heatmap
 from histogram import create_histogram
+from subjects import get_subjects
 
 filename = "data/Data_perday/{}/{}_{}.csv".format('2014-01-06','2014-01-06', "08")
 elements = create_elements(filename)
@@ -123,6 +124,8 @@ app.layout = html.Div(
                         ),
                 dcc.Input(id='username', value='Initial Value', type='text'),
                 html.Button(id='submit-button', type='submit', children='Submit'),
+                html.P(id='cytoscape-tapEdgeData-output'),
+
 
                     
                 ], width = {'size': 2}, className="border bl border-top-0 border-bottom-0"),
@@ -221,19 +224,25 @@ def update_layout(day,hour,dept,direction, click, data, input_val):
     
     if data:
         name = data['label']
-        h = create_histogram(file, name)      
-    return (      
-        elements, h
-    )
-
-# @app.callback(Output('cytoscape-tapNodeData-output', 'children'),
-#               Input('cytoscape-update-layout', 'tapNodeData')),
-# def displayTapNodeData(data):
-#     if data:
-#         name = data['label']
-        
+        h = create_histogram(file, name)   
+        return(elements, h)
+    
+    return (elements, h)
 
 
+@app.callback(Output('cytoscape-tapEdgeData-output','children' ),
+            Input('cytoscape-update-layout', 'tapEdgeData'),
+            Input('slider-update-day', 'value'),
+            Input('slider-update-hour', 'value'))
+            
+def update_layout2(data,day,hour):
+    d = round(day)
+    h = round(hour)
+
+    if data:
+        file = "data/Data_perday/{}/{}_{}_subjects.csv".format(get_day(d),get_day(d), get_hour(h))
+        lst = get_subjects(file, data['source'], data['target'])
+        return (lst)
 
 
 
