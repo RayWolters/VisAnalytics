@@ -15,7 +15,7 @@ import json
 from heatmap import heatmap
 from histogram import create_histogram
 
-filename = "Data_perday/{}/{}_{}.csv".format('2014-01-06','2014-01-06', "08")
+filename = "data/Data_perday/{}/{}_{}.csv".format('2014-01-06','2014-01-06', "08")
 elements = create_elements(filename)
 
 #function who maps indexes from slidebar to days
@@ -197,12 +197,12 @@ def update_layout(day,hour,dept,direction, click, data, input_val):
     d = round(day)
     h = round(hour)
     if dept == 'GAStech':
-        file = "Data_perday/{}/{}_{}.csv".format(get_day(d),get_day(d), get_hour(h))
+        file = "data/Data_perday/{}/{}_{}.csv".format(get_day(d),get_day(d), get_hour(h))
     else:
         if direction == 'whitin':
-            file = "Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, 'inner')
+            file = "data/Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, 'inner')
         else:
-            file = "Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, direction)
+            file = "data/Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, direction)
 
     if click is not None:
         elements = create_elements_individual(file, input_val)
