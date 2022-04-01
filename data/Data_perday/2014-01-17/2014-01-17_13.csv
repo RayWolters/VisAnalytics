@@ -1,0 +1,58 @@
+source,target,weight
+Felix Balas,Brand Tempestad,1
+Felix Balas,Adra Nubarron,1
+Felix Balas,Isande Borrasca,1
+Felix Balas,Elsa Orilla,1
+Felix Balas,Marin Onda,1
+Felix Balas,Kare Orilla,1
+Isande Borrasca,Felix Balas,1
+Isande Borrasca,Lidelse Dedos,1
+Isande Borrasca,Brand Tempestad,1
+Isande Borrasca,Adra Nubarron,1
+Isande Borrasca,Marin Onda,1
+Isande Borrasca,Kare Orilla,1
+Ingrid Barranco,Ada Campo-Corrente,1
+Ingrid Barranco,Sten Sanjorge Jr,1
+Ingrid Barranco,Sten Sanjorge Jr (tethys),1
+Cornelia Lais,Ruscella Mies,1
+Cornelia Lais,Carla Forluniau,1
+Cornelia Lais,Rachel Pantanal,1
+Cornelia Lais,Mat Bramar,1
+Cornelia Lais,Linda Lagos,1
+Cornelia Lais,Anda Ribera,1
+Henk Mies,Albina Hafon,2
+Henk Mies,Claudio Hawelon,2
+Henk Mies,Irene Nant,2
+Henk Mies,Cecilia Morluniau,2
+Henk Mies,Adan Morlun,2
+Henk Mies,Emile Arpa,2
+Henk Mies,Dylan Scozzese,2
+Henk Mies,Valeria Morlun,2
+Henk Mies,Benito Hawelon,2
+Henk Mies,Dante Coginian,2
+Henk Mies,Varro Awelon,2
+Henk Mies,Sten Sanjorge Jr,1
+Cecilia Morluniau,Claudio Hawelon,1
+Cecilia Morluniau,Irene Nant,1
+Cecilia Morluniau,Henk Mies,1
+Cecilia Morluniau,Adan Morlun,1
+Cecilia Morluniau,Dylan Scozzese,1
+Cecilia Morluniau,Valeria Morlun,1
+Ada Campo-Corrente,Sten Sanjorge Jr,5
+Ada Campo-Corrente,Sten Sanjorge Jr (tethys),5
+Sten Sanjorge Jr (tethys),Ada Campo-Corrente,1
+Sten Sanjorge Jr (tethys),Sten Sanjorge Jr,1
+Nils Calixto,Isak Baza,1
+Nils Calixto,Sven Flecha,1
+Minke Mies,Vira Frente,1
+Linda Lagos,Ruscella Mies,1
+Linda Lagos,Cornelia Lais,1
+Linda Lagos,Carla Forluniau,1
+Linda Lagos,Rachel Pantanal,1
+Linda Lagos,Mat Bramar,1
+Linda Lagos,Anda Ribera,1
+Isak Baza,Lucas Alcazar,1
+Axel Calzas,Elsa Orilla,1
+Axel Calzas,Kare Orilla,1
+Sten Sanjorge Jr,Henk Mies,1
+Vira Frente,Minke Mies,3

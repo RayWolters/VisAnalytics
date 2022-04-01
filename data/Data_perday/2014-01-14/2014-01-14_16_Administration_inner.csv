@@ -1,0 +1,16 @@
+source,target,weight
+Carla Forluniau,Cornelia Lais,3
+Carla Forluniau,Rachel Pantanal,3
+Carla Forluniau,Mat Bramar,3
+Carla Forluniau,Linda Lagos,3
+Carla Forluniau,Anda Ribera,3
+Mat Bramar,Anda Ribera,1
+Mat Bramar,Cornelia Lais,1
+Mat Bramar,Rachel Pantanal,1
+Mat Bramar,Linda Lagos,1
+Mat Bramar,Carla Forluniau,1
+Linda Lagos,Cornelia Lais,1
+Linda Lagos,Carla Forluniau,1
+Linda Lagos,Rachel Pantanal,1
+Linda Lagos,Mat Bramar,1
+Linda Lagos,Anda Ribera,1

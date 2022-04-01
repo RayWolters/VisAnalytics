@@ -1,0 +1,11 @@
+source,target,weight
+Sven Flecha,Lucas Alcazar,3
+Sven Flecha,Nils Calixto,3
+Sven Flecha,Isak Baza,3
+Lucas Alcazar,Nils Calixto,1
+Lucas Alcazar,Linnea Bergen,1
+Lucas Alcazar,Isak Baza,1
+Lucas Alcazar,Sven Flecha,1
+Isak Baza,Lucas Alcazar,3
+Isak Baza,Nils Calixto,3
+Isak Baza,Sven Flecha,3

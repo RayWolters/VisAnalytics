@@ -1,0 +1,24 @@
+source,target,weight
+Brand Tempestad,Adra Nubarron,1
+Brand Tempestad,Isande Borrasca,1
+Brand Tempestad,Elsa Orilla,1
+Brand Tempestad,Marin Onda,1
+Brand Tempestad,Kare Orilla,1
+Adra Nubarron,Brand Tempestad,1
+Adra Nubarron,Isande Borrasca,1
+Adra Nubarron,Elsa Orilla,1
+Adra Nubarron,Marin Onda,1
+Adra Nubarron,Kare Orilla,1
+Isande Borrasca,Felix Balas,1
+Isande Borrasca,Lidelse Dedos,1
+Isande Borrasca,Brand Tempestad,1
+Isande Borrasca,Adra Nubarron,1
+Isande Borrasca,Marin Onda,1
+Isande Borrasca,Kare Orilla,1
+Kare Orilla,Felix Balas,3
+Kare Orilla,Lidelse Dedos,3
+Kare Orilla,Brand Tempestad,5
+Kare Orilla,Adra Nubarron,5
+Kare Orilla,Isande Borrasca,5
+Kare Orilla,Elsa Orilla,2
+Kare Orilla,Marin Onda,5

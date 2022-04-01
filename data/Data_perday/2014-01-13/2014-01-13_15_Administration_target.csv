@@ -1,0 +1,17 @@
+source,target,weight
+Ruscella Mies,Mat Bramar,1
+Ruscella Mies,Anda Ribera,1
+Ruscella Mies,Cornelia Lais,1
+Ruscella Mies,Rachel Pantanal,1
+Ruscella Mies,Linda Lagos,1
+Ruscella Mies,Carla Forluniau,1
+Cornelia Lais,Carla Forluniau,1
+Cornelia Lais,Rachel Pantanal,1
+Cornelia Lais,Mat Bramar,1
+Cornelia Lais,Linda Lagos,1
+Cornelia Lais,Anda Ribera,1
+Linda Lagos,Cornelia Lais,1
+Linda Lagos,Carla Forluniau,1
+Linda Lagos,Rachel Pantanal,1
+Linda Lagos,Mat Bramar,1
+Linda Lagos,Anda Ribera,1

@@ -1,0 +1,16 @@
+source,target,weight
+Linnea Bergen,Ruscella Mies,1
+Linnea Bergen,Isia Vann,1
+Linnea Bergen,Loreto Bodrogi,1
+Linnea Bergen,Hennie Osvaldo,1
+Linnea Bergen,Minke Mies,1
+Linnea Bergen,Inga Ferro,1
+Lucas Alcazar,Nils Calixto,3
+Lucas Alcazar,Sven Flecha,3
+Lucas Alcazar,Isak Baza,3
+Nils Calixto,Lucas Alcazar,1
+Nils Calixto,Sven Flecha,1
+Nils Calixto,Isak Baza,1
+Sven Flecha,Lucas Alcazar,3
+Sven Flecha,Nils Calixto,1
+Sven Flecha,Isak Baza,3

@@ -15,13 +15,18 @@ import json
 from heatmap import heatmap
 from histogram import create_histogram
 
-filename = "data/NetworkVis/{}/{}.csv".format('2014-01-06','2014-01-06')
+filename = "Data_perday/{}/{}_{}.csv".format('2014-01-06','2014-01-06', "08")
 elements = create_elements(filename)
 
 #function who maps indexes from slidebar to days
 def get_day(num):
     dic = {1:'2014-01-06', 2:'2014-01-07', 3: '2014-01-08', 4:'2014-01-09',5:'2014-01-10',
      6:'2014-01-13', 7: '2014-01-14', 8: '2014-01-15', 9:'2014-01-16', 10:'2014-01-17'}
+    return dic[num]
+
+def get_hour(num):
+    dic = {1: '08', 2: '09', 3: '10', 4: '11', 5: '12', 6: '13', 7: '14', 8: '15', 
+              9: '16', 10: '17', 11: '18', 12: '19', 13: '20', 14: '21', 15: '22'}
     return dic[num]
 
 # TODO: Fix styling 
@@ -56,7 +61,7 @@ app.layout = html.Div(
                                     for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                                 ], className = "m-4",
                                 ),
-                    html.H5('Slide from 06-01 to 17-01', className="text-center"),
+                    html.H5('Choose day:', className="text-center"),
                     dcc.Slider(1, 10, value=1,
                                 id='slider-update-day',
                                 marks={
@@ -70,6 +75,26 @@ app.layout = html.Div(
                                     8: {'label':  '15'},
                                     9: {'label':  '16'},
                                     10: {'label': '17'}},
+                                ),
+                    html.H5('Choose hour:', className="text-center"),
+                    dcc.Slider(1, 15, value=1,
+                                id='slider-update-hour',
+                                marks={
+                                    1: {'label' : '08'},# 'style': {'color': '#77b0b1'}},
+                                    2: {'label':  '09'},
+                                    3: {'label':  '10'},
+                                    4: {'label':  '11'},
+                                    5: {'label':  '12'},
+                                    6: {'label':  '13'},
+                                    7: {'label':  '14'},
+                                    8: {'label':  '15'},
+                                    9: {'label':  '16'},
+                                    10: {'label': '17'},
+                                    11: {'label': '18'},
+                                    12: {'label': '19'},
+                                    13: {'label': '20'},
+                                    14: {'label': '21'},
+                                    15: {'label': '22'}}
                                 ),
                             html.H5('Categorize per department', className="text-center"),
                             dbc.Row(
@@ -161,21 +186,23 @@ def update_layout(layout):
 @app.callback(Output('cytoscape-update-layout', 'elements'),
               Output('cytoscape-tapNodeData-output', 'children'),
               Input('slider-update-day', 'value'),
+              Input('slider-update-hour', 'value'),
               Input('dropdown-update-departments', 'value'),
               Input('dropdown-update-dept_directions', 'value'),
             Input('submit-button', 'n_clicks'),
             Input('cytoscape-update-layout', 'tapNodeData'),
             State('username', 'value'))
             
-def update_layout(day,dept,direction, click, data, input_val):
+def update_layout(day,hour,dept,direction, click, data, input_val):
     d = round(day)
+    h = round(hour)
     if dept == 'GAStech':
-        file = "data/NetworkVis/{}/{}.csv".format(get_day(d),get_day(d))
+        file = "Data_perday/{}/{}_{}.csv".format(get_day(d),get_day(d), get_hour(h))
     else:
         if direction == 'whitin':
-            file = "data/NetworkVis/{}/{}_{}_{}.csv".format(get_day(d),get_day(d), dept, 'inner')
+            file = "Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, 'inner')
         else:
-            file = "data/NetworkVis/{}/{}_{}_{}.csv".format(get_day(d),get_day(d), dept, direction)
+            file = "Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, direction)
 
     if click is not None:
         elements = create_elements_individual(file, input_val)
@@ -184,9 +211,9 @@ def update_layout(day,dept,direction, click, data, input_val):
     
     if data:
         name = data['label']
-        hist = create_histogram(file, name)      
+        h = create_histogram(file, name)      
     return (      
-        elements, hist
+        elements, h
     )
 
 # @app.callback(Output('cytoscape-tapNodeData-output', 'children'),
