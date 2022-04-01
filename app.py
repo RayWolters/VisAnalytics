@@ -1,3 +1,4 @@
+from click import password_option
 import dash
 from dash import dcc
 from dash import html
@@ -16,19 +17,19 @@ from heatmap import heatmap
 from histogram import create_histogram
 from subjects import get_subjects
 
-filename = "data/Data_perday/{}/{}_{}.csv".format('2014-01-06','2014-01-06', "08")
-elements = create_elements(filename)
+
+elements = create_elements('2014-01-06', "08", '2014-01-17', '22')
 
 #function who maps indexes from slidebar to days
 def get_day(num):
-    dic = {1:'2014-01-06', 2:'2014-01-07', 3: '2014-01-08', 4:'2014-01-09',5:'2014-01-10',
-     6:'2014-01-13', 7: '2014-01-14', 8: '2014-01-15', 9:'2014-01-16', 10:'2014-01-17'}
+    dic = {'Mon 6-01':'2014-01-06', 'Tue 7-01':'2014-01-07', 'Wed 8-01': '2014-01-08', 'Thu 9-01':'2014-01-09','Fri 10-01':'2014-01-10',
+     'Mon 13-01':'2014-01-13', 'Tue 14-01': '2014-01-14', 'Wed 15-01': '2014-01-15', 'Thu 16-01':'2014-01-16', 'Fri 17-01':'2014-01-17'}
     return dic[num]
 
-def get_hour(num):
-    dic = {1: '08', 2: '09', 3: '10', 4: '11', 5: '12', 6: '13', 7: '14', 8: '15', 
-              9: '16', 10: '17', 11: '18', 12: '19', 13: '20', 14: '21', 15: '22'}
-    return dic[num]
+# def get_hour(num):
+#     dic = {1: '08', 2: '09', 3: '10', 4: '11', 5: '12', 6: '13', 7: '14', 8: '15', 
+#               9: '16', 10: '17', 11: '18', 12: '19', 13: '20', 14: '21', 15: '22'}
+#     return dic[num]
 
 # TODO: Fix styling 
 app.layout = html.Div(
@@ -62,69 +63,90 @@ app.layout = html.Div(
                                     for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                                 ], className = "m-4",
                                 ),
-                    html.H5('Slide through 6-17 January:', className="text-center"),
-                    dcc.Slider(1, 10, value=1,
-                                id='slider-update-day',
-                                marks={
-                                    1: {'label' : '06'},# 'style': {'color': '#77b0b1'}},
-                                    2: {'label':  '07'},
-                                    3: {'label':  '08'},
-                                    4: {'label':  '09'},
-                                    5: {'label':  '10'},
-                                    6: {'label':  '13'},
-                                    7: {'label':  '14'},
-                                    8: {'label':  '15'},
-                                    9: {'label':  '16'},
-                                    10: {'label': '17'}},
-                                ),
-                    html.H5('Choose hour:', className="text-center"),
-                    dcc.Slider(1, 15, value=1,
-                                id='slider-update-hour',
-                                marks={
-                                    1: {'label' : '08'},# 'style': {'color': '#77b0b1'}},
-                                    2: {'label':  '09'},
-                                    3: {'label':  '10'},
-                                    4: {'label':  '11'},
-                                    5: {'label':  '12'},
-                                    6: {'label':  '13'},
-                                    7: {'label':  '14'},
-                                    8: {'label':  '15'},
-                                    9: {'label':  '16'},
-                                    10: {'label': '17'},
-                                    11: {'label': '18'},
-                                    12: {'label': '19'},
-                                    13: {'label': '20'},
-                                    14: {'label': '21'},
-                                    15: {'label': '22'}}
-                                ),
-                            html.H5('Categorize per department', className="text-center"),
-                            dbc.Row(
+                    html.H5('Choose Start and End date:', className="text-center"),
+                    dbc.Row(
                             [
                                 dbc.Col(
                                         dcc.Dropdown(
-                                            id='dropdown-update-departments',
-                                            value='GAStech',
+                                            id='dropdown-start-day',
+                                            value='Mon 6-01',
                                             clearable=False,
                                             options=[
                                                 {'label': name.capitalize(), 'value': name}
-                                                for name in ['GAStech', 'Administration', 'Engineering', 'Executive', 'Facilities', 'Information Technology', 'Security']
+                                                for name in ['Mon 6-01', 'Tue 7-01', 'Wed 8-01', 'Thu 9-01', 'Fri 10-01',
+                                                         'Mon 13-01', 'Tue 14-01', 'Wed 15-01', 'Thu 16-01', 'Fri 17-01']
                                             ], className = "m-4",
                                             ),),
                                 dbc.Col(
                                         dcc.Dropdown(
-                                            id='dropdown-update-dept_directions',
-                                            value='both',
+                                            id='dropdown-start-hour',
+                                            value='08:00',
                                             clearable=False,
                                             options=[
                                                 {'label': name.capitalize(), 'value': name}
-                                                for name in ['source', 'target', 'both', 'whitin']
+                                                for name in ['08:00', '09:00', '10:00', '11:00', '12:00','13:00','14:00','15:00','16:00',
+                                                         '17:00','18:00','19:00', '20:00', '21:00', '22:00', '23:00']
+                                            ], className = "m-4",
+                                            ),
+                                            ),
+                                
+                                         
+                            ],
+                        ),
+                    dbc.Row(
+                            [
+                                dbc.Col(
+                                        dcc.Dropdown(
+                                            id='dropdown-end-day',
+                                            value='Fri 17-01',
+                                            clearable=False,
+                                            options=[
+                                                {'label': name.capitalize(), 'value': name}
+                                                for name in ['Mon 6-01', 'Tue 7-01', 'Wed 8-01', 'Thu 9-01', 'Fri 10-01',
+                                                         'Mon 13-01', 'Tue 14-01', 'Wed 15-01', 'Thu 16-01', 'Fri 17-01']
                                             ], className = "m-4",
                                             ),),
-                            ], className = "g-0 customheight justify-content-center",
+                                dbc.Col(
+                                        dcc.Dropdown(
+                                            id='dropdown-end-hour',
+                                            value='22:00',
+                                            clearable=False,
+                                            options=[
+                                                {'label': name.capitalize(), 'value': name}
+                                                for name in ['08:00', '09:00', '10:00', '11:00', '12:00','13:00','14:00','15:00','16:00',
+                                                         '17:00','18:00','19:00', '20:00', '21:00', '22:00', '23:00']
+                                            ], className = "m-4",
+                                            ),),
+                            ]
                         ),
-                dcc.Input(id='username', value='Initial Value', type='text'),
-                html.Button(id='submit-button', type='submit', children='Submit'),
-                html.P(id='cytoscape-tapEdgeData-output'),
+                    # html.H5('Categorize per department', className="text-center"),
+                        #     dbc.Row(
+                        #     [
+                        #         dbc.Col(
+                        #                 dcc.Dropdown(
+                        #                     id='dropdown-update-departments',
+                        #                     value='GAStech',
+                        #                     clearable=False,
+                        #                     options=[
+                        #                         {'label': name.capitalize(), 'value': name}
+                        #                         for name in ['GAStech', 'Administration', 'Engineering', 'Executive', 'Facilities', 'Information Technology', 'Security']
+                        #                     ], className = "m-4",
+                        #                     ),),
+                        #         dbc.Col(
+                        #                 dcc.Dropdown(
+                        #                     id='dropdown-update-dept_directions',
+                        #                     value='both',
+                        #                     clearable=False,
+                        #                     options=[
+                        #                         {'label': name.capitalize(), 'value': name}
+                        #                         for name in ['source', 'target', 'both', 'whitin']
+                        #                     ], className = "m-4",
+                        #                     ),),
+                        #     ], className = "g-0 customheight justify-content-center",
+                        # ),
+                # dcc.Input(id='username', value='Initial Value', type='text'),
+                # html.Button(id='submit-button', type='submit', children='Submit'),
+                # html.P(id='cytoscape-tapEdgeData-output'),
 
 
                     
@@ -197,52 +219,78 @@ def update_layout(layout):
     }
 
 @app.callback(Output('cytoscape-update-layout', 'elements'),
-              Output('cytoscape-tapNodeData-output', 'children'),
-              Input('slider-update-day', 'value'),
-              Input('slider-update-hour', 'value'),
-              Input('dropdown-update-departments', 'value'),
-              Input('dropdown-update-dept_directions', 'value'),
-              Input('submit-button', 'n_clicks'),
-              Input('cytoscape-update-layout', 'tapNodeData'),
-              State('username', 'value'))
+              Input('dropdown-start-day', 'value'),
+              Input('dropdown-start-hour', 'value'),
+              Input('dropdown-end-day', 'value'),
+              Input('dropdown-end-hour', 'value'))
+def update_layout(sday,shour,eday,ehour):
+    start_day  = get_day(sday)
+    start_hour = shour[:2]
+    end_day    = get_day(eday)
+    end_hour   = ehour[:2]
+
+    elements = create_elements(start_day, start_hour, end_day, end_hour)
+    return elements
+# @app.callback(Output('cytoscape-update-layout', 'elements'),
+#               Output('cytoscape-tapNodeData-output', 'children'),
+#               Input('slider-update-day', 'value'),
+#               Input('slider-update-hour', 'value'),
+#               Input('dropdown-update-departments', 'value'),
+#               Input('dropdown-update-dept_directions', 'value'),
+#               Input('submit-button', 'n_clicks'),
+#               Input('cytoscape-update-layout', 'tapNodeData'),
+#               State('username', 'value'))
             
-def update_layout(day,hour,dept,direction, click, data, input_val):
-    d = round(day)
-    h = round(hour)
-    if dept == 'GAStech':
-        file = "data/Data_perday/{}/{}_{}.csv".format(get_day(d),get_day(d), get_hour(h))
-    else:
-        if direction == 'whitin':
-            file = "data/Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, 'inner')
-        else:
-            file = "data/Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, direction)
+# def update_layout(day,hour,dept,direction, click, data, input_val):
+#     d = round(day)
+#     h = round(hour)
+#     if dept == 'GAStech':
+#         file = "data/Data_perday/{}/{}_{}.csv".format(get_day(d),get_day(d), get_hour(h))
+#     else:
+#         if direction == 'whitin':
+#             file = "data/Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, 'inner')
+#         else:
+#             file = "data/Data_perday/{}/{}_{}_{}_{}.csv".format(get_day(d),get_day(d),get_hour(h), dept, direction)
 
-    if click is not None:
-        elements = create_elements_individual(file, input_val)
-    else:
-        elements = create_elements(file)
+#     if click is not None:
+#         elements = create_elements_individual(file, input_val)
+#     else:
+#         elements = create_elements(file)
     
-    if data:
-        name = data['label']
-        h = create_histogram(file, name)   
-        return(elements, h)
+#     if data:
+#         name = data['label']
+#         h = create_histogram(file, name)   
+#         return(elements, h)
     
-    return (elements, h)
+#     return (elements, h)
 
 
-@app.callback(Output('cytoscape-tapEdgeData-output','children' ),
-            Input('cytoscape-update-layout', 'tapEdgeData'),
-            Input('slider-update-day', 'value'),
-            Input('slider-update-hour', 'value'))
+
+
+
+
+
+
+
+
+
+
+# @app.callback(Output('cytoscape-tapEdgeData-output','children' ),
+#             Input('cytoscape-update-layout', 'tapEdgeData'),
+#             Input('slider-update-day', 'value'),
+#             Input('slider-update-hour', 'value'))
             
-def update_layout2(data,day,hour):
-    d = round(day)
-    h = round(hour)
+# def update_layout2(data,day,hour):
+#     d = round(day)
+#     h = round(hour)
 
-    if data:
-        file = "data/Data_perday/{}/{}_{}_subjects.csv".format(get_day(d),get_day(d), get_hour(h))
-        lst = get_subjects(file, data['source'], data['target'])
-        return (lst)
+#     if data:
+#         file = "data/Data_perday/{}/{}_{}_subjects.csv".format(get_day(d),get_day(d), get_hour(h))
+#         lst = get_subjects(file, data['source'], data['target'])
+#         return (lst)
+
+
+
 
 
 

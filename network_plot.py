@@ -7,6 +7,10 @@ from pprint import pprint
 from dash.dependencies import Input, Output
 import json
 
+
+from ast import literal_eval
+
+
 #TODO overall todo: implement as many filter/classification functions to the plot. Think of: -visualize per day, -per departement, -per subject,  -let user type in a name and show network of this name
 #TODO add more functionalities of cytoscape: -highlight networks of users when clicked on -show other networks when clicked
 
@@ -22,7 +26,7 @@ import json
 
 
 
-def create_elements(filename):
+def create_elements(start_day, start_hour, end_day, end_hour):
     dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
     'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
@@ -32,10 +36,21 @@ def create_elements(filename):
     'Isia Vann': 'orange', 'Edvard Vann': 'orange', 'Felix Resumir': 'orange', 'Loreto Bodrogi': 'orange', 'Hideki Cocinaro': 'orange', 'Inga Ferro': 'orange', 'Ruscella Mies': 'black',
     'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
     
-    df = pd.read_csv(filename)
-    df = df.rename(columns={'source': 'Source', 'target': 'Target', 'weight': 'Weight'})
+    begin_date = "{} {}:00:00".format(start_day, start_hour)
+    end_date = "{} {}:00:00".format(end_day, end_hour)
 
-    l = df.values.tolist()
+    df = pd.read_csv('data/networkplot_data/alldays.csv')
+    df = df.set_index('Day')
+    lis = list(df.loc[begin_date: end_date]['Network'])
+
+    l = []
+    for row in lis:
+        for row2 in literal_eval(row):
+            l.append(row2)
+        
+    # df = pd.DataFrame(lst, columns=['Source', 'Target', 'Weight']
+
+    # l = df.values.tolist()
     lst =[]
     all_names = []
     for row in l:
