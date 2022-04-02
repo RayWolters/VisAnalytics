@@ -279,6 +279,22 @@ def update_layout(sday,shour,eday,ehour, depts, direction, data):
 #         return (lst)
 
 
+@app.callback(Output('cytoscape-tapEdgeData-output','children' ),
+            Input('cytoscape-update-layout', 'tapEdgeData'),
+            Input('dropdown-start-day', 'value'),
+            Input('dropdown-start-hour', 'value'),
+            Input('dropdown-end-day', 'value'),
+            Input('dropdown-end-hour', 'value'))
+            
+def update_layout2(data, sday,shour,eday,ehour):
+    start_day  = get_day(sday)
+    start_hour = shour[:2]
+    end_day    = get_day(eday)
+    end_hour   = ehour[:2]
+
+
+    if data:
+        return get_subjects(start_day, start_hour, end_day, end_hour, data['source'], data['target'])
 
 
 
