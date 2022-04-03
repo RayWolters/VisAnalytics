@@ -32,6 +32,7 @@ def prepare_data(start_day, start_hour, end_day, end_hour):
     df = df.set_index('Day')
     lis = list(df.loc[begin_date: end_date]['Network'])
 
+
     l = []
     for row in lis:
         for row2 in literal_eval(row):
@@ -64,10 +65,14 @@ def create_elements(l):
 
     lst =[]
     all_names = []
+
+    searchfor = ['Bodrogi', 'Osvaldo', 'Vann', 'Mies']
+
     for row in l:
-        all_names.append(row[0])
-        all_names.append(row[1])
-        lst.append((row[0], row[1]))
+        if row[0].split()[1] in searchfor or row[1].split()[1] in searchfor:
+            all_names.append(row[0])
+            all_names.append(row[1])
+            lst.append((row[0], row[1]))
     edges_tuples = tuple(lst)
 
     lall_names = list(set(all_names))

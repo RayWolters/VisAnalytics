@@ -30,16 +30,32 @@ def weighted_jaccard2(df1, df2):
 
 def lineplot():
     df = pd.read_csv('data/networkplot_data/alldays.csv', )
+
+    searchfor = ['Bodrogi', 'Osvaldo', 'Vann', 'Mies']
+
+
+
     nw_sim = pd.DataFrame()
     emjac = []
     emiter = []
 
     for i in range(len(df) -1): 
+
+
         df1 = pd.DataFrame(literal_eval(df.iloc[i]['Network']), columns = ['source', 'target', 'weight'])
         df2 = pd.DataFrame(literal_eval(df.iloc[i +1]['Network']), columns = ['source', 'target', 'weight'])
-        if df1.empty == False and df2.empty == False: 
-            emjac.append(weighted_jaccard2(df1, df2))
+
+
+        if (df1.empty == False and df2.empty == False) and ((df1['source'].str.contains('|'.join(searchfor)).any() or df1['target'].str.contains('|'.join(searchfor)).any()) and (df2['source'].str.contains('|'.join(searchfor)).any() or df2['target'].str.contains('|'.join(searchfor)).any())):
+            # emjac.append(weighted_jaccard2(df1, df2))
+            tempw = weighted_jaccard2(df1, df2)
+            emjac.append(tempw)
+            emjac.append(tempw)
+          
             emiter.append(df.iloc[i][0])
+            emiter.append(df.iloc[i + 1][0])
+
+
     nw_sim['sim'] = emjac
     nw_sim['time'] = emiter
 
