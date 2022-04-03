@@ -19,13 +19,28 @@ from histogram import create_histogram, create_histogram_department
 from subjects import get_subjects
 from lineplot import lineplot
 
-elements = prepare_data('2014-01-06', "08", '2014-01-17', '22')
 
 #function who maps indexes from slidebar to days
 def get_day(num):
     dic = {'Mon 6':'2014-01-06', 'Tue 7':'2014-01-07', 'Wed 8': '2014-01-08', 'Thu 9':'2014-01-09','Fri 10':'2014-01-10',
      'Mon 13':'2014-01-13', 'Tue 14': '2014-01-14', 'Wed 15': '2014-01-15', 'Thu 16':'2014-01-16', 'Fri 17':'2014-01-17'}
     return dic[num]
+
+
+dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
+    'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
+    'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
+    'Ada Campo-Corrente': 'green', 'Orhan Strum': 'green', 'Bertrand Ovan': 'purple', 'Emile Arpa': 'purple', 'Varro Awelon': 'purple', 'Dante Coginian': 'purple', 'Albina Hafon': 'purple',
+    'Benito Hawelon': 'purple', 'Claudio Hawelon': 'purple', 'Valeria Morlun': 'purple', 'Adan Morlun': 'purple', 'Cecilia Morluniau': 'purple', 'Irene Nant': 'purple', 'Linnea Bergen': 'blue',
+    'Lucas Alcazar': 'blue', 'Isak Baza': 'blue', 'Nils Calixto': 'blue', 'Sven Flecha': 'blue', 'Kanon Herrero': 'orange', 'Varja Lagos': 'orange', 'Stenig Fusil': 'orange', 'Hennie Osvaldo': 'orange',
+    'Isia Vann': 'orange', 'Edvard Vann': 'orange', 'Felix Resumir': 'orange', 'Loreto Bodrogi': 'orange', 'Hideki Cocinaro': 'orange', 'Inga Ferro': 'orange', 'Ruscella Mies': 'black',
+    'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
+
+employee_names = list(dic.keys())
+
+employee_names.append('GASTech')
+
+elements = prepare_data('2014-01-06', "08", '2014-01-17', '22', list(dic.keys()))
 
 
 # TODO: Fix styling 
@@ -143,6 +158,16 @@ app.layout = html.Div(
                             ], className = "g-0 justify-content-center",
                         ),
 
+                        dcc.Dropdown(
+                                            id='dropdown-update-employees',
+                                            value='GAStech',
+                                            clearable=False,
+                                            options=[
+                                                {'label': name.capitalize(), 'value': name}
+                                                for name in employee_names
+                                            ], multi=True, className = "m-4",
+                                            ),
+
 
 
 
@@ -239,7 +264,17 @@ app.layout = html.Div(
                                             ),),
                             ], className = "g-0 justify-content-center",
                         ),
-                html.P(id='cytoscape-tapEdgeData-output'),
+                dcc.Dropdown(
+                                            id='dropdown-update-employees-2',
+                                            value='GAStech',
+                                            clearable=False,
+                                            options=[
+                                                {'label': name.capitalize(), 'value': name}
+                                                for name in employee_names
+                                            ], multi=True, className = "m-4",
+                                            ),
+                
+                # html.P(id='cytoscape-tapEdgeData-output'),
 
                 dbc.Modal(
                     [
@@ -325,6 +360,18 @@ app.layout = html.Div(
                                 ),
                             ], className = "g-0  justify-content-center",
                         ),
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    [html.Div(id='cytoscape-tapNodeData-output-target', className = "h-75"),
+                                    ], 
+                                ),
+                                dbc.Col(
+                                    [html.Div(id='cytoscape-tapNodeData-output-target-2', className = "h-75"),
+                                    ], 
+                                ),
+                            ], className = "g-0  justify-content-center",
+                        ),
                         
                     # html.Div(id='cytoscape-tapNodeData-output', className = "h-75"),
                     ], width = {'size': 6}, className="border bl border-top-0 border-bottom-0",
@@ -386,18 +433,22 @@ def update_layout(layout):
               Input('dropdown-end-day', 'value'),
               Input('dropdown-end-hour', 'value'),
               Input('dropdown-update-departments', 'value'),
-              Input('dropdown-update-dept_directions', 'value')
+              Input('dropdown-update-dept_directions', 'value'),
+              Input('dropdown-update-employees' , 'value')
               )
-def update_layout(sday,shour,eday,ehour, depts, direction):
+def update_layout(sday,shour,eday,ehour, depts, direction, lst):
     start_day  = get_day(sday)
     start_hour = shour[:2]
     end_day    = get_day(eday)
     end_hour   = ehour[:2]
 
+    if 'GAStech' in lst:
+        lst = list(dic.keys())
+
     if depts == 'GAStech':
-        return prepare_data(start_day, start_hour, end_day, end_hour)
+        return prepare_data(start_day, start_hour, end_day, end_hour, lst)
     else:
-        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction)
+        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction, lst)
 
 @app.callback(Output('cytoscape-update-layout-2', 'elements'),
               Input('dropdown-start-day-2', 'value'),
@@ -405,18 +456,24 @@ def update_layout(sday,shour,eday,ehour, depts, direction):
               Input('dropdown-end-day-2', 'value'),
               Input('dropdown-end-hour-2', 'value'),
               Input('dropdown-update-departments-2', 'value'),
-              Input('dropdown-update-dept_directions-2', 'value')
+              Input('dropdown-update-dept_directions-2', 'value'), 
+              Input('dropdown-update-employees-2' , 'value')
+
               )
-def update_layout(sday,shour,eday,ehour, depts, direction):
+def update_layout(sday,shour,eday,ehour, depts, direction, lst):
     start_day  = get_day(sday)
     start_hour = shour[:2]
     end_day    = get_day(eday)
     end_hour   = ehour[:2]
 
+    if 'GAStech' in lst:
+        lst = list(dic.keys())
+
+
     if depts == 'GAStech':
-        return prepare_data(start_day, start_hour, end_day, end_hour)
+        return prepare_data(start_day, start_hour, end_day, end_hour, lst)
     else:
-        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction)
+        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction, lst)
 
 @app.callback(Output('cytoscape-tapNodeData-output', 'children'),
               Input('dropdown-start-day', 'value'),
@@ -432,12 +489,14 @@ def update_layout(sday,shour,eday,ehour, depts, direction, data):
     end_day    = get_day(eday)
     end_hour   = ehour[:2]
 
+    
+
     if data:
         name = data['label']
         if depts == 'GAStech':
-            return create_histogram(start_day, start_hour, end_day, end_hour, name)
+            return create_histogram(start_day, start_hour, end_day, end_hour, name, 'source')
         else:
-            return create_histogram_department(start_day, start_hour, end_day, end_hour, depts, direction, name)
+            return create_histogram_department(start_day, start_hour, end_day, end_hour, depts, direction, name, 'source')
 
 @app.callback(Output('cytoscape-tapNodeData-output-2', 'children'),
               Input('dropdown-start-day-2', 'value'),
@@ -456,9 +515,52 @@ def update_layout(sday,shour,eday,ehour, depts, direction, data):
     if data:
         name = data['label']
         if depts == 'GAStech':
-            return create_histogram(start_day, start_hour, end_day, end_hour, name)
+            return create_histogram(start_day, start_hour, end_day, end_hour, name, 'source')
         else:
-            return create_histogram_department(start_day, start_hour, end_day, end_hour, depts, direction, name)
+            return create_histogram_department(start_day, start_hour, end_day, end_hour, depts, direction, name, 'source')
+
+
+@app.callback(Output('cytoscape-tapNodeData-output-target', 'children'),
+              Input('dropdown-start-day', 'value'),
+              Input('dropdown-start-hour', 'value'),
+              Input('dropdown-end-day', 'value'),
+              Input('dropdown-end-hour', 'value'),
+              Input('dropdown-update-departments', 'value'),
+              Input('dropdown-update-dept_directions', 'value'),
+              Input('cytoscape-update-layout', 'tapNodeData'))
+def update_layout(sday,shour,eday,ehour, depts, direction, data):
+    start_day  = get_day(sday)
+    start_hour = shour[:2]
+    end_day    = get_day(eday)
+    end_hour   = ehour[:2]
+
+    if data:
+        name = data['label']
+        if depts == 'GAStech':
+            return create_histogram(start_day, start_hour, end_day, end_hour, name, 'target')
+        else:
+            return create_histogram_department(start_day, start_hour, end_day, end_hour, depts, direction, name, 'target')
+
+@app.callback(Output('cytoscape-tapNodeData-output-target-2', 'children'),
+              Input('dropdown-start-day-2', 'value'),
+              Input('dropdown-start-hour-2', 'value'),
+              Input('dropdown-end-day-2', 'value'),
+              Input('dropdown-end-hour-2', 'value'),
+              Input('dropdown-update-departments-2', 'value'),
+              Input('dropdown-update-dept_directions-2', 'value'),
+              Input('cytoscape-update-layout-2', 'tapNodeData'))
+def update_layout(sday,shour,eday,ehour, depts, direction, data):
+    start_day  = get_day(sday)
+    start_hour = shour[:2]
+    end_day    = get_day(eday)
+    end_hour   = ehour[:2]
+
+    if data:
+        name = data['label']
+        if depts == 'GAStech':
+            return create_histogram(start_day, start_hour, end_day, end_hour, name, 'target')
+        else:
+            return create_histogram_department(start_day, start_hour, end_day, end_hour, depts, direction, name, 'target')
         
 
 @app.callback(Output('cytoscape-tapEdgeData-output','children' ),

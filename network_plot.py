@@ -24,7 +24,7 @@ from ast import literal_eval
 
 
 
-def prepare_data(start_day, start_hour, end_day, end_hour):
+def prepare_data(start_day, start_hour, end_day, end_hour, lst):
     begin_date = "{} {}:00:00".format(start_day, start_hour)
     end_date = "{} {}:00:00".format(end_day, end_hour)
 
@@ -37,9 +37,9 @@ def prepare_data(start_day, start_hour, end_day, end_hour):
     for row in lis:
         for row2 in literal_eval(row):
             l.append(row2)
-    return create_elements(l)
+    return create_elements(l, lst)
 
-def prepare_data_department(start_day, start_hour, end_day, end_hour, departments, direction):
+def prepare_data_department(start_day, start_hour, end_day, end_hour, departments, direction, lst):
     begin_date = "{} {}:00:00".format(start_day, start_hour)
     end_date = "{} {}:00:00".format(end_day, end_hour)
 
@@ -51,9 +51,9 @@ def prepare_data_department(start_day, start_hour, end_day, end_hour, department
     for row in lis:
         for row2 in literal_eval(row):
             l.append(row2)
-    return create_elements(l)
+    return create_elements(l, lst)
 
-def create_elements(l):
+def create_elements(l, lst_employees):
     dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
     'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
@@ -66,10 +66,11 @@ def create_elements(l):
     lst =[]
     all_names = []
 
-    searchfor = ['Bodrogi', 'Osvaldo', 'Vann', 'Mies']
+    searchfor = lst_employees
 
+    print(searchfor)
     for row in l:
-        if row[0].split()[1] in searchfor or row[1].split()[1] in searchfor:
+        if row[0] in searchfor:
             all_names.append(row[0])
             all_names.append(row[1])
             lst.append((row[0], row[1]))

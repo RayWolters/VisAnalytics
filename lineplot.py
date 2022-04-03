@@ -29,7 +29,10 @@ def weighted_jaccard2(df1, df2):
     return weighted_jaccard_sim
 
 def lineplot():
-    df = pd.read_csv('data/networkplot_data/alldays.csv', )
+    # df = pd.read_csv('data/networkplot_data/alldays.csv', )
+    df = pd.read_csv('data/networkplot_data/network_data_15.csv', )
+
+    df = df[['Day' , 'Network']]
 
     searchfor = ['Bodrogi', 'Osvaldo', 'Vann', 'Mies']
 
