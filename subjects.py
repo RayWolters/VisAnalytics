@@ -25,12 +25,7 @@ def get_subjects(start_day, start_hour, end_day, end_hour, source, target):
             l.append(row2)
     
     df = pd.DataFrame(l, columns=['Source', 'Target', 'Subject'])
-
-    print(df)
-
     dfs = df[df['Source'] == source]
     dft = dfs[dfs['Target'] == target]
-
-    print(dft)
 
     return(list(dft['Subject']))

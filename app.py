@@ -1,6 +1,8 @@
 from click import password_option
 import dash
 from dash import dcc
+import dash_bootstrap_components as dbc
+
 from dash import html
 import pandas as pd
 import plotly.express as px
@@ -239,6 +241,20 @@ app.layout = html.Div(
                         ),
                 html.P(id='cytoscape-tapEdgeData-output'),
 
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader(dbc.ModalTitle("Header")),
+                        dbc.ModalBody(html.Div(id='cytoscape-tapNodeData-output-modal', className = "h-75"),),
+                        dbc.ModalFooter(
+                            dbc.Button(
+                                "Close", id="close", className="ms-auto", n_clicks=0
+                            )
+                        ),
+                    ],
+                    id="modal",
+                    is_open=False,
+                ),
+
 
                     
                 ], width = {'size': 2}, className="border bl border-top-0 border-bottom-0"),
@@ -461,6 +477,32 @@ def update_layout2(data, sday,shour,eday,ehour):
 
     if data:
         return get_subjects(start_day, start_hour, end_day, end_hour, data['source'], data['target'])
+
+@app.callback(
+    Output("modal", "is_open"),
+    Output('cytoscape-tapNodeData-output-modal', 'children'),
+    Input('dropdown-start-day', 'value'),
+    Input('dropdown-start-hour', 'value'),
+    Input('dropdown-end-day', 'value'),
+    Input('dropdown-end-hour', 'value'),
+    Input('dropdown-update-departments', 'value'),
+    Input('dropdown-update-dept_directions', 'value'),
+    Input('cytoscape-update-layout', 'tapNodeData'),
+    [State("modal", "is_open")],)
+
+def update_layout(sday,shour,eday,ehour, depts, direction, data, is_open):
+    start_day  = get_day(sday)
+    start_hour = shour[:2]
+    end_day    = get_day(eday)
+    end_hour   = ehour[:2]
+
+    if data:
+        name = data['label']
+        if depts == 'GAStech':
+            return (not is_open, create_histogram(start_day, start_hour, end_day, end_hour, name))
+        else:
+            return (not is_open, create_histogram(start_day, start_hour, end_day, end_hour, name))
+    # return is_open
 
 
 # @app.callback(Output('cytoscape-tapEdgeData-output','children' ),
