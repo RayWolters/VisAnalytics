@@ -24,7 +24,7 @@ from ast import literal_eval
 
 
 
-def prepare_data(start_day, start_hour, end_day, end_hour, lst):
+def prepare_data(start_day, start_hour, end_day, end_hour, lst, subject_lst, v_subjects):
     begin_date = "{} {}:00:00".format(start_day, start_hour)
     end_date = "{} {}:00:00".format(end_day, end_hour)
 
@@ -37,9 +37,23 @@ def prepare_data(start_day, start_hour, end_day, end_hour, lst):
     for row in lis:
         for row2 in literal_eval(row):
             l.append(row2)
-    return create_elements(l, lst)
 
-def prepare_data_department(start_day, start_hour, end_day, end_hour, departments, direction, lst):
+    dfs = pd.read_csv('data/networkplot_data/subjects.csv')
+    dfs = dfs.set_index('Day')
+    lis = list(dfs.loc[begin_date: end_date]['Network'])
+
+    ls = []
+    for row in lis:
+        for row2 in literal_eval(row):
+            ls.append(row2)
+    
+    dfs = pd.DataFrame(ls, columns=['Source', 'Target', 'Subject'])
+
+    list_of_em = dfs[dfs['Subject'].isin(subject_lst)][['Source', 'Target']].values.tolist()
+
+    return create_elements(l, lst, v_subjects, list_of_em)
+
+def prepare_data_department(start_day, start_hour, end_day, end_hour, departments, direction, lst, subject_lst, v_subjects):
     begin_date = "{} {}:00:00".format(start_day, start_hour)
     end_date = "{} {}:00:00".format(end_day, end_hour)
 
@@ -51,9 +65,30 @@ def prepare_data_department(start_day, start_hour, end_day, end_hour, department
     for row in lis:
         for row2 in literal_eval(row):
             l.append(row2)
-    return create_elements(l, lst)
 
-def create_elements(l, lst_employees):
+    dfs = pd.read_csv('data/networkplot_data/subjects.csv')
+    dfs = dfs.set_index('Day')
+    lis = list(dfs.loc[begin_date: end_date]['Network'])
+
+    ls = []
+    for row in lis:
+        for row2 in literal_eval(row):
+            ls.append(row2)
+    
+    dfs = pd.DataFrame(ls, columns=['Source', 'Target', 'Subject'])
+
+    
+    print(dfs.head())
+    print(subject_lst)
+
+
+    list_of_em = dfs[dfs['Subject'].isin(subject_lst)][['Source', 'Target']].values.tolist()
+
+    print(list_of_em)
+
+    return create_elements(l, lst, v_subjects, list_of_em)
+
+def create_elements(l, lst_employees, v_subjects, list_of_em):
     dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
     'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
@@ -68,12 +103,21 @@ def create_elements(l, lst_employees):
 
     searchfor = lst_employees
 
-    print(searchfor)
+    
+
     for row in l:
         if row[0] in searchfor:
-            all_names.append(row[0])
-            all_names.append(row[1])
-            lst.append((row[0], row[1]))
+            if v_subjects:
+                all_names.append(row[0])
+                all_names.append(row[1])
+                lst.append((row[0], row[1]))
+            else:
+                if [row[0], row[1]] in list_of_em:
+                    all_names.append(row[0])
+                    all_names.append(row[1])
+                    lst.append((row[0], row[1]))
+
+                
     edges_tuples = tuple(lst)
 
     lall_names = list(set(all_names))

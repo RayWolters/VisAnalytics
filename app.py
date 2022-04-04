@@ -1,9 +1,11 @@
+import email
 from click import password_option
 import dash
 from dash import dcc
 import dash_bootstrap_components as dbc
 
 from dash import html
+from numpy import unicode_
 import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
@@ -40,7 +42,12 @@ employee_names = list(dic.keys())
 
 employee_names.append('GASTech')
 
-elements = prepare_data('2014-01-06', "08", '2014-01-17', '22', list(dic.keys()))
+
+email_df = pd.read_csv('data/email headers.csv', encoding='cp1252')
+
+unique_subjects = list(set(list(email_df['Subject'])))
+
+elements = prepare_data('2014-01-06', "08", '2014-01-17', '22', list(dic.keys()), unique_subjects, True)
 
 
 # TODO: Fix styling 
@@ -168,6 +175,17 @@ app.layout = html.Div(
                                             ], multi=True, className = "m-4",
                                             ),
 
+                        dcc.Dropdown(
+                                            id='dropdown-update-subjects',
+                                            value=['All'],
+                                            clearable=False,
+                                            options=[
+                                                {'label': subject.capitalize(), 'value': subject}
+                                                for subject in unique_subjects
+                                            ], multi=True, className = "m-4",
+                                            ),
+                                            
+
 
 
 
@@ -273,18 +291,28 @@ app.layout = html.Div(
                                                 for name in employee_names
                                             ], multi=True, className = "m-4",
                                             ),
+
+
+                dcc.Dropdown(
+                    id='dropdown-update-subjects-2',
+                    value=['All'],
+                    clearable=False,
+                    options=[
+                        {'label': subject.capitalize(), 'value': subject}
+                        for subject in unique_subjects
+                    ], multi=True, className = "m-4",
+                    ),
                 
-                # html.P(id='cytoscape-tapEdgeData-output'),
 
                 dbc.Modal(
                     [
                         dbc.ModalHeader(dbc.ModalTitle("Header")),
-                        dbc.ModalBody(html.Div(id='cytoscape-tapNodeData-output-modal', className = "h-75"),),
-                        dbc.ModalFooter(
-                            dbc.Button(
-                                "Close", id="close", className="ms-auto", n_clicks=0
-                            )
-                        ),
+                        dbc.ModalBody(html.Div(id='cytoscape-tapEdgeData-output', className = "h-75"),),
+                        # dbc.ModalFooter(
+                        #     dbc.Button(
+                        #         "Close", id="close", className="ms-auto", n_clicks=0
+                        #     )
+                        # ),
                     ],
                     id="modal",
                     is_open=False,
@@ -406,9 +434,13 @@ app.layout = html.Div(
                         ),
                     ], width = {'size': 4}, className = "h-100"
                 ),
+
+            
             ], className = "vh-100 g-0",
+
+            
         ),
-    ],
+    ], style =  {"overflow": "scroll"},
 )
 
 @app.callback(Output('cytoscape-update-layout', 'layout'),
@@ -434,46 +466,87 @@ def update_layout(layout):
               Input('dropdown-end-hour', 'value'),
               Input('dropdown-update-departments', 'value'),
               Input('dropdown-update-dept_directions', 'value'),
-              Input('dropdown-update-employees' , 'value')
+              Input('dropdown-update-employees' , 'value'),
+              Input('dropdown-update-subjects', 'value'), 
               )
-def update_layout(sday,shour,eday,ehour, depts, direction, lst):
+def update_layout(sday,shour,eday,ehour, depts, direction, lst, subject_lst):
+
+    dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
+    'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
+    'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
+    'Ada Campo-Corrente': 'green', 'Orhan Strum': 'green', 'Bertrand Ovan': 'purple', 'Emile Arpa': 'purple', 'Varro Awelon': 'purple', 'Dante Coginian': 'purple', 'Albina Hafon': 'purple',
+    'Benito Hawelon': 'purple', 'Claudio Hawelon': 'purple', 'Valeria Morlun': 'purple', 'Adan Morlun': 'purple', 'Cecilia Morluniau': 'purple', 'Irene Nant': 'purple', 'Linnea Bergen': 'blue',
+    'Lucas Alcazar': 'blue', 'Isak Baza': 'blue', 'Nils Calixto': 'blue', 'Sven Flecha': 'blue', 'Kanon Herrero': 'orange', 'Varja Lagos': 'orange', 'Stenig Fusil': 'orange', 'Hennie Osvaldo': 'orange',
+    'Isia Vann': 'orange', 'Edvard Vann': 'orange', 'Felix Resumir': 'orange', 'Loreto Bodrogi': 'orange', 'Hideki Cocinaro': 'orange', 'Inga Ferro': 'orange', 'Ruscella Mies': 'black',
+    'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
+
+
+
     start_day  = get_day(sday)
     start_hour = shour[:2]
     end_day    = get_day(eday)
     end_hour   = ehour[:2]
 
-    if 'GAStech' in lst:
+    if "All" in subject_lst or len(subject_lst) == 0:
+        v_subjects = True
+        subjects = unique_subjects
+        # print(subjects)
+    else:
+        v_subjects = False
+        subjects = subject_lst
+    
+    if 'GAStech' == lst:
         lst = list(dic.keys())
+        # print(lst)
 
     if depts == 'GAStech':
-        return prepare_data(start_day, start_hour, end_day, end_hour, lst)
+        return prepare_data(start_day, start_hour, end_day, end_hour, lst, subjects, v_subjects)
     else:
-        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction, lst)
-
+        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction, lst, subjects, v_subjects)
 @app.callback(Output('cytoscape-update-layout-2', 'elements'),
               Input('dropdown-start-day-2', 'value'),
               Input('dropdown-start-hour-2', 'value'),
               Input('dropdown-end-day-2', 'value'),
               Input('dropdown-end-hour-2', 'value'),
               Input('dropdown-update-departments-2', 'value'),
-              Input('dropdown-update-dept_directions-2', 'value'), 
-              Input('dropdown-update-employees-2' , 'value')
-
+              Input('dropdown-update-dept_directions-2', 'value'),
+              Input('dropdown-update-employees-2' , 'value'),
+              Input('dropdown-update-subjects-2', 'value'), 
               )
-def update_layout(sday,shour,eday,ehour, depts, direction, lst):
+def update_layout(sday,shour,eday,ehour, depts, direction, lst, subject_lst):
+
+    dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
+    'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
+    'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
+    'Ada Campo-Corrente': 'green', 'Orhan Strum': 'green', 'Bertrand Ovan': 'purple', 'Emile Arpa': 'purple', 'Varro Awelon': 'purple', 'Dante Coginian': 'purple', 'Albina Hafon': 'purple',
+    'Benito Hawelon': 'purple', 'Claudio Hawelon': 'purple', 'Valeria Morlun': 'purple', 'Adan Morlun': 'purple', 'Cecilia Morluniau': 'purple', 'Irene Nant': 'purple', 'Linnea Bergen': 'blue',
+    'Lucas Alcazar': 'blue', 'Isak Baza': 'blue', 'Nils Calixto': 'blue', 'Sven Flecha': 'blue', 'Kanon Herrero': 'orange', 'Varja Lagos': 'orange', 'Stenig Fusil': 'orange', 'Hennie Osvaldo': 'orange',
+    'Isia Vann': 'orange', 'Edvard Vann': 'orange', 'Felix Resumir': 'orange', 'Loreto Bodrogi': 'orange', 'Hideki Cocinaro': 'orange', 'Inga Ferro': 'orange', 'Ruscella Mies': 'black',
+    'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
+
+
+
     start_day  = get_day(sday)
     start_hour = shour[:2]
     end_day    = get_day(eday)
     end_hour   = ehour[:2]
 
-    if 'GAStech' in lst:
+    if "All" in subject_lst or len(subject_lst) == 0:
+        v_subjects = True
+        subjects = unique_subjects
+        # print(subjects)
+    else:
+        v_subjects = False
+        subjects = subject_lst
+    
+    if 'GAStech' == lst:
         lst = list(dic.keys())
-
+        # print(lst)
 
     if depts == 'GAStech':
-        return prepare_data(start_day, start_hour, end_day, end_hour, lst)
+        return prepare_data(start_day, start_hour, end_day, end_hour, lst, subjects, v_subjects)
     else:
-        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction, lst)
+        return prepare_data_department(start_day, start_hour, end_day, end_hour, depts, direction, lst, subjects, v_subjects)
 
 @app.callback(Output('cytoscape-tapNodeData-output', 'children'),
               Input('dropdown-start-day', 'value'),
@@ -563,48 +636,45 @@ def update_layout(sday,shour,eday,ehour, depts, direction, data):
             return create_histogram_department(start_day, start_hour, end_day, end_hour, depts, direction, name, 'target')
         
 
-@app.callback(Output('cytoscape-tapEdgeData-output','children' ),
-            Input('cytoscape-update-layout', 'tapEdgeData'),
-            Input('dropdown-start-day', 'value'),
-            Input('dropdown-start-hour', 'value'),
-            Input('dropdown-end-day', 'value'),
-            Input('dropdown-end-hour', 'value'))
+# @app.callback(Output('cytoscape-tapEdgeData-output','children' ),
+#             Input('cytoscape-update-layout', 'tapEdgeData'),
+#             Input('dropdown-start-day', 'value'),
+#             Input('dropdown-start-hour', 'value'),
+#             Input('dropdown-end-day', 'value'),
+#             Input('dropdown-end-hour', 'value'))
             
-def update_layout2(data, sday,shour,eday,ehour):
-    start_day  = get_day(sday)
-    start_hour = shour[:2]
-    end_day    = get_day(eday)
-    end_hour   = ehour[:2]
+# def update_layout2(data, sday,shour,eday,ehour):
+#     start_day  = get_day(sday)
+#     start_hour = shour[:2]
+#     end_day    = get_day(eday)
+#     end_hour   = ehour[:2]
 
 
-    if data:
-        return get_subjects(start_day, start_hour, end_day, end_hour, data['source'], data['target'])
+#     if data:
+#         return get_subjects(start_day, start_hour, end_day, end_hour, data['source'], data['target'])
 
-@app.callback(
-    Output("modal", "is_open"),
-    Output('cytoscape-tapNodeData-output-modal', 'children'),
-    Input('dropdown-start-day', 'value'),
-    Input('dropdown-start-hour', 'value'),
-    Input('dropdown-end-day', 'value'),
-    Input('dropdown-end-hour', 'value'),
-    Input('dropdown-update-departments', 'value'),
-    Input('dropdown-update-dept_directions', 'value'),
-    Input('cytoscape-update-layout', 'tapNodeData'),
-    [State("modal", "is_open")],)
+# @app.callback(
+#     Output("modal", "is_open"),
+#     Output('cytoscape-tapEdgeData-output', 'children'),
+#     Input('dropdown-start-day-2', 'value'),
+#     Input('dropdown-start-hour-2', 'value'),
+#     Input('dropdown-end-day-2', 'value'),
+#     Input('dropdown-end-hour-2', 'value'),
+#     Input('dropdown-update-departments-2', 'value'),
+#     Input('dropdown-update-dept_directions-2', 'value'),
+#     Input('cytoscape-update-layout-2', 'tapEdgeData'),
+#     [State("modal", "is_open")],)
 
-def update_layout(sday,shour,eday,ehour, depts, direction, data, is_open):
-    start_day  = get_day(sday)
-    start_hour = shour[:2]
-    end_day    = get_day(eday)
-    end_hour   = ehour[:2]
+# def update_layout(sday,shour,eday,ehour, depts, direction, data, is_open):
+#     start_day  = get_day(sday)
+#     start_hour = shour[:2]
+#     end_day    = get_day(eday)
+#     end_hour   = ehour[:2]
 
-    if data:
-        name = data['label']
-        if depts == 'GAStech':
-            return (not is_open, create_histogram(start_day, start_hour, end_day, end_hour, name))
-        else:
-            return (not is_open, create_histogram(start_day, start_hour, end_day, end_hour, name))
-    # return is_open
+#     if data:
+#         return(not is_open, get_subjects(start_day, start_hour, end_day, end_hour, data['source'], data['target']))
+    
+    
 
 
 # @app.callback(Output('cytoscape-tapEdgeData-output','children' ),
