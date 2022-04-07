@@ -10,10 +10,26 @@ body {
     border-left: None !important;
 }
 
-.customheight {
-    height: 35%
+.customWidth {
+    width: 15%;
 }
 
-.customheight2 {
-    height: 65%
+.customWidth2 {
+    width: 55%;
+}
+
+.customHeight {
+    height: 93.5%;
+}
+
+.customHeight3 {
+    height: 40%;
+}
+
+.customHeight4 {
+    height: 85%;
+}
+
+.customHeight5 {
+    height: 95%;
 }
