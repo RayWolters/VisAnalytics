@@ -20,6 +20,9 @@ import json
 from histogram import create_histogram, create_histogram_department
 from subjects import get_subjects
 from lineplot import lineplot
+from pok_table import search_on_names
+from dash import Dash, dash_table
+from collections import OrderedDict
 
 #function who maps indexes from slidebar to days
 def get_day(num):
@@ -49,6 +52,8 @@ unique_subjects = list(set(list(email_df['Subject'])))
 
 elements = prepare_data('2014-01-06', "08", '2014-01-17', '22', 'Source')
 
+df_table_full, df_table_last, df_table_middle, df_info_associated_employees = search_on_names()
+
 # TODO: Fix styling 
 app.layout = html.Div(
     children = [
@@ -62,7 +67,7 @@ app.layout = html.Div(
                 dbc.Col(
                     [
                         dbc.Row(dbc.Col(html.H2("Disappearance at GAStech", className="m-0 bg-dark text-white text-center")), className="g-0"),
-                        dbc.Row(dbc.Col(id="page-contents", className="h-75 m-2"), className="g-0 customHeight4"),
+                        dbc.Row(dbc.Col(id="page-contents", className="h-75 m-2"), className="g-0 customHeight4 mb-4"),
                         dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=3, previous_next=True)), className="g-0"),
                     ], width={"size": 7}, className = 'h-75 bg-light p-0',
                 ),
@@ -350,7 +355,65 @@ def switch_page(page):
     dbc.Row(
             dbc.Col(
                 dcc.Graph(figure=sunburst_departments(), className = "h-100")), className="customHeight3 g-0")]
-    return html.H1("default"), []
+    return [
+        dbc.Row(
+            [
+                dbc.Row([
+                    dbc.Col([
+                        html.H5('The goal on this page is, given the historical records and articles*, to find employees that are possibly associated with the POK or even are part of the POK.', className="border bg-white mb-0"),
+                        html.H6('* No employee names (either fully, or partially) appear in the articles.', className="border bg-white"),
+                    ]),
+                ], className=""),
+                dbc.Row([
+                    dbc.Col([
+                        html.H6('Lastnames of employees that appear in the historical records that contain POK, pok or Protectors.', className="border"),
+                        dash_table.DataTable(
+                            data=df_table_last.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in df_table_last.columns],
+                            style_table={'overflowX': 'auto'},
+                        ),
+                        html.H6('Employee Records of employees whose last-, first-, or middlename appears in one of the historical records', className="border bg-white mt-2"),
+                    ], width={'size': 6}),
+                    dbc.Col([
+                        html.H6('Some lastnames of employees consist of two words which is why we also check on these names of employees that appear in the historical \
+                        records that contain POK, pok or Protectors. \
+                        It appears that there is only one employee whose name is fully contained in one of the historical records.', className="border"),
+                        dash_table.DataTable(
+                            data=df_table_middle.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in df_table_middle.columns],
+                            style_table={'overflowX': 'auto'},
+                        ),
+                        dash_table.DataTable(
+                            data=df_table_full.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in df_table_full.columns],
+                            style_table={'overflowX': 'auto'},
+                        ), 
+                    ], width={'size': 6}),
+                ]),
+                dbc.Row([ 
+                    dbc.Col([
+                        
+                        
+                    ], width={"size": 6}),
+                ], className=""),
+                dbc.Row([
+                    dbc.Col([
+                        dash_table.DataTable(
+                            data=df_info_associated_employees.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
+                            style_table={'overflowX': 'auto'},
+                        ),
+                    ]),
+                ], className=""),
+            ], className="",
+        ),
+        ], [
+    dbc.Row(
+            dbc.Col(
+                dcc.Graph(figure=sunburst_executive(), className = "h-100")), className="customHeight3 g-0"), 
+    dbc.Row(
+            dbc.Col(
+                dcc.Graph(figure=sunburst_departments(), className = "h-100")), className="customHeight3 g-0")]
 
 @app.callback(Output('cytoscape-update-layout', 'layout'),
               Input('dropdown-update-layout', 'value'))
