@@ -88,4 +88,7 @@ def search_on_names():
     df_get_associated_members_data['CurrentEmploymentStartDate'] = df_get_associated_members_data['CurrentEmploymentStartDate'].dt.date
     df_get_associated_members_data['MilitaryDischargeDate'] = df_get_associated_members_data['MilitaryDischargeDate'].dt.date
     df_get_associated_members_data['POK member'] = ['Valentine Mies', '', 'Valentine Mies', 'Valentine Mies', 'Carmine Osvaldo', 'Isia Vann', 'Isia Vann', 'Henk Bodrogi']
+    
+    df_get_associated_members_data = df_get_associated_members_data.set_index('POK member')
+
     return df_get_associated_members_data
