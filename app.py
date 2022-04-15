@@ -52,7 +52,7 @@ unique_subjects = list(set(list(email_df['Subject'])))
 
 elements = prepare_data('2014-01-06', "08", '2014-01-17', '22', 'Source')
 
-df_table_full, df_table_last, df_table_middle, df_info_associated_employees = search_on_names()
+df_info_associated_employees = search_on_names()
 
 # TODO: Fix styling 
 app.layout = html.Div(
@@ -83,7 +83,34 @@ app.layout = html.Div(
 )
 def switch_page(page):
     if page == 2:
-        return [], [dcc.Graph(figure=lineplot(), className = "h-75"),]
+        return [
+            dbc.Row(
+            [
+                dbc.Row([
+                    dbc.Col([
+                        html.H5('The goal on this page is, given the historical records and articles*, to find employees that are possibly associated with the POK or even are part of the POK.', className="border bg-white mb-0"),
+                        html.H6('* No employee names (either fully, or partially) appear in the articles.', className="border bg-white"),
+                    ]),
+                ], className=""),
+                dbc.Row([
+                    dbc.Col([
+                        dash_table.DataTable(
+                            data=df_info_associated_employees.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
+                            style_table={'overflowX': 'auto'},
+                        ),
+                    ]),
+                ], className=""),
+            ], className="",
+        ),
+        ], [
+            dbc.Row(
+                dbc.Col(
+                    dcc.Graph(figure=sunburst_executive(), className = "h-100")), className="customHeight3 g-0"), 
+            dbc.Row(
+                dbc.Col(
+                    dcc.Graph(figure=sunburst_departments(), className = "h-100")), className="customHeight3 g-0")
+        ]
     if page == 3:
         return [
         dbc.Row(
@@ -355,65 +382,7 @@ def switch_page(page):
     dbc.Row(
             dbc.Col(
                 dcc.Graph(figure=sunburst_departments(), className = "h-100")), className="customHeight3 g-0")]
-    return [
-        dbc.Row(
-            [
-                dbc.Row([
-                    dbc.Col([
-                        html.H5('The goal on this page is, given the historical records and articles*, to find employees that are possibly associated with the POK or even are part of the POK.', className="border bg-white mb-0"),
-                        html.H6('* No employee names (either fully, or partially) appear in the articles.', className="border bg-white"),
-                    ]),
-                ], className=""),
-                dbc.Row([
-                    dbc.Col([
-                        html.H6('Lastnames of employees that appear in the historical records that contain POK, pok or Protectors.', className="border"),
-                        dash_table.DataTable(
-                            data=df_table_last.to_dict('records'),
-                            columns=[{'id': c, 'name': c} for c in df_table_last.columns],
-                            style_table={'overflowX': 'auto'},
-                        ),
-                        html.H6('Employee Records of employees whose last-, first-, or middlename appears in one of the historical records', className="border bg-white mt-2"),
-                    ], width={'size': 6}),
-                    dbc.Col([
-                        html.H6('Some lastnames of employees consist of two words which is why we also check on these names of employees that appear in the historical \
-                        records that contain POK, pok or Protectors. \
-                        It appears that there is only one employee whose name is fully contained in one of the historical records.', className="border"),
-                        dash_table.DataTable(
-                            data=df_table_middle.to_dict('records'),
-                            columns=[{'id': c, 'name': c} for c in df_table_middle.columns],
-                            style_table={'overflowX': 'auto'},
-                        ),
-                        dash_table.DataTable(
-                            data=df_table_full.to_dict('records'),
-                            columns=[{'id': c, 'name': c} for c in df_table_full.columns],
-                            style_table={'overflowX': 'auto'},
-                        ), 
-                    ], width={'size': 6}),
-                ]),
-                dbc.Row([ 
-                    dbc.Col([
-                        
-                        
-                    ], width={"size": 6}),
-                ], className=""),
-                dbc.Row([
-                    dbc.Col([
-                        dash_table.DataTable(
-                            data=df_info_associated_employees.to_dict('records'),
-                            columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
-                            style_table={'overflowX': 'auto'},
-                        ),
-                    ]),
-                ], className=""),
-            ], className="",
-        ),
-        ], [
-    dbc.Row(
-            dbc.Col(
-                dcc.Graph(figure=sunburst_executive(), className = "h-100")), className="customHeight3 g-0"), 
-    dbc.Row(
-            dbc.Col(
-                dcc.Graph(figure=sunburst_departments(), className = "h-100")), className="customHeight3 g-0")]
+    return [], []
 
 @app.callback(Output('cytoscape-update-layout', 'layout'),
               Input('dropdown-update-layout', 'value'))
