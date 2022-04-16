@@ -72,7 +72,7 @@ app.layout = html.Div(
                 dbc.Col(
                     [
                         dbc.Row(dbc.Col(html.H2("Disappearance at GAStech", className="m-0 bg-dark text-white text-center")), className="g-0"),
-                        dbc.Row(dbc.Col(id="page-contents", className="h-75 m-2"), className="g-0 customHeight4 mb-4"),
+                        dbc.Row(dbc.Col(id="page-contents", className="h-100 m-2"), className="g-0 customHeight4 mb-4"),
                         dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=3, previous_next=True)), className="g-0"),
                     ], width={"size": 7}, className = 'h-75 bg-light p-0',
                 ),
@@ -93,12 +93,13 @@ def switch_page(page):
             [
                 dbc.Row([
                     dbc.Col([
-                        html.H5('The goal on this page is, given the historical records and articles*, to find employees that are possibly associated with the POK or even are part of the POK.', className="border bg-white mb-0"),
-                        html.H6('* No employee names (either fully, or partially) appear in the articles.', className="border bg-white"),
-                    ]),
-                ], className=""),
+                        html.H5('The goal on this page is, given the historical records and articles* that contain the words POK, pok, or Protectors of Kronos, to find employees that are possibly associated with the POK or even are part of the POK.', className="border bg-white mb-0"),
+                        html.H6('* No employee names (either fully, or partially) appear in the articles.', className=""),
+                    ], width={"size": 11}),
+                ], className="justify-content-center align-items-center customHeight6"),
                 dbc.Row([
                     dbc.Col([
+                        dbc.Label("The table below contains employee records of employees whose lastname or fullname appears in the historical records. The first column is manually added, as a pre-analysis, to show which employees are (possibly) associated with the POK by considering their full name or lastname."),
                         dash_table.DataTable(
                             data=df_info_associated_employees.to_dict('records'),
                             columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
@@ -163,9 +164,9 @@ def switch_page(page):
                                 },
                                 ],
                         ),
-                    ]),
-                ], className=""),
-            ], className="",
+                    ], width={"size": 10}),
+                ], className="justify-content-center align-items-center customHeight7"),
+            ], className="h-100",
         ),
         ], [
             dbc.Row(

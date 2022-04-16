@@ -88,7 +88,11 @@ def search_on_names():
     df_get_associated_members_data['CurrentEmploymentStartDate'] = df_get_associated_members_data['CurrentEmploymentStartDate'].dt.date
     df_get_associated_members_data['MilitaryDischargeDate'] = df_get_associated_members_data['MilitaryDischargeDate'].dt.date
     df_get_associated_members_data['POK member'] = ['Valentine Mies', '', 'Valentine Mies', 'Valentine Mies', 'Carmine Osvaldo', 'Isia Vann', 'Isia Vann', 'Henk Bodrogi']
-    
-    df_get_associated_members_data = df_get_associated_members_data.set_index('POK member')
+    df_get_associated_members_data['Employee Name'] = df_get_associated_members_data['FirstName'] + ' ' + df_get_associated_members_data['LastName']
+    df_get_associated_members_data['Country'] = df_get_associated_members_data['BirthCountry'] + ',' + df_get_associated_members_data['CitizenshipCountry']
+    df_get_associated_members_data = df_get_associated_members_data.drop(columns=['LastName', 'FirstName', 'EmailAddress', 'PassportCountry', \
+                                    'PassportIssueDate', 'PassportExpirationDate', 'BirthCountry', 'CitizenshipCountry'], axis=1)
+    # df_get_associated_members_data = df_get_associated_members_data.set_index('POK member')
+    df_get_associated_members_data =df_get_associated_members_data[['POK member', 'Employee Name', 'Country', 'Gender', 'CitizenshipBasis', 'CurrentEmploymentType', 'CurrentEmploymentTitle', 'MilitaryServiceBranch', 'MilitaryDischargeType', 'CurrentEmploymentStartDate', 'MilitaryDischargeDate']]
 
     return df_get_associated_members_data
