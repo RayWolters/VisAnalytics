@@ -14,6 +14,11 @@ warnings.filterwarnings("ignore")
 import seaborn as sns
 
 
+
+#this file creates the heatmap visualizing the similarties between different networks.
+
+
+
 def jaccard_similarity(g, h):
     if len(g) == 0 and len(h) == 0:
         return 0
@@ -21,8 +26,9 @@ def jaccard_similarity(g, h):
     return round(len(i) / (len(g) + len(h) - len(i)),3)
 
 def create_data(interval, treshold):
-    filepath_main = 'C:/Users/20183046/Documents/MASTER DS&AI/YEAR_1/Q3/2AMV10/3. Disappearance at GAStech/data/data/data/'
-    df = pd.read_csv(filepath_main + 'email headers.csv', encoding='cp1252')
+    #interval -> the time interval for networks to be analyzes (e.g. one hour or 30 minutes)
+    #treshold -> the maximum number of receivers for one specific mail (e.g. to left out mails send to whole company)
+    df = pd.read_csv('data/email headers.csv', encoding='cp1252')
     df.Date = pd.to_datetime(df.Date)
     df.head()
 
@@ -49,14 +55,14 @@ def create_data(interval, treshold):
         ef_to.append(l)
     df = pd.DataFrame({ 'from': dffrom2, 'to':ef_to, 'date': df.Date, 'subject':df.Subject})
 
-    df['interval'] = df['date'].dt.round('{}min'.format((str(interval))))
+    df['interval'] = df['date'].dt.round('{}min'.format((str(interval))))  #at this place all networks are rounded to the specific interval.
     df.head()
 
     data = df.values.tolist()
 
     dicdat = {}
     for row in data:
-        if len(row[1]) < treshold:
+        if len(row[1]) < treshold:   #at this place all emails send to more people than treshold are left out of the anlyse to similar networks.
             day = str(row[4])
             if day in dicdat.keys():
                 dicdat[day].append(row)
@@ -80,7 +86,7 @@ def create_data(interval, treshold):
     for k,v in dic.items():
         l.append([k,v])
 
-    return(pd.DataFrame(l, columns=['Day', 'Network']))#.to_csv('Network_data_converted/network_data_{}_subjects.csv'.format(str(interval)))
+    return(pd.DataFrame(l, columns=['Day', 'Network']))
 
 def create_heap(interval, treshold):
     df = create_data(interval, treshold).set_index('Day')

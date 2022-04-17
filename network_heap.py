@@ -12,17 +12,8 @@ import json
 from ast import literal_eval
 
 
-#TODO overall todo: implement as many filter/classification functions to the plot. Think of: -visualize per day, -per departement, -per subject,  -let user type in a name and show network of this name
-#TODO add more functionalities of cytoscape: -highlight networks of users when clicked on -show other networks when clicked
-
-#Cytoscape Callbacks
-#https://dash.plotly.com/cytoscape/callbacks
-
-#Cytoscape User Interactions
-#https://dash.plotly.com/cytoscape/events
-
-
 def prepare_data_heap_empty():
+    #function just to return empty elements. In this way 2 empty graphs are plotted as default.
     edges_tuples = tuple([])
     nodes_tuple = tuple([])
 
@@ -33,8 +24,8 @@ def prepare_data_heap_empty():
     elements =  nodes + edges
     return elements
 
-# def prepare_data_heap(start_day, start_hour, end_day, end_hour, way):
 def prepare_data_heap(day, inter, only_pok):
+    #prepare the data you want to plot, inputs consist of data obtained from clicking on heatmap.
     if len(day) ==16:
         day = day + ':00'
 
@@ -50,6 +41,9 @@ def prepare_data_heap(day, inter, only_pok):
     return create_elements_heap(l, pok_names, only_pok)
 
 def create_elements_heap(l, pok_names, only_pok):
+    #create the elements of the prepared data
+    #in this function the nodes/edges are created with corresponding colors obtained from the dictionary
+    
     dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
     'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
@@ -62,15 +56,10 @@ def create_elements_heap(l, pok_names, only_pok):
     lst =[]
     all_names = []
 
-    # searchfor = pok_names
-
     if only_pok:
         searchfor = pok_names
     else:
         searchfor = dic.keys()
-
-
-
 
     for row in l:
         if row[0] in searchfor or row[1] in searchfor:

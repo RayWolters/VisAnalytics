@@ -60,6 +60,9 @@ df_info_associated_employees = search_on_names()
 
 heatm = create_heap(60, 10)
 
+sunburst_executive_start = sunburst_executive('', True)
+sunburst_departments_start = sunburst_departments('', True)
+
 # TODO: Fix styling 
 app.layout = html.Div(
     children = [
@@ -67,7 +70,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     [
-                        dbc.Row(dbc.Col(html.H2("VA group 30", className="bg-dark text-white text-center")), className="g-0"),
+                        dbc.Row(dbc.Col(html.H2("VA", className="bg-dark text-white text-center")), className="g-0"),
                         dbc.Row(dbc.Col(id="side-div", className="h-100 m-2"), className="g-0 customHeight"),         
                     ], width={"size": 2}, className="h-75 bg-light p-0 border bl border-bottom-0 border-top-0"),
                 dbc.Col(
@@ -76,7 +79,13 @@ app.layout = html.Div(
                         dbc.Row(dbc.Col(id="page-contents", className="h-100 m-2"), className="g-0 customHeight4 mb-4"),
                         dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=3, previous_next=True)), className="g-0"),
                     ], width={"size": 7}, className = 'h-75 bg-light p-0',
+                
                 ),
+                dbc.Col(
+                    [
+                        dbc.Row(dbc.Col(html.H2("Group 30", className="bg-dark text-white text-center")), className="g-0"),
+                        dbc.Row(dbc.Col(id="side-div2", className="h-100 m-2"), className="g-0 customHeight"),         
+                    ], width={"size": 2}, className="h-75 bg-light p-0 border bl border-bottom-0 border-top-0"),
             ], className="vh-100 align-items-center justify-content-center",
         ),
     ],
@@ -85,6 +94,7 @@ app.layout = html.Div(
 @app.callback(
     [Output("page-contents", "children"),
     Output("side-div", "children")],
+    Output("side-div2", "children"),
     [Input("pagination", "active_page")],
 )
 def switch_page(page):
@@ -102,6 +112,7 @@ def switch_page(page):
                     dbc.Col([
                         dbc.Label("The table below contains employee records of employees whose lastname or fullname appears in the historical records. The first column is manually added, as a pre-analysis, to show which employees are (possibly) associated with the POK by considering their full name or lastname."),
                         dash_table.DataTable(
+                            id='dash-table',
                             data=df_info_associated_employees.to_dict('records'),
                             columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
                             style_table={'overflowX': 'auto'},
@@ -111,7 +122,7 @@ def switch_page(page):
                                             'row_index':0,  # number | 'odd' | 'even'
                                             
                                           },
-                                            'backgroundColor': 'black',
+                                            'backgroundColor': 'grey',
                                             'color': 'white'
                                 },
                                 {
@@ -165,6 +176,9 @@ def switch_page(page):
                                 },
                                 ],
                         ),
+                        dbc.Alert(id='dash-table-call'),
+
+                        
                     ], width={"size": 10}),
                 ], className="justify-content-center align-items-center customHeight7"),
             ], className="h-100",
@@ -172,18 +186,18 @@ def switch_page(page):
         ], [
             dbc.Row(
                 dbc.Col(
-                    dcc.Graph(figure=sunburst_executive(), className = "h-100")), className="customHeight3 g-0"), 
+                    dcc.Graph(id='sunburst_network_page2',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
             dbc.Row(
                 dbc.Col(
-                    dcc.Graph(figure=sunburst_departments(), className = "h-100")), className="customHeight3 g-0")
-        ]
+                    dcc.Graph(id='sunburst_exc_page2', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
+        ],[]
     if page==3:
         return [
         dbc.Row(
             [
        
             dbc.Col([
-            html.H3(id='title-plot-1', className='text-center'),
+            html.H4(id='title-plot-1', className="bg-dark text-white text-center"),
                 cyto.Cytoscape(
                 id='cytoscape-update-layout-heat',
                 layout={'name': 'grid'},
@@ -207,7 +221,7 @@ def switch_page(page):
             html.H5(id='cytoscape-mouseoverEdgeData-output-1')]),
             
             dbc.Col([
-                html.H3(id='title-plot-2', className='text-center'),
+                html.H4(id='title-plot-2', className="bg-dark text-white text-center"),
                 cyto.Cytoscape(
                 id='cytoscape-update-layout-heat-2',
                 layout={'name': 'grid'},
@@ -235,42 +249,27 @@ def switch_page(page):
 
             ]),
         dbc.Row(
-            dcc.Graph(id='heatmap', figure=heatm, className = "h-100")
-        )
-
-
-        ], [
-        dbc.Row(
+            [
                 dbc.Col(
-                    dcc.Graph(figure=sunburst_executive(), className = "h-100")), className="customHeight3 g-0"), 
-        dbc.Row(
+                    [
+                    html.H5("Network similarity heatmap", className="bg-dark text-white text-center"),
+                    dbc.Row(dcc.Graph(id='heatmap', figure=heatm, className = "h-100"),)]
+                ),
                 dbc.Col(
-                    dcc.Graph(figure=sunburst_departments(), className = "h-100")), className="customHeight3 g-0"),
-        dbc.Row(dcc.Dropdown(
-                            id='dropdown-update-layout-heat',
-                            value='circle',
-                            clearable=False,
-                            options=[
-                                {'label': name.capitalize(), 'value': name}
-                                for name in ['grid', 'random', 'circle', 'cose', 'concentric']
-                            ], className = "")),
-        dbc.Row(dcc.Dropdown(
-                            id='dropdown-update-layout-heat-2',
-                            value='circle',
-                            clearable=False,
-                            options=[
-                                {'label': name.capitalize(), 'value': name}
-                                for name in ['grid', 'random', 'circle', 'cose', 'concentric']
-                            ], className = "")),  
-        dbc.Row(dcc.Dropdown(
+                    [
+                     html.H5("Heatmap settings", className="bg-dark text-white text-center"),
+
+                    html.H5('Choose the communication interval on where you want to find similar networks beteen POK members', className="border bg-white mb-0"),
+                    dbc.Row(dcc.Dropdown(
                             id='dropdown-interval',
                             value='1 hourly interval',
                             clearable=False,
                             options=[
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['2 hourly interval', '1 hourly interval', '30 minutes interval', '15 minutes interval', '5 minuts interval']
-                            ], className = "")),
-        dbc.Row(dcc.Dropdown(
+                            ], className = "")),  
+                    html.H5("Choose a upper bound on number of total to's. E.g. to leave out all mails send to whole company ", className="border bg-white mb-0"),
+                    dbc.Row(dcc.Dropdown(
                             id='treshold-interval',
                             value='30 employees',
                             clearable=False,
@@ -278,7 +277,8 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['30 employees', '25 employees', '20 employees', '15 employees', '10 employees', '8 employees', '5 employees', '3 employees', '2 employees', '1 employee']
                             ], className = "")),
-        dbc.Row(dcc.Dropdown(
+                    html.H5("Choose whether to include whole network within interval in plots or only POK member contributions", className="border bg-white mb-0"),
+                    dbc.Row(dcc.Dropdown(
                             id='employee-participants',
                             value='only POK',
                             clearable=False,
@@ -286,12 +286,53 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['all', 'only POK']
                             ], className = "")),
-                              
                     ]
-    return [], []
+                ),
+
+
+            
+            
+
+            ]
+        )
+
+
+        ], [
+        dbc.Row(
+                dbc.Col(
+                    dcc.Graph(id='sunburst_network_page3',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
+        dbc.Row(
+                dbc.Col(
+                    dcc.Graph(id='sunburst_exc_page3', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0"),
+        dbc.Row(dcc.Dropdown(
+                    id='dropdown-update-layout-heat',
+                    value='cose',
+                    clearable=False,
+                    options=[
+                        {'label': name.capitalize(), 'value': name}
+                        for name in ['grid', 'random', 'circle', 'cose', 'concentric']
+                    ], className = "")),
+                              
+            ],[
+        dbc.Row(
+                dbc.Col(
+                    dcc.Graph(id='sunburst_network_page3-2',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
+        dbc.Row(
+                dbc.Col(
+                    dcc.Graph(id='sunburst_exc_page3-2', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0"),
+        dbc.Row(dcc.Dropdown(
+                            id='dropdown-update-layout-heat-2',
+                            value='cose',
+                            clearable=False,
+                            options=[
+                                {'label': name.capitalize(), 'value': name}
+                                for name in ['grid', 'random', 'circle', 'cose', 'concentric']
+                            ], className = "")),  ]
+    return [], [],[]
 
 
 
+#update the heatmap with other input values
 @app.callback(Output('heatmap', 'figure'),
               Input('dropdown-interval', 'value'),
               Input('treshold-interval', 'value'))
@@ -310,22 +351,8 @@ def update_layout(value, treshold):
     t = int(treshold.split()[0])
     return(create_heap(inter, t))
 
-@app.callback(Output('cytoscape-update-layout', 'layout'),
-              Input('dropdown-update-layout', 'value'))
-def update_layout(layout):
-    return {
-        'name': layout,
-        'animate': True
-    }
 
-@app.callback(Output('cytoscape-update-layout-2', 'layout'),
-              Input('dropdown-update-layout-2', 'value'))
-def update_layout(layout):
-    return {
-        'name': layout,
-        'animate': True
-    }
-
+#update layout of left network
 @app.callback(Output('cytoscape-update-layout-heat', 'layout'),
               Input('dropdown-update-layout-heat', 'value'))
 def update_layout(layout):
@@ -334,6 +361,7 @@ def update_layout(layout):
         'animate': True
     }
 
+#update layout of right network
 @app.callback(Output('cytoscape-update-layout-heat-2', 'layout'),
               Input('dropdown-update-layout-heat-2', 'value'))
 def update_layout(layout):
@@ -342,6 +370,7 @@ def update_layout(layout):
         'animate': True
     }
 
+#update both networks by new data obtained from heatmap
 @app.callback(Output('cytoscape-update-layout-heat', 'elements'),
               Output('cytoscape-update-layout-heat-2', 'elements'),
               Output('title-plot-1', 'children'),
@@ -372,6 +401,7 @@ def update_table(clickData, value, employees):
     
     return(elements1, elements2, xnode, ynode)
 
+#print subjects of mails after clicked on edge of network 1
 @app.callback(Output('cytoscape-mouseoverEdgeData-output-1', 'children'),
               Input('cytoscape-update-layout-heat', 'tapEdgeData'),
               Input('title-plot-1', 'children'),
@@ -386,8 +416,7 @@ def displayTapEdgeData(data, date, value):
             inter = 30
         return get_subjects_heap(inter, data['source'], data['target'], date)
 
-
-
+#print subjects of mails after clicked on edge of network 2
 @app.callback(Output('cytoscape-mouseoverEdgeData-output-2', 'children'),
               Input('cytoscape-update-layout-heat-2', 'tapEdgeData'), #mouseoverEdgeData
               Input('title-plot-2', 'children'),
@@ -402,6 +431,47 @@ def displayTapEdgeData(data, date, value):
         elif value == '30 minutes interval':
             inter = 30
         return get_subjects_heap(inter, data['source'], data['target'], date)
+
+#update left sunburst corresponding to nodes of left network
+@app.callback(Output('sunburst_network_page3', 'figure'),
+             Output('sunburst_exc_page3', 'figure'),
+              Input('cytoscape-update-layout-heat', 'tapNodeData'))
+def update_call(data):
+    executives = {'Sten Sanjorge Jr': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr (tethys)': 'Sangorge JR. (CEO)', 'Willem Vasco-Pais': 'Vasco-Pais (ESA)', 'Ingrid Barranco': 'Barranco (CFO)',
+                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos'}
+    if data:
+        if data['label'] in executives.keys():
+            return(sunburst_departments_start, sunburst_executive(data['label'], False))
+        else:
+            return(sunburst_departments(data['label'], False), sunburst_executive_start)
+
+#update right sunburst corresponding to nodes of right network
+@app.callback(Output('sunburst_network_page3-2', 'figure'),
+             Output('sunburst_exc_page3-2', 'figure'),
+              Input('cytoscape-update-layout-heat-2', 'tapNodeData'))
+def update_call(data):
+    executives = {'Sten Sanjorge Jr': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr (tethys)': 'Sangorge JR. (CEO)', 'Willem Vasco-Pais': 'Vasco-Pais (ESA)', 'Ingrid Barranco': 'Barranco (CFO)',
+                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos'}
+    if data:
+        if data['label'] in executives.keys():
+            return(sunburst_departments_start, sunburst_executive(data['label'], False))
+        else:
+            return(sunburst_departments(data['label'], False), sunburst_executive_start)
+
+#update sunburst based on cells of dataframe at page 2
+@app.callback(Output('sunburst_network_page2', 'figure'),
+             Output('sunburst_exc_page2', 'figure'),
+             Input('dash-table', 'active_cell'))
+def update_call(cell):
+    executives = {'Sten Sanjorge Jr.': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr (tethys)': 'Sangorge JR. (CEO)', 'Willem Vasco-Pais': 'Vasco-Pais (ESA)', 'Ingrid Barranco': 'Barranco (CFO)',
+                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos'}
+    if cell:
+        row = cell['row']
+        name = df_info_associated_employees.iloc[row][1]
+        if name in executives.keys():
+            return(sunburst_departments_start, sunburst_executive(name, False))
+        else:
+            return(sunburst_departments(name, False), sunburst_executive_start)
 
 
 
