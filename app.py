@@ -13,7 +13,7 @@ from dash_bootstrap_components._components.Container import Container
 from sunburst import sunburst_departments, sunburst_executive
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 from network_plot import prepare_data
-from network_heap import prepare_data_heap
+from network_heap import prepare_data_heap, prepare_data_heap_empty
 
 import dash_cytoscape as cyto
 from pprint import pprint
@@ -24,6 +24,7 @@ from subjects import get_subjects, get_subjects_heap
 from lineplot import lineplot
 from pok_table import search_on_names
 from heatmap import heatmap
+from heatmap_creater import create_heap
 from dash import Dash, dash_table
 from collections import OrderedDict
 
@@ -53,11 +54,11 @@ email_df = pd.read_csv('data/email headers.csv', encoding='cp1252')
 
 unique_subjects = list(set(list(email_df['Subject'])))
 
-elements = prepare_data_heap('2014-01-06 09:00', 60)
+elements = prepare_data_heap_empty()
 
 df_info_associated_employees = search_on_names()
 
-heatm = heatmap(60)
+heatm = create_heap(60, 10)
 
 # TODO: Fix styling 
 app.layout = html.Div(
@@ -182,7 +183,7 @@ def switch_page(page):
             [
        
             dbc.Col([
-            html.H3(id='title-plot-1'),
+            html.H3(id='title-plot-1', className='text-center'),
                 cyto.Cytoscape(
                 id='cytoscape-update-layout-heat',
                 layout={'name': 'grid'},
@@ -206,7 +207,7 @@ def switch_page(page):
             html.H5(id='cytoscape-mouseoverEdgeData-output-1')]),
             
             dbc.Col([
-                html.H3(id='title-plot-2'),
+                html.H3(id='title-plot-2', className='text-center'),
                 cyto.Cytoscape(
                 id='cytoscape-update-layout-heat-2',
                 layout={'name': 'grid'},
@@ -267,7 +268,23 @@ def switch_page(page):
                             clearable=False,
                             options=[
                                 {'label': name.capitalize(), 'value': name}
-                                for name in ['2 hourly interval', '1 hourly interval', '30 minutes interval']
+                                for name in ['2 hourly interval', '1 hourly interval', '30 minutes interval', '15 minutes interval', '5 minuts interval']
+                            ], className = "")),
+        dbc.Row(dcc.Dropdown(
+                            id='treshold-interval',
+                            value='30 employees',
+                            clearable=False,
+                            options=[
+                                {'label': name.capitalize(), 'value': name}
+                                for name in ['30 employees', '25 employees', '20 employees', '15 employees', '10 employees', '8 employees', '5 employees', '3 employees', '2 employees', '1 employee']
+                            ], className = "")),
+        dbc.Row(dcc.Dropdown(
+                            id='employee-participants',
+                            value='only POK',
+                            clearable=False,
+                            options=[
+                                {'label': name.capitalize(), 'value': name}
+                                for name in ['all', 'only POK']
                             ], className = "")),
                               
                     ]
@@ -276,15 +293,22 @@ def switch_page(page):
 
 
 @app.callback(Output('heatmap', 'figure'),
-              Input('dropdown-interval', 'value'))
-def update_layout(value):
+              Input('dropdown-interval', 'value'),
+              Input('treshold-interval', 'value'))
+def update_layout(value, treshold):
     if value == '2 hourly interval':
         inter = 120
     elif value == '1 hourly interval':
         inter = 60
     elif value == '30 minutes interval':
         inter = 30
-    return(heatmap(inter))
+    elif value == '15 minutes interval':
+        inter = 15
+    elif value == '5 minutes interval':
+        inter = 5
+
+    t = int(treshold.split()[0])
+    return(create_heap(inter, t))
 
 @app.callback(Output('cytoscape-update-layout', 'layout'),
               Input('dropdown-update-layout', 'value'))
@@ -323,9 +347,10 @@ def update_layout(layout):
               Output('title-plot-1', 'children'),
               Output('title-plot-2', 'children'),
               Input('heatmap','clickData'),
-              Input('dropdown-interval', 'value')
+              Input('dropdown-interval', 'value'),
+              Input('employee-participants', 'value')
               )
-def update_table(clickData, value):
+def update_table(clickData, value, employees):
     if clickData:
         if value == '2 hourly interval':
             inter = 120
@@ -334,13 +359,18 @@ def update_table(clickData, value):
         elif value == '30 minutes interval':
             inter = 30
 
-        xnode = clickData['points'][0]['x']
-        ynode = clickData['points'][0]['y']
-        elements1 = prepare_data_heap(xnode, inter)
-        elements2 = prepare_data_heap(ynode, inter)
+    if employees == 'all':
+        only_pok = False
+    elif employees == 'only POK':
+        only_pok = True
 
-        
-        return(elements1, elements2, xnode, ynode)
+    xnode = clickData['points'][0]['x']
+    ynode = clickData['points'][0]['y']
+    elements1 = prepare_data_heap(xnode, inter, only_pok)
+    elements2 = prepare_data_heap(ynode, inter, only_pok)
+
+    
+    return(elements1, elements2, xnode, ynode)
 
 @app.callback(Output('cytoscape-mouseoverEdgeData-output-1', 'children'),
               Input('cytoscape-update-layout-heat', 'tapEdgeData'),

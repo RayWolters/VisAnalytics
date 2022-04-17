@@ -22,10 +22,19 @@ from ast import literal_eval
 #https://dash.plotly.com/cytoscape/events
 
 
+def prepare_data_heap_empty():
+    edges_tuples = tuple([])
+    nodes_tuple = tuple([])
 
+    nodes = [{'data': {'id': short, 'label': label},'classes' : color} for short, label, color in nodes_tuple]
+
+    edges = [{'data': {'source': source, 'target': target}} for source, target in edges_tuples]
+
+    elements =  nodes + edges
+    return elements
 
 # def prepare_data_heap(start_day, start_hour, end_day, end_hour, way):
-def prepare_data_heap(day, inter):
+def prepare_data_heap(day, inter, only_pok):
     if len(day) ==16:
         day = day + ':00'
 
@@ -38,9 +47,9 @@ def prepare_data_heap(day, inter):
     for row in lis:
         l.append(row)
 
-    return create_elements_heap(l, pok_names)
+    return create_elements_heap(l, pok_names, only_pok)
 
-def create_elements_heap(l, pok_names):
+def create_elements_heap(l, pok_names, only_pok):
     dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
     'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
@@ -53,7 +62,15 @@ def create_elements_heap(l, pok_names):
     lst =[]
     all_names = []
 
-    searchfor = pok_names
+    # searchfor = pok_names
+
+    if only_pok:
+        searchfor = pok_names
+    else:
+        searchfor = dic.keys()
+
+
+
 
     for row in l:
         if row[0] in searchfor or row[1] in searchfor:
