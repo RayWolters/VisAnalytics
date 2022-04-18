@@ -176,7 +176,7 @@ def switch_page(page):
                                 },
                                 ],
                         ),
-                        dbc.Alert(id='dash-table-call'),
+                        # dbc.Alert(id='dash-table-call'),
 
                         
                     ], width={"size": 10}),
