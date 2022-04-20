@@ -33,6 +33,7 @@ from heatmap_creater import create_heap
 from dash import Dash, dash_table
 from collections import OrderedDict
 from page1 import create_visualizations_page1, print_text_of_words
+from page2_tsne import create_pca, plot_tsne_kmeans
 
 #function who maps indexes from slidebar to days
 def get_day(num):
@@ -90,7 +91,9 @@ wc_pok.update_layout(coloraxis_showscale=False)
 wc_pok.update_xaxes(showticklabels=False)
 wc_pok.update_yaxes(showticklabels=False)
 
+df_pca  = create_pca()
 
+pca_fig = plot_tsne_kmeans(10, df_pca)
 
 # TODO: Fix styling 
 app.layout = html.Div(
@@ -106,7 +109,7 @@ app.layout = html.Div(
                     [
                         dbc.Row(dbc.Col(html.H2("Disappearance at GAStech", className="m-0 bg-dark text-white text-center")), className="g-0"),
                         dbc.Row(dbc.Col(id="page-contents", className="h-100 m-2"), className="g-0 customHeight4 mb-4"),
-                        dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=4, previous_next=True)), className="g-0"),
+                        dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=5, previous_next=True)), className="g-0"),
                     ], width={"size": 7}, className = 'h-75 bg-light p-0',
                 
                 ),
@@ -127,7 +130,7 @@ app.layout = html.Div(
     [Input("pagination", "active_page")],
 )
 def switch_page(page):
-    if page == 4:
+    if page == 5:
         return [
             dbc.Row(
             [
@@ -170,7 +173,7 @@ def switch_page(page):
                 dbc.Col(
                     dcc.Graph(id='sunburst_exc_page4', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
         ],[]
-    if page == 2:
+    if page == 3:
         return [
             dbc.Row(
             [
@@ -213,7 +216,7 @@ def switch_page(page):
                 dbc.Col(
                     dcc.Graph(id='sunburst_exc_page2', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
         ],[]
-    if page==3:
+    if page==4:
         return [
         dbc.Row(
             [
@@ -345,6 +348,18 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                             ], className = "")),  ]
+    if page == 2:
+        return [dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100") ],[
+                            dbc.Row(dcc.Dropdown(
+                            id='choose-k',
+                            value=10,
+                            clearable=False,
+                            options=[
+                                {'label': name, 'value': name}
+                                for name in [1,2,3,4,5,6,7,8,9,10]
+                            ], className = ""))],[]
+
+    
     return [html.H5("Barchart of most frequent words", className="bg-dark text-white text-center"),
             dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '500px'}), ),
             html.H5("Search on words in articles:", className="bg-dark text-white text-center"),
@@ -366,7 +381,7 @@ def switch_page(page):
 
                         dcc.Graph(id='pie-all',figure=pie_all, className = "h-100")), className="customHeight3 g-0"),     
                 
-                html.H4("Change the analysis:", className="bg-dark text-white text-center"),
+                html.H5("Change the analysis:", className="bg-dark text-white text-center"),
                 html.H5('Choose between all articles analysis, or filtered on articles containing POK'),#, className="border bg-white mb-0"),
                 dbc.Row(dcc.Dropdown(
                     id='dropdown-update-page1',
@@ -411,6 +426,13 @@ def switch_page(page):
             
             
             ]
+
+@app.callback(
+    Output("pca-fig", "figure"),
+    Input('choose-k', 'value'))
+
+def update_layout(value):
+    return(plot_tsne_kmeans(value, df_pca))
 
 @app.callback(
     Output("modal_all", "is_open"),
