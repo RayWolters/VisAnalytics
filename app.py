@@ -72,6 +72,7 @@ sunburst_departments_start = sunburst_departments('', True)
 pie_all = create_visualizations_page1('pie', 'All articles')
 bar_all = create_visualizations_page1('bar', 'All articles')
 
+my_list = print_text_of_words('criminals')
 # pie_pok = create_visualizations_page1('pie', 'Filter on pok')
 # bar_pok = create_visualizations_page1('bar', 'Filter on pok')
 
@@ -330,16 +331,18 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                             ], className = "")),  ]
-    return [dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '400px'}), ),
-            dbc.Row(dcc.Textarea(
-                id='output-txt',
-                placeholder = 'choose a word in the bar plot above',
-                value = 'choose a word in the bar plot above',
-                style = {'width': '98%' }
-            )
+    return [dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '500px'}), ),
+ 
+            
+           dbc.Row( 
+                dbc.Container([
+                    html.Ul([html.Li(x) for x in my_list]),
+                    ],style={"display": "flex", 'overflowY': 'scroll'},
+                    
+                    ), className = "h-50"),
             
 
-            ),
+            
 
             ], [dbc.Row(dcc.Dropdown(
                     id='dropdown-update-page1',
