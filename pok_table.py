@@ -96,3 +96,5 @@ def search_on_names():
     df_get_associated_members_data =df_get_associated_members_data[['POK member', 'Employee Name', 'Country', 'Gender', 'CitizenshipBasis', 'CurrentEmploymentType', 'CurrentEmploymentTitle', 'MilitaryServiceBranch', 'MilitaryDischargeType', 'CurrentEmploymentStartDate', 'MilitaryDischargeDate']]
 
     return df_get_associated_members_data
+
+

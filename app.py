@@ -3,8 +3,9 @@ from click import password_option
 import dash
 from dash import dcc
 import dash_bootstrap_components as dbc
-
+import glob, os
 from dash import html
+from matplotlib.pyplot import pie
 from numpy import unicode_
 import pandas as pd
 import plotly.express as px
@@ -23,10 +24,12 @@ from histogram import create_histogram, create_histogram_department
 from subjects import get_subjects, get_subjects_heap
 from lineplot import lineplot
 from pok_table import search_on_names
+from communities import communities_plot
 from heatmap import heatmap
 from heatmap_creater import create_heap
 from dash import Dash, dash_table
 from collections import OrderedDict
+from page1 import create_visualizations_page1, print_text_of_words
 
 #function who maps indexes from slidebar to days
 def get_day(num):
@@ -45,6 +48,7 @@ dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black'
     'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
 
 
+
 employee_names = list(dic.keys())
 
 employee_names.append('GASTech')
@@ -58,10 +62,20 @@ elements = prepare_data_heap_empty()
 
 df_info_associated_employees = search_on_names()
 
+df_communities, communities_plot_style = communities_plot('Department')
+
 heatm = create_heap(60, 10)
 
 sunburst_executive_start = sunburst_executive('', True)
 sunburst_departments_start = sunburst_departments('', True)
+
+pie_all = create_visualizations_page1('pie', 'All articles')
+bar_all = create_visualizations_page1('bar', 'All articles')
+
+# pie_pok = create_visualizations_page1('pie', 'Filter on pok')
+# bar_pok = create_visualizations_page1('bar', 'Filter on pok')
+
+
 
 # TODO: Fix styling 
 app.layout = html.Div(
@@ -77,7 +91,7 @@ app.layout = html.Div(
                     [
                         dbc.Row(dbc.Col(html.H2("Disappearance at GAStech", className="m-0 bg-dark text-white text-center")), className="g-0"),
                         dbc.Row(dbc.Col(id="page-contents", className="h-100 m-2"), className="g-0 customHeight4 mb-4"),
-                        dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=3, previous_next=True)), className="g-0"),
+                        dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=4, previous_next=True)), className="g-0"),
                     ], width={"size": 7}, className = 'h-75 bg-light p-0',
                 
                 ),
@@ -98,6 +112,49 @@ app.layout = html.Div(
     [Input("pagination", "active_page")],
 )
 def switch_page(page):
+    if page == 4:
+        return [
+            dbc.Row(
+            [
+                dbc.Row([
+                    dbc.Col([
+                        html.H5('', className="border bg-white mb-0"),
+                        html.H6('', className=""),
+                    ], width={"size": 11}),
+                ], className="justify-content-center align-items-center customHeight6"),
+                dbc.Row(dcc.Dropdown(
+                            id='Departments',
+                            value='Departments',
+                            clearable=False,
+                            options=[
+                                {'label': name.capitalize(), 'value': name}
+                                for name in ['Gender', 'Departments', 'POK', 'Military']
+                            ], className = "")),
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Label(""),
+                        dash_table.DataTable(
+                            id='dash-table4',
+                            data=df_communities.to_dict('records'),
+                            # columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
+                            # style_table={'overflowX': 'auto'},
+                            style_data_conditional=communities_plot_style
+                        ),
+                        # dbc.Alert(id='dash-table-call'),
+
+                        
+                    ], width={"size": 10}),
+                ], className="justify-content-center align-items-center customHeight7"),
+            ], className="h-100",
+        ),
+        ], [
+            dbc.Row(
+                dbc.Col(
+                    dcc.Graph(id='sunburst_network_page4',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
+            dbc.Row(
+                dbc.Col(
+                    dcc.Graph(id='sunburst_exc_page4', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
+        ],[]
     if page == 2:
         return [
             dbc.Row(
@@ -117,64 +174,14 @@ def switch_page(page):
                             columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
                             style_table={'overflowX': 'auto'},
                             style_data_conditional=[
-                                {
-                                    'if': {
-                                            'row_index':0,  # number | 'odd' | 'even'
-                                            
-                                          },
-                                            'backgroundColor': 'grey',
-                                            'color': 'white'
-                                },
-                                {
-                                    'if': {
-                                            'row_index':1,  # number | 'odd' | 'even'
-                                          },
-                                            'backgroundColor': 'green',
-                                            'color': 'black'
-                                },
-                                {
-                                    'if': {
-                                            'row_index':2,  # number | 'odd' | 'even'
-                                          },
-                                            'backgroundColor': 'purple',
-                                            'color': 'white'
-                                },
-                                {
-                                    'if': {
-                                            'row_index':3,  # number | 'odd' | 'even'
-                                          },
-                                            'backgroundColor': 'orange',
-                                            'color': 'black'
-                                },
-                                {
-                                    'if': {
-                                            'row_index':4,  # number | 'odd' | 'even'
-                                          },
-                                            'backgroundColor': 'orange',
-                                            'color': 'black'
-                                },
-                                {
-                                    'if': {
-                                            'row_index':5,  # number | 'odd' | 'even'
-                                          },
-                                            'backgroundColor': 'orange',
-                                            'color': 'black'
-                                },
-                                {
-                                    'if': {
-                                            'row_index':6,  # number | 'odd' | 'even'
-                                          },
-                                            'backgroundColor': 'orange',
-                                            'color': 'black'
-                                },
-                                {
-                                    'if': {
-                                            'row_index':7,  # number | 'odd' | 'even'
-                                          },
-                                            'backgroundColor': 'orange',
-                                            'color': 'black'
-                                },
-                                ],
+                                {'if': {'row_index':0,},'backgroundColor': 'grey','color': 'black'},
+                                {'if': {'row_index':1,},'backgroundColor': 'green','color': 'white'},
+                                {'if': {'row_index':2,},'backgroundColor': 'purple','color': 'white'},
+                                {'if': {'row_index':3,},'backgroundColor': 'orange','color': 'black'},
+                                {'if': {'row_index':4,},'backgroundColor': 'orange','color': 'black'},
+                                {'if': {'row_index':5,},'backgroundColor': 'grey','color': 'black'},
+                                {'if': {'row_index':6,},'backgroundColor': 'orange','color': 'black'},
+                                {'if': {'row_index':7,},'backgroundColor': 'orange','color': 'black'}],
                         ),
                         # dbc.Alert(id='dash-table-call'),
 
@@ -288,11 +295,6 @@ def switch_page(page):
                             ], className = "")),
                     ]
                 ),
-
-
-            
-            
-
             ]
         )
 
@@ -316,7 +318,7 @@ def switch_page(page):
             ],[
         dbc.Row(
                 dbc.Col(
-                    dcc.Graph(id='sunburst_network_page3-2',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
+                    dcc.Graph(id='sunburst_network_page3-2',figure=sunburst_departments_start, className = "h-150")), className="customHeight3 g-0"), 
         dbc.Row(
                 dbc.Col(
                     dcc.Graph(id='sunburst_exc_page3-2', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0"),
@@ -328,9 +330,45 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                             ], className = "")),  ]
-    return [], [],[]
+    return [dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '400px'}), ),
+            dbc.Row(dcc.Textarea(
+                id='output-txt',
+                placeholder = 'choose a word in the bar plot above',
+                value = 'choose a word in the bar plot above',
+                style = {'width': '98%' }
+            )
+            
 
+            ),
 
+            ], [dbc.Row(dcc.Dropdown(
+                    id='dropdown-update-page1',
+                    value='All articles',
+                    clearable=False,
+                    options=[
+                        {'label': name.capitalize(), 'value': name}
+                        for name in ['All articles', 'Filter on POK']
+                    ], className = "")),  
+
+                dbc.Row(
+                    dbc.Col(
+                        dcc.Graph(id='pie-all',figure=pie_all, className = "h-100")), className="customHeight3 g-0"),     
+                        
+            ],[]
+
+#update sunburst based on cells of dataframe at page 2
+@app.callback(Output('output-txt', 'value'),
+             Input('bar-chart', 'clickData'))
+def update_call(data):
+    if data:
+        return(str(print_text_of_words(data['points'][0]['y'])))
+    
+#update sunburst based on cells of dataframe at page 2
+@app.callback(Output('pie-all', 'figure'),
+             Output('bar-chart', 'figure'),
+             Input('dropdown-update-page1', 'value'))
+def update_call(value):
+    return (create_visualizations_page1('pie', value), create_visualizations_page1('bar', value))
 
 #update the heatmap with other input values
 @app.callback(Output('heatmap', 'figure'),
@@ -444,6 +482,8 @@ def update_call(data):
             return(sunburst_departments_start, sunburst_executive(data['label'], False))
         else:
             return(sunburst_departments(data['label'], False), sunburst_executive_start)
+    else:
+        return (sunburst_departments('', True),  sunburst_executive('', True))
 
 #update right sunburst corresponding to nodes of right network
 @app.callback(Output('sunburst_network_page3-2', 'figure'),
@@ -457,6 +497,8 @@ def update_call(data):
             return(sunburst_departments_start, sunburst_executive(data['label'], False))
         else:
             return(sunburst_departments(data['label'], False), sunburst_executive_start)
+    else:
+        return (sunburst_departments('', True),  sunburst_executive('', True))
 
 #update sunburst based on cells of dataframe at page 2
 @app.callback(Output('sunburst_network_page2', 'figure'),
@@ -472,8 +514,31 @@ def update_call(cell):
             return(sunburst_departments_start, sunburst_executive(name, False))
         else:
             return(sunburst_departments(name, False), sunburst_executive_start)
+    else:
+        return (sunburst_departments('', True),  sunburst_executive('', True))
 
+#update sunburst based on cells of dataframe at page 2
+@app.callback(Output('sunburst_network_page4', 'figure'),
+             Output('sunburst_exc_page4', 'figure'),
+             Input('dash-table4', 'active_cell'))
+def update_call(cell):
+    executives = {'Sten Sanjorge Jr.': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr (tethys)': 'Sangorge JR. (CEO)', 'Willem Vasco-Pais': 'Vasco-Pais (ESA)', 'Ingrid Barranco': 'Barranco (CFO)',
+                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos'}
+    if cell:
+        row = cell['row']
+        col = cell['column']
+        print(cell)
+        name = df_communities.iloc[row][col]
+        if name in executives.keys():
+            return(sunburst_departments_start, sunburst_executive(name, False))
+        else:
+            return(sunburst_departments(name, False), sunburst_executive_start)
+    else:
+        return (sunburst_departments('', True),  sunburst_executive('', True))
 
-
+@app.callback(Output('dash-table4', 'style_data_conditional'),
+              Input('Departments', 'value'))
+def update_layout(value):
+    return (communities_plot(value)[1])
 if __name__ == "__main__":
     app.run_server(debug=True)

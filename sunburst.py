@@ -106,7 +106,8 @@ def sunburst_departments(input_name, first):
     
     dups = {'Varja Lagos': 'V. Lagos', 'Edvard Vann':'E. Vann', 'Isia Vann':'I. Vann', 'Minke Mies':'M.Mies',
        'Benito Hawelon':'B. Hawelon', 'Valeria Morlun':'V. Morlun', 'Claudio Hawelon':'C. Hawelon', 'Henk Mies':'H. Mies',
-       'Adan Morlun':'A. Morlun', 'Birgitta Frente':'B. Frente', 'Vira Frente':'V. Frente', 'Ruscella Mies Haber':'Haber'}
+       'Adan Morlun':'A. Morlun', 'Birgitta Frente':'B. Frente', 'Vira Frente':'V. Frente', 'Ruscella Mies Haber':'Haber', 
+       'Ruscella Mies':'Haber', 'Elsa Orilla':'E. Orilla', 'Kare Orilla':'K. Orilla'}
     
 
     if not first:
