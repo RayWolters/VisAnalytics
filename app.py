@@ -336,14 +336,11 @@ def switch_page(page):
             
            dbc.Row( 
                 dbc.Container([
-                    html.Ul([html.Li(x) for x in my_list]),
+                    html.Ul(children = [html.Li(x) for x in my_list[:15]], id='id1',   ),
                     ],style={"display": "flex", 'overflowY': 'scroll'},
                     
-                    ), className = "h-50"),
-            
-
-            
-
+                    ), className = "h-50"), 
+                 
             ], [dbc.Row(dcc.Dropdown(
                     id='dropdown-update-page1',
                     value='All articles',
@@ -357,14 +354,15 @@ def switch_page(page):
                     dbc.Col(
                         dcc.Graph(id='pie-all',figure=pie_all, className = "h-100")), className="customHeight3 g-0"),     
                         
-            ],[]
+            ],[html.Div(id='my-output'),]
 
 #update sunburst based on cells of dataframe at page 2
-@app.callback(Output('output-txt', 'value'),
+@app.callback(Output('id1', 'children'),
              Input('bar-chart', 'clickData'))
 def update_call(data):
     if data:
-        return(str(print_text_of_words(data['points'][0]['y'])))
+        lst = print_text_of_words(data['points'][0]['y'])
+        return [html.Li(x) for x in lst[:15]]
     
 #update sunburst based on cells of dataframe at page 2
 @app.callback(Output('pie-all', 'figure'),

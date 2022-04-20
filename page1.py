@@ -219,7 +219,7 @@ def concor(word, docdict, width=80, max_lines=25):
         if listy:
             l.append('\nArticle {j}.txt, {z} result(s) found, shown below:'.format(z=len(listy), j=key))
             for x in range(min(len(listy), max_lines)):
-                l.append([f'Result {x+1}: ', listy[x].line.encode('ascii','ignore').decode('unicode_escape')])
+                l.append(([f'Result {x+1}: ', listy[x].line.encode('ascii','ignore').decode('unicode_escape')]))
     return(l)
 
 def print_text_of_words(word_val, width=80):
