@@ -15,6 +15,9 @@ from sunburst import sunburst_departments, sunburst_executive
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 from network_plot import prepare_data
 from network_heap import prepare_data_heap, prepare_data_heap_empty
+import numpy as np
+from PIL import Image
+
 
 import dash_cytoscape as cyto
 from pprint import pprint
@@ -48,6 +51,8 @@ dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black'
     'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
 
 
+#DESCRIBE GOALS PER PAGE
+goal_page1 = "The goal of this page is to obtain intsights into the sentimental anlysis of the articles. "
 
 employee_names = list(dic.keys())
 
@@ -73,8 +78,17 @@ pie_all = create_visualizations_page1('pie', 'All articles')
 bar_all = create_visualizations_page1('bar', 'All articles')
 
 my_list = print_text_of_words('criminals')
-# pie_pok = create_visualizations_page1('pie', 'Filter on pok')
-# bar_pok = create_visualizations_page1('bar', 'Filter on pok')
+
+
+wc_all = px.imshow(np.array(Image.open(f"data/wordclouds/all.png")))
+wc_all.update_layout(coloraxis_showscale=False)
+wc_all.update_xaxes(showticklabels=False)
+wc_all.update_yaxes(showticklabels=False)
+
+wc_pok = px.imshow(np.array(Image.open(f"data/wordclouds/pok.png")))
+wc_pok.update_layout(coloraxis_showscale=False)
+wc_pok.update_xaxes(showticklabels=False)
+wc_pok.update_yaxes(showticklabels=False)
 
 
 
@@ -129,7 +143,7 @@ def switch_page(page):
                             clearable=False,
                             options=[
                                 {'label': name.capitalize(), 'value': name}
-                                for name in ['Gender', 'Departments', 'POK', 'Military']
+                                for name in ['Departments', 'POK', 'Military']
                             ], className = "")),
                 dbc.Row([
                     dbc.Col([
@@ -331,17 +345,30 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['grid', 'random', 'circle', 'cose', 'concentric']
                             ], className = "")),  ]
-    return [dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '500px'}), ),
- 
-            
+    return [html.H5("Barchart of most frequent words", className="bg-dark text-white text-center"),
+            dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '500px'}), ),
+            html.H5("Search on words in articles:", className="bg-dark text-white text-center"),
            dbc.Row( 
                 dbc.Container([
                     html.Ul(children = [html.Li(x) for x in my_list[:15]], id='id1',   ),
-                    ],style={"display": "flex", 'overflowY': 'scroll'},
+                    ],style={"display": "flex"},
                     
                     ), className = "h-50"), 
                  
-            ], [dbc.Row(dcc.Dropdown(
+            ], [html.H5(goal_page1, className="border bg-white mb-0"),
+
+                
+                html.H5("Distribution of articles sentiments", className="bg-dark text-white text-center"),
+                dbc.Row(
+                    
+
+                    dbc.Col(
+
+                        dcc.Graph(id='pie-all',figure=pie_all, className = "h-100")), className="customHeight3 g-0"),     
+                
+                html.H4("Change the analysis:", className="bg-dark text-white text-center"),
+                html.H5('Choose between all articles analysis, or filtered on articles containing POK'),#, className="border bg-white mb-0"),
+                dbc.Row(dcc.Dropdown(
                     id='dropdown-update-page1',
                     value='All articles',
                     clearable=False,
@@ -350,12 +377,63 @@ def switch_page(page):
                         for name in ['All articles', 'Filter on POK']
                     ], className = "")),  
 
-                dbc.Row(
-                    dbc.Col(
-                        dcc.Graph(id='pie-all',figure=pie_all, className = "h-100")), className="customHeight3 g-0"),     
-                        
-            ],[html.Div(id='my-output'),]
 
+            ],[html.H5("Wordclouds", className="bg-dark text-white text-center"),
+
+                html.H5('Click on one of these buttons to view the information from the bar charts in a wordcloud format'),#, className="border bg-white mb-0"),
+                dbc.Row([
+                
+            dbc.Col(html.Button('Wordcloud all articles', id='btn-nclicks-all', n_clicks=0),),
+            dbc.Col(html.Button('Wordcloud POK articles', id='btn-nclicks-pok', n_clicks=0),),],
+            
+            ),
+
+               dbc.Modal(
+                    [   dbc.ModalHeader(dbc.ModalTitle("All articles")),
+                        dcc.Graph(figure=wc_all),
+                    ],
+                    id="modal_all",
+                    size="xl",
+                    is_open=False,
+                ),
+                dbc.Modal(
+                    [   dbc.ModalHeader(dbc.ModalTitle("POK related articles")),
+                        dcc.Graph(figure=wc_pok),
+                    ],
+                    id="modal_pok",
+                    size="xl",
+                    is_open=False,
+                ),
+            
+            
+            
+            
+            
+            
+            ]
+
+@app.callback(
+    Output("modal_all", "is_open"),
+    Input('btn-nclicks-all', 'n_clicks'),
+    [State("modal_all", "is_open")],)
+
+def update_layout(data, is_open):
+    if data:
+        return(not is_open)
+    else:
+        return (is_open)
+
+@app.callback(
+    Output("modal_pok", "is_open"),
+    Input('btn-nclicks-pok', 'n_clicks'),
+    [State("modal_pok", "is_open")],)
+
+def update_layout(data, is_open):
+    if data:
+        return(not is_open)
+    else:
+        return (is_open)
+    
 #update sunburst based on cells of dataframe at page 2
 @app.callback(Output('id1', 'children'),
              Input('bar-chart', 'clickData'))
@@ -436,8 +514,6 @@ def update_table(clickData, value, employees):
     ynode = clickData['points'][0]['y']
     elements1 = prepare_data_heap(xnode, inter, only_pok)
     elements2 = prepare_data_heap(ynode, inter, only_pok)
-
-    
     return(elements1, elements2, xnode, ynode)
 
 #print subjects of mails after clicked on edge of network 1
