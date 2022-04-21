@@ -54,20 +54,19 @@ dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black'
 
 #DESCRIBE GOALS PER PAGE
 goal_page1 = "The goal of this page is to obtain intsights into the sentimental anlysis of the articles. "
+goal_page2 = "The goal of this page consist of finding articles that are similar based on a PCA analysis."
 
 employee_names = list(dic.keys())
-
 employee_names.append('GASTech')
-
 
 email_df = pd.read_csv('data/email headers.csv', encoding='cp1252')
 
 unique_subjects = list(set(list(email_df['Subject'])))
 
-elements = prepare_data_heap_empty()
+elements1 = prepare_data_heap("2014-01-06 09:00", 60, True)
+elements2 = prepare_data_heap("2014-01-06 10:00", 60, True)
 
 df_info_associated_employees = search_on_names()
-
 df_communities, communities_plot_style = communities_plot('Department')
 
 heatm = create_heap(60, 10)
@@ -77,9 +76,7 @@ sunburst_departments_start = sunburst_departments('', True)
 
 pie_all = create_visualizations_page1('pie', 'All articles')
 bar_all = create_visualizations_page1('bar', 'All articles')
-
 my_list = print_text_of_words('criminals')
-
 
 wc_all = px.imshow(np.array(Image.open(f"data/wordclouds/all.png")))
 wc_all.update_layout(coloraxis_showscale=False)
@@ -91,9 +88,15 @@ wc_pok.update_layout(coloraxis_showscale=False)
 wc_pok.update_xaxes(showticklabels=False)
 wc_pok.update_yaxes(showticklabels=False)
 
-df_pca  = create_pca()
+legend_millitary = pd.DataFrame(['ArmedForcesOf-Kronos','TethanDefense-ForceArmy','TethanDefense-ForceAir','TethanDefense-ForceNavy'], columns=['Military class'])
+legend_department = pd.DataFrame(['Board', 'Facilities','Engineering','IT','Security'], columns=['Departments'])
+legend_pok = pd.DataFrame(['not involved with POK', 'involved with POK'], columns=['POK'])
 
+df_pca  = create_pca()
 pca_fig = plot_tsne_kmeans(10, df_pca)
+
+article1 = [open("data/articles/{}".format("0.txt")).read()]
+
 
 # TODO: Fix styling 
 app.layout = html.Div(
@@ -134,12 +137,6 @@ def switch_page(page):
         return [
             dbc.Row(
             [
-                # dbc.Row([
-                #     dbc.Col([
-                #         html.H5('', className="border bg-white mb-0"),
-                #         html.H6('', className=""),
-                #     ], width={"size": 11}),
-                # ], className="justify-content-center align-items-center customHeight6"),
                 dbc.Row(
                     dbc.Col([
                         dcc.Dropdown(
@@ -162,7 +159,6 @@ def switch_page(page):
                             style_table={'overflowY': 'auto'},
                             style_data_conditional=communities_plot_style
                         ),
-                        # dbc.Alert(id='dash-table-call'),
 
                         
                     ], width={"size": 10}),
@@ -176,7 +172,20 @@ def switch_page(page):
             dbc.Row(
                 dbc.Col(
                     dcc.Graph(id='sunburst_exc_page4', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
-        ],[]
+        ],[
+                        dash_table.DataTable(
+                            id='dash-table-legends',
+                            data=legend_millitary.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in legend_millitary.columns],
+                            style_table={'overflowX': 'auto'},
+                            style_data_conditional=[
+                                {'if': {'row_index':0,},'backgroundColor': 'blue','color': 'white'},
+                                {'if': {'row_index':1,},'backgroundColor': 'red','color': 'white'},
+                                {'if': {'row_index':2,},'backgroundColor': 'orange','color': 'white'},
+                                {'if': {'row_index':3,},'backgroundColor': 'purple','color': 'white'},],
+                        ),
+
+        ]
     if page == 3:
         return [
             dbc.Row(
@@ -224,13 +233,15 @@ def switch_page(page):
         return [
         dbc.Row(
             [   
+
+            # dbc.Container([
             dbc.Col([
-                    html.H4(id='title-plot-1', className="bg-dark text-white text-center"),
+                    html.H5(id='title-plot-1', className="bg-dark text-white text-center"),
                     cyto.Cytoscape(
                     id='cytoscape-update-layout-heat',
                     layout={'name': 'grid'},
                     style={'width': '100%', 'height': '230px'},
-                    elements=elements
+                    elements=elements1
                     #deze hier onder uit commenten als we niet met kleurtjes willen
                     ,stylesheet=[
                                         {'selector': 'node','style': {'content': 'data(label)'}},
@@ -250,12 +261,12 @@ def switch_page(page):
             ], className="h-100"),
             
             dbc.Col([
-                    html.H4(id='title-plot-2', className="bg-dark text-white text-center"),
+                    html.H5(id='title-plot-2', className="bg-dark text-white text-center"),
                     cyto.Cytoscape(
                     id='cytoscape-update-layout-heat-2',
                     layout={'name': 'grid'},
                     style={'width': '100%', 'height': '230px'},
-                    elements=elements
+                    elements=elements2
                     #deze hier onder uit commenten als we niet met kleurtjes willen
                     ,stylesheet=[
                                         {'selector': 'node','style': {'content': 'data(label)'}},
@@ -273,7 +284,11 @@ def switch_page(page):
                     ), 
                 html.H5(id='cytoscape-mouseoverEdgeData-output-2')
             ], className="h-100"),
+            # ],style={"display": "flex", "overflow":"hidden", "overflow-y":"scroll"},),
+
+            
             ], className="h-50"),
+
         dbc.Row(
             [
                 dbc.Col(
@@ -335,7 +350,7 @@ def switch_page(page):
                     clearable=False,
                     options=[
                         {'label': name.capitalize(), 'value': name}
-                        for name in ['grid', 'random', 'circle', 'cose', 'concentric']
+                        for name in ['grid', 'random', 'circle', 'cose',]
                     ], className = "mt-4")),
                               
             ],[
@@ -351,10 +366,13 @@ def switch_page(page):
                             clearable=False,
                             options=[
                                 {'label': name.capitalize(), 'value': name}
-                                for name in ['grid', 'random', 'circle', 'cose', 'concentric']
+                                for name in ['grid', 'random', 'circle', 'cose']
                             ], className = "mt-4")),  ]
     if page == 2:
         return [dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100") ],[
+                            html.H5(goal_page2, className="border bg-white mb-0"),
+                            html.H5("Change the analysis:", className="bg-dark text-white text-center"),
+                            html.H5('Choose a different K to obtain different K-means clusters:'),
                             dbc.Row(dcc.Dropdown(
                             id='choose-k',
                             value=10,
@@ -362,7 +380,14 @@ def switch_page(page):
                             options=[
                                 {'label': name, 'value': name}
                                 for name in [1,2,3,4,5,6,7,8,9,10]
-                            ], className = ""))],[]
+                            ], className = ""))],[
+
+                # dbc.Row( 
+                dbc.Container([
+                    html.Ul(children = [html.Li(x) for x in article1], id='print_article',),
+                    ],style={"display": "flex", "overflow":"hidden", "overflow-x":"scroll","overflow-y":"scroll",}, className="h-100 border",
+                    ),   
+                            ]
 
     
     return [html.H5("Barchart of most frequent words", className="bg-dark text-white text-center"),
@@ -370,7 +395,7 @@ def switch_page(page):
             html.H5("Search on words in articles:", className="bg-dark text-white text-center"),
            dbc.Row( 
                 dbc.Container([
-                    html.Ul(children = [html.Li(x) for x in my_list[:15]], id='id1',   ),
+                    html.Ul(children = [html.Li(x) for x in my_list], id='id1',   ),
                     ],style={"display": "flex", "overflow":"hidden", "overflow-y":"scroll"}, className="h-100 border",
                     ), className = "customHeight9 g-0"), 
             ], [html.H5(goal_page1, className="border bg-white mb-0"),
@@ -431,6 +456,19 @@ def switch_page(page):
             
             ]
 
+
+
+#update sunburst based on cells of dataframe at page 2
+@app.callback(Output('print_article', 'children'),
+             Input('pca-fig', 'clickData'))
+def update_call(data):
+    if data:
+        article_num = str(data['points'][0]['customdata'][0])
+        strline = 'ARTICLE {}:'.format(article_num)
+        lst = [strline, [open("data/articles/{}.txt".format(article_num)).read()]]
+        return [html.Li(x) for x in lst]
+
+
 @app.callback(
     Output("pca-fig", "figure"),
     Input('choose-k', 'value'))
@@ -466,7 +504,7 @@ def update_layout(data, is_open):
 def update_call(data):
     if data:
         lst = print_text_of_words(data['points'][0]['y'])
-        return [html.Li(x) for x in lst[:15]]
+        return [html.Li(x) for x in lst]
     
 #update sunburst based on cells of dataframe at page 2
 @app.callback(Output('pie-all', 'figure'),
@@ -536,11 +574,14 @@ def update_table(clickData, value, employees):
     elif employees == 'only POK':
         only_pok = True
 
-    xnode = clickData['points'][0]['x']
-    ynode = clickData['points'][0]['y']
-    elements1 = prepare_data_heap(xnode, inter, only_pok)
-    elements2 = prepare_data_heap(ynode, inter, only_pok)
-    return(elements1, elements2, xnode, ynode)
+    if clickData:
+        xnode = clickData['points'][0]['x']
+        ynode = clickData['points'][0]['y']
+        elements1 = prepare_data_heap(xnode, inter, only_pok)
+        elements2 = prepare_data_heap(ynode, inter, only_pok)
+        return(elements1, elements2, xnode, ynode)
+    else:
+        return ( prepare_data_heap("2014-01-06 09:00", 60, True), prepare_data_heap("2014-01-06 10:00", 60, True),"2014-01-06 09:00","2014-01-06 10:00")
 
 #print subjects of mails after clicked on edge of network 1
 @app.callback(Output('cytoscape-mouseoverEdgeData-output-1', 'children'),
@@ -640,8 +681,42 @@ def update_call(cell):
         return (sunburst_departments('', True),  sunburst_executive('', True))
 
 @app.callback(Output('dash-table4', 'style_data_conditional'),
+              Output('dash-table-legends', 'data'),
+              Output('dash-table-legends', 'columns'),
+              Output('dash-table-legends', 'style_data_conditional'),
               Input('Departments', 'value'))
 def update_layout(value):
-    return (communities_plot(value)[1])
+    if value == 'Military':
+        style =[
+                                {'if': {'row_index':0,},'backgroundColor': 'blue','color': 'white'},
+                                {'if': {'row_index':1,},'backgroundColor': 'red','color': 'white'},
+                                {'if': {'row_index':2,},'backgroundColor': 'orange','color': 'white'},
+                                {'if': {'row_index':3,},'backgroundColor': 'purple','color': 'white'},]
+        data = legend_millitary.to_dict('records')
+        cols =[{'id': c, 'name': c} for c in legend_millitary.columns]
+
+    elif value == 'Departments':
+        style =[
+                                {'if': {'row_index':0,},'backgroundColor': 'green','color': 'white'},
+                                {'if': {'row_index':1,},'backgroundColor': 'purple','color': 'white'},
+                                {'if': {'row_index':2,},'backgroundColor': 'red','color': 'white'},
+                                {'if': {'row_index':3,},'backgroundColor': 'blue','color': 'white'},
+                                {'if': {'row_index':4,},'backgroundColor': 'orange','color': 'black'}]
+        data = legend_department.to_dict('records')
+        cols =[{'id': c, 'name': c} for c in legend_department.columns]
+    else:
+        style =[
+                                {'if': {'row_index':0,},'backgroundColor': 'white','color': 'black'},
+                                {'if': {'row_index':1,},'backgroundColor': 'yellow','color': 'black'}]
+        data = legend_pok.to_dict('records')
+        cols =[{'id': c, 'name': c} for c in legend_pok.columns]
+
+    return (communities_plot(value)[1], data, cols, style)
+
+
+
+
+
+
 if __name__ == "__main__":
     app.run_server(debug=True)

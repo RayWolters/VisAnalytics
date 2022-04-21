@@ -161,7 +161,7 @@ def communities_plot(color):
                                         {'if': {'row_index': 0,'column_id': 'class 1'},'backgroundColor': 'blue','color': 'white'},{'if': {'row_index': 1,'column_id': 'class 1'},'backgroundColor': 'white','color': 'black'},
                                         {'if': {'row_index': 2,'column_id': 'class 1'},'backgroundColor':'white','color': 'black'},{'if': {'row_index': 3,'column_id': 'class 1'},'backgroundColor': 'white','color': 'black'},
                                         {'if': {'row_index': 4,'column_id': 'class 1'},'backgroundColor':'orange','color': 'white'},{'if': {'row_index': 5,'column_id': 'class 1'},'backgroundColor': 'white','color': 'black'},
-                                        {'if': {'row_index': 6,'column_id': 'class 1'},'backgroundColor':'blue','color': 'white'},{'if': {'row_index': 7,'column_id': 'class 1'},'backgroundColor': 'orange','color': 'white'},
+                                        {'if': {'row_index': 6,'column_id': 'class 1'},'backgroundColor':'blue','color': 'white'},{'if': {'row_index': 7,'column_id': 'class 1'},'backgroundColor': 'white','color': 'black'},
                                         {'if': {'row_index': 8,'column_id': 'class 1'},'backgroundColor':'blue','color': 'white'},{'if': {'row_index': 9,'column_id': 'class 1'},'backgroundColor': 'white','color': 'black'},
                                         {'if': {'row_index': 10,'column_id': 'class 1'},'backgroundColor':'purple','color': 'white'},{'if': {'row_index': 11,'column_id': 'class 1'},'backgroundColor': 'white','color': 'black'},
                                         {'if': {'row_index': 12,'column_id': 'class 1'},'backgroundColor':'white','color': 'black'},

@@ -23,7 +23,6 @@ def create_heatmap(similarity, cmap = "YlGnBu"):
 
 
 def create_pca():
-    # documents = [open("data/articles/{}").read() for f in os.listdir("data/articles")]
     documents = [open("data/articles/{}".format(f)).read() for f in os.listdir("data/articles")]
 
     tfidf = TfidfVectorizer().fit_transform(documents)
