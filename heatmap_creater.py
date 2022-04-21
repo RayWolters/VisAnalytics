@@ -68,8 +68,7 @@ def create_data(interval, treshold):
                 dicdat[day].append(row)
             else:
                 dicdat[day] = [row]
-
-
+    
     dic = {}
 
     for key in dicdat.keys():

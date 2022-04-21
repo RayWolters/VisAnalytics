@@ -577,7 +577,7 @@ def update_table(clickData, value, employees):
         elements2 = prepare_data_heap(ynode, inter, only_pok)
         return(elements1, elements2, xnode, ynode)
     else:
-        return ( prepare_data_heap("2014-01-06 09:00", 60, True), prepare_data_heap("2014-01-06 10:00", 60, True),"2014-01-06 09:00","2014-01-06 10:00")
+        return ( prepare_data_heap("2014-01-06 10:00", 60, True), prepare_data_heap("2014-01-06 12:00", 60, True),"2014-01-06 10:00","2014-01-06 12:00")
 
 #print subjects of mails after clicked on edge of network 1
 @app.callback(Output('cytoscape-mouseoverEdgeData-output-1', 'children'),
