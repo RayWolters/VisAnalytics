@@ -28,7 +28,6 @@ from subjects import get_subjects, get_subjects_heap
 from lineplot import lineplot
 from pok_table import search_on_names
 from communities import communities_plot
-from heatmap import heatmap
 from heatmap_creater import create_heap
 from dash import Dash, dash_table
 from collections import OrderedDict
@@ -311,7 +310,7 @@ def switch_page(page):
                             clearable=False,
                             options=[
                                 {'label': name.capitalize(), 'value': name}
-                                for name in ['2 hourly interval', '1 hourly interval', '30 minutes interval', '15 minutes interval', '5 minuts interval']
+                                for name in ['2 hourly interval', '1 hourly interval', '30 minutes interval', '15 minutes interval']
                             ], className = "")),  
                     html.H5("Choose a upper bound on number of total to's. E.g. to leave out all mails send to whole company ", className="border bg-white mb-0"),
                     dbc.Row(dcc.Dropdown(

@@ -113,12 +113,16 @@ def create_heap(interval, treshold):
         l1 = dic[day]
 
         for day2 in dates:
-            l2 = dic[day2]
 
-            G = nx.from_edgelist(l1)
-            H = nx.from_edgelist(l2)
+            if day == day2:
+                siml.append(1)
+            else:
+                l2 = dic[day2]
 
-            siml.append(jaccard_similarity(G.edges(), H.edges()))
+                G = nx.from_edgelist(l1)
+                H = nx.from_edgelist(l2)
+
+                siml.append(jaccard_similarity(G.edges(), H.edges()))
 
         dic_similarities[day] = siml
         
