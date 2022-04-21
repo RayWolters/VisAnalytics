@@ -1,3 +1,4 @@
+from matplotlib import markers
 import nltk #pip install
 import glob, os
 import re
@@ -148,14 +149,19 @@ def make_pie(docs):
                       marker=dict(colors=colors, line=dict(color='#000000', width=2)))
     return fig
     
-def make_bar(docs, size=20, flatten=True):
+def make_bar(docs, indicator, size=20, flatten=True):
     if flatten:
         freq = nltk.FreqDist(make_flat(docs))
     else:
         freq = nltk.FreqDist(docs)
     testcloud = freq.most_common(size)
     freqdf = pd.DataFrame(testcloud, columns=['Word', 'Frequency'])
-    fig = px.bar(freqdf, x="Frequency", y="Word", orientation='h')
+    if indicator:
+        fig = px.bar(freqdf, x="Frequency", y="Word", orientation='h', color_discrete_sequence=['red']*len(freqdf) )
+    else:
+        col_l = (['lightgrey']*6) + ['red', 'red'] + ((['lightgrey']*12))
+        # print(col_l)
+        fig = px.bar(freqdf, x="Frequency", y="Word", orientation='h', color_discrete_sequence=col_l)
     return fig
 
 def make_wc(docs, size=20, flatten=True):
@@ -194,10 +200,8 @@ def create_visualizations_page1(plot, filter):
             return make_pie(documents)
         elif plot == 'bar':
             _, _, neg_articles, _ = SIA(documents)
-            return make_bar(neg_articles)
-        # elif plot == 'word':
-        #     _, _, neg_articles, _ = SIA(documents)
-        #     make_wc(ne)
+            return make_bar(neg_articles, False)
+
     elif filter == 'Filter on POK':
         pok_only = []
         pok_only_dict = {}
@@ -211,7 +215,7 @@ def create_visualizations_page1(plot, filter):
         if plot == 'pie':
             return make_pie(pok_only)
         elif plot == 'bar':
-            return make_bar(neg_word_list) 
+            return make_bar(neg_word_list, True) 
 
 def makeDocDict(docs):
     testdict = {}

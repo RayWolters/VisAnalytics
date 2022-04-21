@@ -1,4 +1,82 @@
 import pandas as pd
+from operator import itemgetter
+import networkx as nx
+from networkx.algorithms import community
+
+def find_subgroups():
+    data = pd.read_csv('data/network_data/subjects.csv').set_index('Day')
+    lis = list(data.loc['2014-01-06 08:00:00':'2014-01-17 20:00:00']['Network'])
+
+    l = []
+    for row in lis:
+        for row2 in literal_eval(row):
+            l.append(row2)
+        
+    df = pd.DataFrame(l, columns=['Source', 'Target', 'Subject'])
+
+    node_names = list(set(list(set(df['Source'])) + list(set(df['Target']))))
+    color_dict = {}
+    for name in node_names:
+        color_dict[name] = dic[name]
+    edges = df[['Source', 'Target']].values.tolist()
+
+    G = nx.Graph()
+    G.add_nodes_from(node_names)
+    G.add_edges_from(edges)
+    nx.set_node_attributes(G, color_dict, 'color')
+
+    degree_dict = dict(G.degree(G.nodes()))
+    nx.set_node_attributes(G, degree_dict, 'degree')
+
+    betweenness_dict = nx.betweenness_centrality(G) # Run betweenness centrality
+    eigenvector_dict = nx.eigenvector_centrality(G) # Run eigenvector centrality
+
+    # Assign each to an attribute in your network
+    nx.set_node_attributes(G, betweenness_dict, 'betweenness')
+    nx.set_node_attributes(G, eigenvector_dict, 'eigenvector')
+
+    communities = community.greedy_modularity_communities(G)
+
+    modularity_dict = {} # Create a blank dictionary
+    for i,c in enumerate(communities): # Loop through the list of communities, keeping track of the number for the community
+        for name in c: # Loop through each person in a community
+            modularity_dict[name] = i # Create an entry in the dictionary for the person, where the value is which group they belong to.
+
+    # Now you can add modularity information like we did the other metrics
+    nx.set_node_attributes(G, modularity_dict, 'modularity')
+
+
+        # First get a list of just the nodes in that class
+    class0 = [n for n in G.nodes() if G.nodes[n]['modularity'] == 0]
+
+    # Then create a dictionary of the eigenvector centralities of those nodes
+    class0_eigenvector = {n:G.nodes[n]['eigenvector'] for n in class0}
+
+    # Then sort that dictionary and print the first 5 results
+    class0_sorted_by_eigenvector = sorted(class0_eigenvector.items(), key=itemgetter(1), reverse=True)
+
+    print("Modularity Class 0 Sorted by Eigenvector Centrality:")
+    for node in class0_sorted_by_eigenvector[:5]:
+        print("Name:", node[0], "| Eigenvector Centrality:", node[1])
+
+    lst = []
+    for i,c in enumerate(communities): 
+        if len(c) > 2:
+            lst.append(list(c))
+
+    ll = []
+
+    ll.append(lst[0])
+    ll.append(lst[1] +[''])
+    ll.append(lst[2] +['','','','',''])
+    ll.append(lst[3] +['','','','',''])
+    ll.append(lst[4] +['','','','','', '', ''])
+    ll.append(lst[5] +['','','','','', '', ''])
+
+    return pd.DataFrame(ll).T
+        
+
+
 
 
 def communities_plot(color):
@@ -17,6 +95,8 @@ def communities_plot(color):
     df.columns=['class 1','class 2','class 3','class 4','class 5', 'class 6']
     df = df.fillna('')
     df_communities = df
+
+
 
     lst_communities = [
                                     {'if': {'row_index': 0,'column_id': 'class 1'},'backgroundColor': str(dic[df_communities['class 1'][0]]),'color': 'black'},{'if': {'row_index': 1,'column_id': 'class 1'},'backgroundColor': str(dic[df_communities['class 1'][1]]),'color': 'white'},
