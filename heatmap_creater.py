@@ -125,6 +125,7 @@ def create_heap(interval, treshold):
     df = pd.DataFrame(list(dic_similarities.values()),columns=dates)
     df['date'] = dates
     df = df.set_index('date')
-
-
-    return(px.imshow(df))
+    fig = px.imshow(df)
+    fig.update_layout(margin=dict(l=0, r=0, b=0, t=0, pad = 3), paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',)
+    return(fig)

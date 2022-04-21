@@ -130,9 +130,20 @@ def make_pie(docs):
     sizes, _, _, _ = SIA(docs)
     
     colors = ['green', 'red', 'lightgrey']
+    layout = go.Layout(
+        margin = go.layout.Margin(
+            l=0,
+            r=0,
+            b=0,
+            t=0,
+            pad = 0,
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
 
     fig = go.Figure(data=[go.Pie(labels=['Positive', 'Negative', 'Neutral'],
-                                 values=sizes)])
+                                 values=sizes)], layout=layout)
     fig.update_traces(hoverinfo='label+value', textinfo='percent', textfont_size=15,
                       marker=dict(colors=colors, line=dict(color='#000000', width=2)))
     return fig

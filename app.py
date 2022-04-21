@@ -116,7 +116,7 @@ app.layout = html.Div(
                 dbc.Col(
                     [
                         dbc.Row(dbc.Col(html.H2("Group 30", className="bg-dark text-white text-center")), className="g-0"),
-                        dbc.Row(dbc.Col(id="side-div2", className="h-100 m-2"), className="g-0 customHeight"),         
+                        dbc.Row(dbc.Col(id="side-div2", className="h-100 mt-0 m-2"), className="g-0 customHeight"),         
                     ], width={"size": 2}, className="h-75 bg-light p-0 border bl border-bottom-0 border-top-0"),
             ], className="vh-100 align-items-center justify-content-center",
         ),
@@ -134,20 +134,24 @@ def switch_page(page):
         return [
             dbc.Row(
             [
-                dbc.Row([
+                # dbc.Row([
+                #     dbc.Col([
+                #         html.H5('', className="border bg-white mb-0"),
+                #         html.H6('', className=""),
+                #     ], width={"size": 11}),
+                # ], className="justify-content-center align-items-center customHeight6"),
+                dbc.Row(
                     dbc.Col([
-                        html.H5('', className="border bg-white mb-0"),
-                        html.H6('', className=""),
-                    ], width={"size": 11}),
-                ], className="justify-content-center align-items-center customHeight6"),
-                dbc.Row(dcc.Dropdown(
+                        dcc.Dropdown(
                             id='Departments',
                             value='Departments',
                             clearable=False,
                             options=[
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['Departments', 'POK', 'Military']
-                            ], className = "")),
+                            ], className = "")
+                    ], width={"size": 6}), className="justify-content-center align-items-center",
+                    ),
                 dbc.Row([
                     dbc.Col([
                         dbc.Label(""),
@@ -155,7 +159,7 @@ def switch_page(page):
                             id='dash-table4',
                             data=df_communities.to_dict('records'),
                             # columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
-                            # style_table={'overflowX': 'auto'},
+                            style_table={'overflowY': 'auto'},
                             style_data_conditional=communities_plot_style
                         ),
                         # dbc.Alert(id='dash-table-call'),
@@ -219,66 +223,67 @@ def switch_page(page):
     if page==4:
         return [
         dbc.Row(
-            [
-       
+            [   
             dbc.Col([
-            html.H4(id='title-plot-1', className="bg-dark text-white text-center"),
-                cyto.Cytoscape(
-                id='cytoscape-update-layout-heat',
-                layout={'name': 'grid'},
-                style={'width': '100%', 'height': '400px'},
-                elements=elements
-                #deze hier onder uit commenten als we niet met kleurtjes willen
-                ,stylesheet=[
-                                    {'selector': 'node','style': {'content': 'data(label)'}},
-                                    {'selector': 'edge','style': {'curve-style': 'bezier', 'target-arrow-shape': 'triangle'}},
-                                    {'selector': '.black','style': {'background-color': 'black','line-color': 'black'}},
-                                    {'selector': '.red','style': {'background-color': 'red','line-color': 'red'}},
-                                    {'selector': '.blue','style': {'background-color': 'blue','line-color': 'blue'}},
-                                    {'selector': '.orange','style': {'background-color': 'orange','line-color': 'orange'}},
-                                    {'selector': '.purple','style': {'background-color': 'purple','line-color': 'purple'}},
-                                    {'selector': '.green','style': {'background-color': 'green','line-color': 'green'}},
-                                    {'selector': '.orange_pok','style': {'background-color': 'orange','line-color': 'orange', 'shape': 'star'}},
-                                    {'selector': '.black_pok','style': {'background-color': 'black','line-color': 'black', 'shape': 'star'}},
-                                    {'selector': '.green_pok','style': {'background-color': 'green','line-color': 'green', 'shape': 'star'}},
-                                ]
-                ), 
-            html.H5(id='cytoscape-mouseoverEdgeData-output-1')]),
+                    html.H4(id='title-plot-1', className="bg-dark text-white text-center"),
+                    cyto.Cytoscape(
+                    id='cytoscape-update-layout-heat',
+                    layout={'name': 'grid'},
+                    style={'width': '100%', 'height': '230px'},
+                    elements=elements
+                    #deze hier onder uit commenten als we niet met kleurtjes willen
+                    ,stylesheet=[
+                                        {'selector': 'node','style': {'content': 'data(label)'}},
+                                        {'selector': 'edge','style': {'curve-style': 'bezier', 'target-arrow-shape': 'triangle'}},
+                                        {'selector': '.black','style': {'background-color': 'black','line-color': 'black'}},
+                                        {'selector': '.red','style': {'background-color': 'red','line-color': 'red'}},
+                                        {'selector': '.blue','style': {'background-color': 'blue','line-color': 'blue'}},
+                                        {'selector': '.orange','style': {'background-color': 'orange','line-color': 'orange'}},
+                                        {'selector': '.purple','style': {'background-color': 'purple','line-color': 'purple'}},
+                                        {'selector': '.green','style': {'background-color': 'green','line-color': 'green'}},
+                                        {'selector': '.orange_pok','style': {'background-color': 'orange','line-color': 'orange', 'shape': 'star'}},
+                                        {'selector': '.black_pok','style': {'background-color': 'black','line-color': 'black', 'shape': 'star'}},
+                                        {'selector': '.green_pok','style': {'background-color': 'green','line-color': 'green', 'shape': 'star'}},
+                                    ]
+                    ), 
+                html.H5(id='cytoscape-mouseoverEdgeData-output-1')
+            ], className="h-100"),
             
             dbc.Col([
-                html.H4(id='title-plot-2', className="bg-dark text-white text-center"),
-                cyto.Cytoscape(
-                id='cytoscape-update-layout-heat-2',
-                layout={'name': 'grid'},
-                style={'width': '100%', 'height': '400px'},
-                elements=elements
-                #deze hier onder uit commenten als we niet met kleurtjes willen
-                ,stylesheet=[
-                                    {'selector': 'node','style': {'content': 'data(label)'}},
-                                    {'selector': 'edge','style': {'curve-style': 'bezier', 'target-arrow-shape': 'triangle'}},
-                                    {'selector': '.black','style': {'background-color': 'black','line-color': 'black'}},
-                                    {'selector': '.red','style': {'background-color': 'red','line-color': 'red'}},
-                                    {'selector': '.blue','style': {'background-color': 'blue','line-color': 'blue'}},
-                                    {'selector': '.orange','style': {'background-color': 'orange','line-color': 'orange'}},
-                                    {'selector': '.purple','style': {'background-color': 'purple','line-color': 'purple'}},
-                                    {'selector': '.green','style': {'background-color': 'green','line-color': 'green'}},
-                                    {'selector': '.orange_pok','style': {'background-color': 'orange','line-color': 'orange', 'shape': 'star'}},
-                                    {'selector': '.black_pok','style': {'background-color': 'black','line-color': 'black', 'shape': 'star'}},
-                                    {'selector': '.green_pok','style': {'background-color': 'green','line-color': 'green', 'shape': 'star'}},
-                                ]
-                ), 
-            html.H5(id='cytoscape-mouseoverEdgeData-output-2')]),
-
-                
-              
-
-            ]),
+                    html.H4(id='title-plot-2', className="bg-dark text-white text-center"),
+                    cyto.Cytoscape(
+                    id='cytoscape-update-layout-heat-2',
+                    layout={'name': 'grid'},
+                    style={'width': '100%', 'height': '230px'},
+                    elements=elements
+                    #deze hier onder uit commenten als we niet met kleurtjes willen
+                    ,stylesheet=[
+                                        {'selector': 'node','style': {'content': 'data(label)'}},
+                                        {'selector': 'edge','style': {'curve-style': 'bezier', 'target-arrow-shape': 'triangle'}},
+                                        {'selector': '.black','style': {'background-color': 'black','line-color': 'black'}},
+                                        {'selector': '.red','style': {'background-color': 'red','line-color': 'red'}},
+                                        {'selector': '.blue','style': {'background-color': 'blue','line-color': 'blue'}},
+                                        {'selector': '.orange','style': {'background-color': 'orange','line-color': 'orange'}},
+                                        {'selector': '.purple','style': {'background-color': 'purple','line-color': 'purple'}},
+                                        {'selector': '.green','style': {'background-color': 'green','line-color': 'green'}},
+                                        {'selector': '.orange_pok','style': {'background-color': 'orange','line-color': 'orange', 'shape': 'star'}},
+                                        {'selector': '.black_pok','style': {'background-color': 'black','line-color': 'black', 'shape': 'star'}},
+                                        {'selector': '.green_pok','style': {'background-color': 'green','line-color': 'green', 'shape': 'star'}},
+                                    ]
+                    ), 
+                html.H5(id='cytoscape-mouseoverEdgeData-output-2')
+            ], className="h-100"),
+            ], className="h-50"),
         dbc.Row(
             [
                 dbc.Col(
                     [
                     html.H5("Network similarity heatmap", className="bg-dark text-white text-center"),
-                    dbc.Row(dcc.Graph(id='heatmap', figure=heatm, className = "h-100"),)]
+                    dbc.Row(
+                        dbc.Col([
+                            dcc.Graph(id='heatmap', figure=heatm, className = "h-100"),
+                        ]), className="h-100")
+                    ], className="h-100",
                 ),
                 dbc.Col(
                     [
@@ -311,9 +316,9 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['all', 'only POK']
                             ], className = "")),
-                    ]
+                    ], className="h-100"
                 ),
-            ]
+            ], className="customHeight10",
         )
 
 
@@ -331,12 +336,12 @@ def switch_page(page):
                     options=[
                         {'label': name.capitalize(), 'value': name}
                         for name in ['grid', 'random', 'circle', 'cose', 'concentric']
-                    ], className = "")),
+                    ], className = "mt-4")),
                               
             ],[
         dbc.Row(
                 dbc.Col(
-                    dcc.Graph(id='sunburst_network_page3-2',figure=sunburst_departments_start, className = "h-150")), className="customHeight3 g-0"), 
+                    dcc.Graph(id='sunburst_network_page3-2',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
         dbc.Row(
                 dbc.Col(
                     dcc.Graph(id='sunburst_exc_page3-2', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0"),
@@ -347,7 +352,7 @@ def switch_page(page):
                             options=[
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['grid', 'random', 'circle', 'cose', 'concentric']
-                            ], className = "")),  ]
+                            ], className = "mt-4")),  ]
     if page == 2:
         return [dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100") ],[
                             dbc.Row(dcc.Dropdown(
@@ -391,13 +396,14 @@ def switch_page(page):
                     ], className = "")),  
 
 
-            ],[html.H5("Wordclouds", className="bg-dark text-white text-center"),
-
-                html.H5('Click on one of these buttons to view the information from the bar charts in a wordcloud format'),#, className="border bg-white mb-0"),
+            ],[
                 dbc.Row([
-                
-            dbc.Col(html.Button('Wordcloud all articles', id='btn-nclicks-all', n_clicks=0),),
-            dbc.Col(html.Button('Wordcloud POK articles', id='btn-nclicks-pok', n_clicks=0),),],
+                        html.H5("Wordclouds", className="bg-dark text-white text-center"),
+                        html.H5('Click on one of these buttons to view the information from the bar charts in a wordcloud format'),#, className="border bg-white mb-0"),
+                ], className="g-0"),
+                dbc.Row([
+                    dbc.Col(html.Button('Wordcloud all articles', id='btn-nclicks-all', n_clicks=0),),
+                    dbc.Col(html.Button('Wordcloud POK articles', id='btn-nclicks-pok', n_clicks=0),),],
             
             ),
 
