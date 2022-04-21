@@ -21,6 +21,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 #pip install pyspellchecker
+nltk.download('vader_lexicon')
+nltk.download('stopwords')
 
 tokenizer = RegexpTokenizer(r'\w+')
 sia = SentimentIntensityAnalyzer()
