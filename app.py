@@ -53,7 +53,7 @@ dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black'
 
 
 #DESCRIBE GOALS PER PAGE
-goal_page1 = "The goal of this page is to obtain intsights into the sentimental anlysis of the articles. "
+goal_page1 = "The goal of this page is to obtain intsights into the sentiment anlysis of the articles. "
 goal_page2 = "The goal of this page consist of finding articles that are similar based on a PCA analysis."
 
 employee_names = list(dic.keys())
