@@ -23,14 +23,11 @@ import dash_cytoscape as cyto
 from pprint import pprint
 from dash.dependencies import Input, Output, State
 import json
-from histogram import create_histogram, create_histogram_department
-from subjects import get_subjects, get_subjects_heap
-from lineplot import lineplot
+from subjects import get_subjects_heap
 from pok_table import search_on_names
 from communities import communities_plot
 from heatmap_creater import create_heap
 from dash import Dash, dash_table
-from collections import OrderedDict
 from page1 import create_visualizations_page1, print_text_of_words
 from page2_tsne import create_pca, plot_tsne_kmeans
 
