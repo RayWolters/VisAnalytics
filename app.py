@@ -361,15 +361,13 @@ def switch_page(page):
 
     
     return [html.H5("Barchart of most frequent words", className="bg-dark text-white text-center"),
-            dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '500px'}), ),
+            dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '500px'}), className="customHeight8"),
             html.H5("Search on words in articles:", className="bg-dark text-white text-center"),
            dbc.Row( 
                 dbc.Container([
                     html.Ul(children = [html.Li(x) for x in my_list[:15]], id='id1',   ),
-                    ],style={"display": "flex"},
-                    
-                    ), className = "h-50"), 
-                 
+                    ],style={"display": "flex", "overflow":"hidden", "overflow-y":"scroll"}, className="h-100 border",
+                    ), className = "customHeight9 g-0"), 
             ], [html.H5(goal_page1, className="border bg-white mb-0"),
 
                 
