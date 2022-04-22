@@ -1,5 +1,8 @@
 import plotly.graph_objects as go
 
+#this file creates the sunburst diagrams.
+
+
 
 #the linked brushing with the other visuaizations with this sunburst file are obtained as follows:
 #clicking on a datacell/network node gives an employee name, this name is used as input in this functions below.

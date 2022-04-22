@@ -1,9 +1,10 @@
-import email
-from click import password_option
 import dash
 from dash import dcc
 import dash_bootstrap_components as dbc
-import glob, os
+import numpy as np
+from PIL import Image
+
+# import glob, os
 from dash import html
 from matplotlib.pyplot import pie
 from numpy import unicode_
@@ -13,16 +14,10 @@ import dash_bootstrap_components as dbc
 from dash_bootstrap_components._components.Container import Container
 from sunburst import sunburst_departments, sunburst_executive
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
-from network_plot import prepare_data
-from network_heap import prepare_data_heap, prepare_data_heap_empty
-import numpy as np
-from PIL import Image
-
 
 import dash_cytoscape as cyto
-from pprint import pprint
 from dash.dependencies import Input, Output, State
-import json
+from network_heap import prepare_data_heap
 from subjects import get_subjects_heap
 from pok_table import search_on_names
 from communities import communities_plot
@@ -31,13 +26,7 @@ from dash import Dash, dash_table
 from page1 import create_visualizations_page1, print_text_of_words
 from page2_tsne import create_pca, plot_tsne_kmeans
 
-#function who maps indexes from slidebar to days
-def get_day(num):
-    dic = {'Mon 6':'2014-01-06', 'Tue 7':'2014-01-07', 'Wed 8': '2014-01-08', 'Thu 9':'2014-01-09','Fri 10':'2014-01-10',
-     'Mon 13':'2014-01-13', 'Tue 14': '2014-01-14', 'Wed 15': '2014-01-15', 'Thu 16':'2014-01-16', 'Fri 17':'2014-01-17'}
-    return dic[num]
-
-
+#dictionary used in coloring the network visualizations on page 4.
 dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
     'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
@@ -47,29 +36,12 @@ dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black'
     'Isia Vann': 'orange', 'Edvard Vann': 'orange', 'Felix Resumir': 'orange', 'Loreto Bodrogi': 'orange', 'Hideki Cocinaro': 'orange', 'Inga Ferro': 'orange', 'Ruscella Mies': 'black',
     'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
 
+#describe goals epr page:
+goal_page1 = "The goal of this page is to obtain insights into the sentiment analysis of the articles. "
+goal_page2 = "The goal of this page consists of finding articles that are similar based on a PCA analysis."
+goal_page5 = "The goal of this page consists of obtaining insights into possible subgroups within the email communication network. The columns of the table consist of the found subgroups, with the dropdown menu you can change color details."
 
-#DESCRIBE GOALS PER PAGE
-goal_page1 = "The goal of this page is to obtain intsights into the sentiment analysis of the articles. "
-goal_page2 = "The goal of this page consist of finding articles that are similar based on a PCA analysis."
-
-employee_names = list(dic.keys())
-employee_names.append('GASTech')
-
-email_df = pd.read_csv('data/email headers.csv', encoding='cp1252')
-
-unique_subjects = list(set(list(email_df['Subject'])))
-
-elements1 = prepare_data_heap("2014-01-06 09:00", 60, True)
-elements2 = prepare_data_heap("2014-01-06 10:00", 60, True)
-
-df_info_associated_employees = search_on_names()
-df_communities, communities_plot_style = communities_plot('Department')
-
-heatm = create_heap(60, 10)
-
-sunburst_executive_start = sunburst_executive('', True)
-sunburst_departments_start = sunburst_departments('', True)
-
+#create teh visualizations used in page 1
 pie_all = create_visualizations_page1('pie', 'All articles')
 bar_all = create_visualizations_page1('bar', 'All articles')
 my_list = print_text_of_words('criminals')
@@ -84,24 +56,42 @@ wc_pok.update_layout(coloraxis_showscale=False)
 wc_pok.update_xaxes(showticklabels=False)
 wc_pok.update_yaxes(showticklabels=False)
 
+#create default article to print
+article1 = [open("data/articles/{}".format("0.txt")).read()]
+
+#create the sunburst used in multiple pages of the DASH.
+sunburst_executive_start = sunburst_executive('', True)
+sunburst_departments_start = sunburst_departments('', True)
+
+#set default network elements 
+elements1 = prepare_data_heap("2014-01-06 09:00", 60, True)
+elements2 = prepare_data_heap("2014-01-06 10:00", 60, True)
+
+#create default heatmap used in page 4 of DASH.
+heatm = create_heap(60, 10)
+
+#create dataframes used as input for tables within the DASH.
+df_info_associated_employees = search_on_names()
+df_communities, communities_plot_style = communities_plot('Department')
+
+#create legends corresponding to one of the tables.
 legend_millitary = pd.DataFrame(['ArmedForcesOf-Kronos','TethanDefense-ForceArmy','TethanDefense-ForceAir','TethanDefense-ForceNavy'], columns=['Military class'])
 legend_department = pd.DataFrame(['Board', 'Facilities','Engineering','IT','Security'], columns=['Departments'])
 legend_pok = pd.DataFrame(['not involved with POK', 'involved with POK'], columns=['POK'])
 
+#create default TSNE plot.
 df_pca  = create_pca()
 pca_fig = plot_tsne_kmeans(10, df_pca)
 
-article1 = [open("data/articles/{}".format("0.txt")).read()]
 
 
-# TODO: Fix styling 
+
+#create the layout used throughout the entire DASH, including multiple pages.
 app.layout = html.Div(
     children = [
         dbc.Row(
-            [
-                dbc.Col(
-                    [
-                        dbc.Row(dbc.Col(html.H2("VA", className="bg-dark text-white text-center")), className="g-0"),
+            [    dbc.Col(
+                    [   dbc.Row(dbc.Col(html.H2("VA", className="bg-dark text-white text-center")), className="g-0"),
                         dbc.Row(dbc.Col(id="side-div", className="h-100 m-2"), className="g-0 customHeight"),         
                     ], width={"size": 2}, className="h-75 bg-light p-0 border bl border-bottom-0 border-top-0"),
                 dbc.Col(
@@ -122,6 +112,7 @@ app.layout = html.Div(
     ],
 )
 
+#callback that facilitates the switches between pages.
 @app.callback(
     [Output("page-contents", "children"),
     Output("side-div", "children")],
@@ -129,59 +120,26 @@ app.layout = html.Div(
     [Input("pagination", "active_page")],
 )
 def switch_page(page):
-    if page == 5:
-        return [
-            dbc.Row(
-            [
-                dbc.Row(
-                    dbc.Col([
-                        dcc.Dropdown(
-                            id='Departments',
-                            value='Departments',
+    if page == 2:#add pca plot
+        return [dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100") ],[
+                            html.H5(goal_page2, className="border bg-white mb-0"),
+                            html.H5("Change the analysis:", className="bg-dark text-white text-center"),
+                            html.H5('Choose a different K to obtain different K-means clusters:'),
+                            dbc.Row(dcc.Dropdown(
+                            id='choose-k',
+                            value=10,
                             clearable=False,
                             options=[
-                                {'label': name.capitalize(), 'value': name}
-                                for name in ['Departments', 'POK', 'Military']
-                            ], className = "")
-                    ], width={"size": 6}), className="justify-content-center align-items-center",
-                    ),
-                dbc.Row([
-                    dbc.Col([
-                        dbc.Label(""),
-                        dash_table.DataTable(
-                            id='dash-table4',
-                            data=df_communities.to_dict('records'),
-                            # columns=[{'id': c, 'name': c} for c in df_info_associated_employees.columns],
-                            style_table={'overflowY': 'auto'},
-                            style_data_conditional=communities_plot_style
-                        ),
+                                {'label': name, 'value': name}
+                                for name in [1,2,3,4,5,6,7,8,9,10]
+                            ], className = ""))],[
 
-                        
-                    ], width={"size": 10}),
-                ], className="justify-content-center align-items-center customHeight7"),
-            ], className="h-100",
-        ),
-        ], [
-            dbc.Row(
-                dbc.Col(
-                    dcc.Graph(id='sunburst_network_page4',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
-            dbc.Row(
-                dbc.Col(
-                    dcc.Graph(id='sunburst_exc_page4', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
-        ],[
-                        dash_table.DataTable(
-                            id='dash-table-legends',
-                            data=legend_millitary.to_dict('records'),
-                            columns=[{'id': c, 'name': c} for c in legend_millitary.columns],
-                            style_table={'overflowX': 'auto'},
-                            style_data_conditional=[
-                                {'if': {'row_index':0,},'backgroundColor': 'blue','color': 'white'},
-                                {'if': {'row_index':1,},'backgroundColor': 'red','color': 'white'},
-                                {'if': {'row_index':2,},'backgroundColor': 'orange','color': 'white'},
-                                {'if': {'row_index':3,},'backgroundColor': 'purple','color': 'white'},],
-                        ),
-
-        ]
+                # add a container where articles can be printed.
+                dbc.Container([
+                    html.Ul(children = [html.Li(x) for x in article1], id='print_article',),
+                    ],style={"display": "flex", "overflow":"hidden", "overflow-x":"scroll","overflow-y":"scroll",}, className="h-100 border",
+                    ),   
+                            ]
     if page == 3:
         return [
             dbc.Row(
@@ -195,6 +153,7 @@ def switch_page(page):
                 dbc.Row([
                     dbc.Col([
                         dbc.Label("The table below contains employee records of employees whose lastname or fullname appears in the historical records. The first column is manually added, as a pre-analysis, to show which employees are (possibly) associated with the POK by considering their full name or lastname."),
+                        #add a table containing information about employees found in analysis
                         dash_table.DataTable(
                             id='dash-table',
                             data=df_info_associated_employees.to_dict('records'),
@@ -209,15 +168,13 @@ def switch_page(page):
                                 {'if': {'row_index':5,},'backgroundColor': 'grey','color': 'black'},
                                 {'if': {'row_index':6,},'backgroundColor': 'orange','color': 'black'},
                                 {'if': {'row_index':7,},'backgroundColor': 'orange','color': 'black'}],
-                        ),
-                        # dbc.Alert(id='dash-table-call'),
-
-                        
+                        ),                      
                     ], width={"size": 10}),
                 ], className="justify-content-center align-items-center customHeight7"),
             ], className="h-100",
         ),
         ], [
+            #add sunburst plots
             dbc.Row(
                 dbc.Col(
                     dcc.Graph(id='sunburst_network_page2',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
@@ -225,12 +182,12 @@ def switch_page(page):
                 dbc.Col(
                     dcc.Graph(id='sunburst_exc_page2', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
         ],[]
+
     if page==4:
         return [
         dbc.Row(
             [   
-
-            # dbc.Container([
+            #add node/edge visualization of netwerk 1
             dbc.Col([
                     html.H5(id='title-plot-1', className="bg-dark text-white text-center"),
                     cyto.Cytoscape(
@@ -255,7 +212,7 @@ def switch_page(page):
                     ), 
                 html.H5(id='cytoscape-mouseoverEdgeData-output-1')
             ], className="h-100"),
-            
+            #add node/edge visualization of netwerk 2
             dbc.Col([
                     html.H5(id='title-plot-2', className="bg-dark text-white text-center"),
                     cyto.Cytoscape(
@@ -279,16 +236,11 @@ def switch_page(page):
                                     ]
                     ), 
                 html.H5(id='cytoscape-mouseoverEdgeData-output-2')
-            ], className="h-100"),
-            # ],style={"display": "flex", "overflow":"hidden", "overflow-y":"scroll"},),
-
-            
-            ], className="h-50"),
-
+            ], className="h-100"),], className="h-50"),
         dbc.Row(
             [
                 dbc.Col(
-                    [
+                    [#add heatmap 
                     html.H5("Network similarity heatmap", className="bg-dark text-white text-center"),
                     dbc.Row(
                         dbc.Col([
@@ -299,8 +251,8 @@ def switch_page(page):
                 dbc.Col(
                     [
                      html.H5("Heatmap settings", className="bg-dark text-white text-center"),
-
-                    html.H5('Choose the communication interval on where you want to find similar networks beteen POK members', className="border bg-white mb-0"),
+                    #add a couple of dropdowns that give user opportunity to select/change their analysis
+                    html.H5('Choose the communication interval on which you want to find similar networks between POK members', className="border bg-white mb-0"),
                     dbc.Row(dcc.Dropdown(
                             id='dropdown-interval',
                             value='1 hourly interval',
@@ -309,7 +261,7 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['2 hourly interval', '1 hourly interval', '30 minutes interval', '15 minutes interval']
                             ], className = "")),  
-                    html.H5("Choose a upper bound on number of total to's. E.g. to leave out all mails send to whole company ", className="border bg-white mb-0"),
+                    html.H5("Choose an upper bound on the number of total to's. E.g. to leave out all emails send to the whole company", className="border bg-white mb-0"),
                     dbc.Row(dcc.Dropdown(
                             id='treshold-interval',
                             value='30 employees',
@@ -318,7 +270,7 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['30 employees', '25 employees', '20 employees', '15 employees', '10 employees', '8 employees', '5 employees', '3 employees', '2 employees', '1 employee']
                             ], className = "")),
-                    html.H5("Choose whether to include whole network within interval in plots or only POK member contributions", className="border bg-white mb-0"),
+                    html.H5("Choose whether to include the whole network within the interval in plots or only POK member contributions", className="border bg-white mb-0"),
                     dbc.Row(dcc.Dropdown(
                             id='employee-participants',
                             value='only POK',
@@ -330,10 +282,7 @@ def switch_page(page):
                     ], className="h-100"
                 ),
             ], className="customHeight10",
-        )
-
-
-        ], [
+        )], [#add sunbursts
         dbc.Row(
                 dbc.Col(
                     dcc.Graph(id='sunburst_network_page3',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
@@ -347,9 +296,8 @@ def switch_page(page):
                     options=[
                         {'label': name.capitalize(), 'value': name}
                         for name in ['grid', 'random', 'circle', 'cose',]
-                    ], className = "mt-4")),
-                              
-            ],[
+                    ], className = "mt-4")),     
+            ],[#add sunbursts
         dbc.Row(
                 dbc.Col(
                     dcc.Graph(id='sunburst_network_page3-2',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
@@ -364,28 +312,58 @@ def switch_page(page):
                                 {'label': name.capitalize(), 'value': name}
                                 for name in ['grid', 'random', 'circle', 'cose']
                             ], className = "mt-4")),  ]
-    if page == 2:
-        return [dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100") ],[
-                            html.H5(goal_page2, className="border bg-white mb-0"),
-                            html.H5("Change the analysis:", className="bg-dark text-white text-center"),
-                            html.H5('Choose a different K to obtain different K-means clusters:'),
-                            dbc.Row(dcc.Dropdown(
-                            id='choose-k',
-                            value=10,
+    if page == 5:
+        return [
+            html.H5(goal_page5, className="border bg-white mb-0"),
+            dbc.Row(
+            [
+                dbc.Row(
+                    dbc.Col([ #add a dropdown so user can obtain different insights.
+                        dcc.Dropdown(
+                            id='Departments',
+                            value='Departments',
                             clearable=False,
                             options=[
-                                {'label': name, 'value': name}
-                                for name in [1,2,3,4,5,6,7,8,9,10]
-                            ], className = ""))],[
+                                {'label': name.capitalize(), 'value': name}
+                                for name in ['Departments', 'POK', 'Military']
+                            ], className = "")
+                    ], width={"size": 6}), className="justify-content-center align-items-center",
+                    ),
+                dbc.Row([ #add table
+                    dbc.Col([
+                        dbc.Label(""),
+                        dash_table.DataTable(
+                            id='dash-table4',
+                            data=df_communities.to_dict('records'),
+                            style_table={'overflowY': 'auto'},
+                            style_data_conditional=communities_plot_style
+                        ),                        
+                    ], width={"size": 10}),
+                ], className="justify-content-center align-items-center customHeight7"),
+            ], className="h-100",
+        ),
+        ], [
+            dbc.Row(
+                dbc.Col( #add sunbursts
+                    dcc.Graph(id='sunburst_network_page4',figure=sunburst_departments_start, className = "h-100")), className="customHeight3 g-0"), 
+            dbc.Row(
+                dbc.Col(
+                    dcc.Graph(id='sunburst_exc_page4', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0")
+        ],[#add table containing the useful information.
+                        dash_table.DataTable(
+                            id='dash-table-legends',
+                            data=legend_millitary.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in legend_millitary.columns],
+                            style_table={'overflowX': 'auto'},
+                            style_data_conditional=[
+                                {'if': {'row_index':0,},'backgroundColor': 'blue','color': 'white'},
+                                {'if': {'row_index':1,},'backgroundColor': 'red','color': 'white'},
+                                {'if': {'row_index':2,},'backgroundColor': 'orange','color': 'white'},
+                                {'if': {'row_index':3,},'backgroundColor': 'purple','color': 'white'},],
+                        ),
 
-                # dbc.Row( 
-                dbc.Container([
-                    html.Ul(children = [html.Li(x) for x in article1], id='print_article',),
-                    ],style={"display": "flex", "overflow":"hidden", "overflow-x":"scroll","overflow-y":"scroll",}, className="h-100 border",
-                    ),   
-                            ]
-
-    
+        ]
+    #if page == 1    
     return [html.H5("Barchart of most frequent words", className="bg-dark text-white text-center"),
             dbc.Row(dcc.Graph(id='bar-chart',figure=bar_all, className = "h-100", style={'height': '500px'}), className="customHeight8"),
             html.H5("Search on words in articles:", className="bg-dark text-white text-center"),
@@ -394,17 +372,11 @@ def switch_page(page):
                     html.Ul(children = [html.Li(x) for x in my_list], id='id1',   ),
                     ],style={"display": "flex", "overflow":"hidden", "overflow-y":"scroll"}, className="h-100 border",
                     ), className = "customHeight9 g-0"), 
-            ], [html.H5(goal_page1, className="border bg-white mb-0"),
-
-                
+            ], [html.H5(goal_page1, className="border bg-white mb-0"),               
                 html.H5("Distribution of articles sentiments", className="bg-dark text-white text-center"),
-                dbc.Row(
-                    
-
+                dbc.Row(                  
                     dbc.Col(
-
                         dcc.Graph(id='pie-all',figure=pie_all, className = "h-100")), className="customHeight3 g-0"),     
-                
                 html.H5("Change the analysis:", className="bg-dark text-white text-center"),
                 html.H5('Choose between all articles analysis, or filtered on articles containing POK'),#, className="border bg-white mb-0"),
                 dbc.Row(dcc.Dropdown(
@@ -415,8 +387,6 @@ def switch_page(page):
                         {'label': name.capitalize(), 'value': name}
                         for name in ['All articles', 'Filter on POK']
                     ], className = "")),  
-
-
             ],[
                 dbc.Row([
                         html.H5("Wordclouds", className="bg-dark text-white text-center"),
@@ -427,7 +397,7 @@ def switch_page(page):
                     dbc.Col(html.Button('Wordcloud POK articles', id='btn-nclicks-pok', n_clicks=0),),],
             
             ),
-
+            #add modals that shows word clouds to user
                dbc.Modal(
                     [   dbc.ModalHeader(dbc.ModalTitle("All articles")),
                         dcc.Graph(figure=wc_all),
@@ -443,14 +413,7 @@ def switch_page(page):
                     id="modal_pok",
                     size="xl",
                     is_open=False,
-                ),
-            
-            
-            
-            
-            
-            
-            ]
+                ),]
 
 
 
@@ -464,7 +427,7 @@ def update_call(data):
         lst = [strline, [open("data/articles/{}.txt".format(article_num)).read()]]
         return [html.Li(x) for x in lst]
 
-
+#update K-means clustering
 @app.callback(
     Output("pca-fig", "figure"),
     Input('choose-k', 'value'))
@@ -472,6 +435,7 @@ def update_call(data):
 def update_layout(value):
     return(plot_tsne_kmeans(value, df_pca))
 
+#show modal
 @app.callback(
     Output("modal_all", "is_open"),
     Input('btn-nclicks-all', 'n_clicks'),
@@ -483,6 +447,7 @@ def update_layout(data, is_open):
     else:
         return (is_open)
 
+#show modal
 @app.callback(
     Output("modal_pok", "is_open"),
     Input('btn-nclicks-pok', 'n_clicks'),
@@ -676,6 +641,7 @@ def update_call(cell):
     else:
         return (sunburst_departments('', True),  sunburst_executive('', True))
 
+#update tables and corresponding legends
 @app.callback(Output('dash-table4', 'style_data_conditional'),
               Output('dash-table-legends', 'data'),
               Output('dash-table-legends', 'columns'),
@@ -708,11 +674,6 @@ def update_layout(value):
         cols =[{'id': c, 'name': c} for c in legend_pok.columns]
 
     return (communities_plot(value)[1], data, cols, style)
-
-
-
-
-
 
 if __name__ == "__main__":
     app.run_server(debug=True)

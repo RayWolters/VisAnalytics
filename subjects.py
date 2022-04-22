@@ -1,8 +1,16 @@
 import pandas as pd
 from ast import literal_eval
 
+#this file returns the correct subjects when a user clicks on an edge.
 
-def get_subjects_heap(inter, s, t, date):
+def get_subjects_heap(inter, s, t, date):  
+    """
+    This function gets the corresponding subjects of a email network edge and returns it 
+    inter -> interval chosen by user
+    s -> source node
+    t -> target node
+    date -> date (indirectly specified by user after clicking on the heatmap)
+    """    
     if len(date) ==16:
             date = date + ':00'
 
@@ -12,7 +20,7 @@ def get_subjects_heap(inter, s, t, date):
 
 
     df = pd.DataFrame(lis, columns=['Source', 'Target', 'Subject'])
+    print(len(df))
     dfs = df[df['Source'] == s]
     dft = dfs[dfs['Target'] == t]
-
     return(list(dft['Subject']))

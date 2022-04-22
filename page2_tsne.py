@@ -1,20 +1,15 @@
-import nltk
-import glob, os
-import re
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
-
 from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk import word_tokenize
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
+
+#this file provides the informatin for the second page.
 
 def create_heatmap(similarity, cmap = "YlGnBu"):
   df = pd.DataFrame(similarity)
@@ -23,6 +18,9 @@ def create_heatmap(similarity, cmap = "YlGnBu"):
 
 
 def create_pca():
+    """
+    This function will performs the PCA dimensionality reduction on the articles.
+    """
     documents = [open("data/articles/{}".format(f)).read() for f in os.listdir("data/articles")]
 
     tfidf = TfidfVectorizer().fit_transform(documents)
@@ -31,12 +29,13 @@ def create_pca():
     return df
 
 def plot_tsne_kmeans(k, df):
-    #Initialize the class object
+    """
+    This function will take the pca's as input and convert it to a k-means plot
+    k  -> number of means (clusters)
+    df -> dataframe containing pca values 
+    """
     kmeans = KMeans(n_clusters= k)
-
-    #predict the labels of clusters.
     label = kmeans.fit_predict(df)
-
     dff = pd.DataFrame(df, columns=['pca1', 'pca2'])
     dff['label'] = [str(i) for i in label]
     dff['label2']= label

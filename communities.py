@@ -4,6 +4,11 @@ import networkx as nx
 from networkx.algorithms import community
 
 def find_subgroups():
+    """
+    This function performs an alysis to find sub groups within our email traffic network.
+    Parts of code from an open source tutorial by John R. Ladd ORCID id icon , Jessica Otis, Christopher N. Warren, and Scott Weingart
+    https://programminghistorian.org/en/lessons/exploring-and-analyzing-network-data-with-python
+    """
     data = pd.read_csv('data/network_data/subjects.csv').set_index('Day')
     lis = list(data.loc['2014-01-06 08:00:00':'2014-01-17 20:00:00']['Network'])
 
@@ -24,48 +29,27 @@ def find_subgroups():
     G.add_nodes_from(node_names)
     G.add_edges_from(edges)
     nx.set_node_attributes(G, color_dict, 'color')
+    degrees = dict(G.degree(G.nodes()))
+    nx.set_node_attributes(G, degrees, 'degree')
+    betweenness = nx.betweenness_centrality(G) 
+    eigenvector = nx.eigenvector_centrality(G) 
+    nx.set_node_attributes(G, betweenness, 'betweenness')
+    nx.set_node_attributes(G, eigenvector, 'eigenvector')
+    subgroups = community.greedy_modularity_communities(G)
 
-    degree_dict = dict(G.degree(G.nodes()))
-    nx.set_node_attributes(G, degree_dict, 'degree')
+    dic = {} 
+    for i,c in enumerate(subgroups):
+        for name in c: 
+            dic[name] = i 
 
-    betweenness_dict = nx.betweenness_centrality(G) # Run betweenness centrality
-    eigenvector_dict = nx.eigenvector_centrality(G) # Run eigenvector centrality
-
-    # Assign each to an attribute in your network
-    nx.set_node_attributes(G, betweenness_dict, 'betweenness')
-    nx.set_node_attributes(G, eigenvector_dict, 'eigenvector')
-
-    communities = community.greedy_modularity_communities(G)
-
-    modularity_dict = {} # Create a blank dictionary
-    for i,c in enumerate(communities): # Loop through the list of communities, keeping track of the number for the community
-        for name in c: # Loop through each person in a community
-            modularity_dict[name] = i # Create an entry in the dictionary for the person, where the value is which group they belong to.
-
-    # Now you can add modularity information like we did the other metrics
-    nx.set_node_attributes(G, modularity_dict, 'modularity')
-
-
-        # First get a list of just the nodes in that class
-    class0 = [n for n in G.nodes() if G.nodes[n]['modularity'] == 0]
-
-    # Then create a dictionary of the eigenvector centralities of those nodes
-    class0_eigenvector = {n:G.nodes[n]['eigenvector'] for n in class0}
-
-    # Then sort that dictionary and print the first 5 results
-    class0_sorted_by_eigenvector = sorted(class0_eigenvector.items(), key=itemgetter(1), reverse=True)
-
-    print("Modularity Class 0 Sorted by Eigenvector Centrality:")
-    for node in class0_sorted_by_eigenvector[:5]:
-        print("Name:", node[0], "| Eigenvector Centrality:", node[1])
+    nx.set_node_attributes(G, dic, 'modularity')
 
     lst = []
-    for i,c in enumerate(communities): 
+    for i,c in enumerate(subgroups): 
         if len(c) > 2:
             lst.append(list(c))
 
     ll = []
-
     ll.append(lst[0])
     ll.append(lst[1] +[''])
     ll.append(lst[2] +['','','','',''])
@@ -76,10 +60,10 @@ def find_subgroups():
     return pd.DataFrame(ll).T
         
 
-
-
-
 def communities_plot(color):
+    """
+    This function takes the subgroups created dataframe as input and give them the corresonding colors.
+    """
 
     dic = {'Mat Bramar': 'grey', 'Anda Ribera': 'grey', 'Rachel Pantanal': 'grey', 'Linda Lagos': 'orange', 'Carla Forluniau': 'grey', 'Cornelia Lais': 'grey',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
@@ -169,39 +153,6 @@ def communities_plot(color):
                                     {'if': {'row_index': 4, 'column_id': 'class 6'},'backgroundColor': str(dic[df_communities['class 6'][4]]),'color': 'black'}, {'if': {'row_index': 5,'column_id': 'class 6'},'backgroundColor': str(dic[df_communities['class 6'][5]]),'color': 'white'}
                                                                 
                                     ]
-    if color == 'Gender':
-        lst_communities = [              {'if': {'row_index': 0,'column_id': 'class 1'},'backgroundColor': 'blue','color': 'white'},{'if': {'row_index': 1,'column_id': 'class 1'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 2,'column_id': 'class 1'},'backgroundColor':'blue','color': 'white'},{'if': {'row_index': 3,'column_id': 'class 1'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 4,'column_id': 'class 1'},'backgroundColor':'blue','color': 'white'},{'if': {'row_index': 5,'column_id': 'class 1'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 6,'column_id': 'class 1'},'backgroundColor':'red','color': 'white'},{'if': {'row_index': 7,'column_id': 'class 1'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 8,'column_id': 'class 1'},'backgroundColor':'blue','color': 'white'},{'if': {'row_index': 9,'column_id': 'class 1'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 10,'column_id': 'class 1'},'backgroundColor':'blue','color': 'white'},{'if': {'row_index': 11,'column_id': 'class 1'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 12,'column_id': 'class 1'},'backgroundColor':'red','color': 'white'},
-
-                                        {'if': {'row_index': 0, 'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 1,'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 2, 'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 3,'column_id': 'class 2'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 4, 'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 5,'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 6, 'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 7,'column_id': 'class 2'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 8, 'column_id': 'class 2'},'backgroundColor': 'red','color': 'white'}, {'if': {'row_index': 9,'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 10,'column_id': 'class 2'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 11,'column_id': 'class 2'},'backgroundColor': 'red','color': 'white'},
-
-                                        {'if': {'row_index': 0, 'column_id': 'class 3'},'backgroundColor': 'red','color': 'white'}, {'if': {'row_index': 1,'column_id': 'class 3'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 2, 'column_id': 'class 3'},'backgroundColor': 'red','color': 'white'}, {'if': {'row_index': 3,'column_id': 'class 3'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 4, 'column_id': 'class 3'},'backgroundColor': 'red','color': 'white'}, {'if': {'row_index': 5,'column_id': 'class 3'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 6, 'column_id': 'class 3'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 7,'column_id': 'class 3'},'backgroundColor': 'red','color': 'white'},
-                                    
-                                        {'if': {'row_index': 0, 'column_id': 'class 4'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 1,'column_id': 'class 4'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 2, 'column_id': 'class 4'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 3,'column_id': 'class 4'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 4, 'column_id': 'class 4'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 5,'column_id': 'class 4'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 6, 'column_id': 'class 4'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 7,'column_id': 'class 4'},'backgroundColor': 'red','color': 'white'},
-
-                                        {'if': {'row_index': 0, 'column_id': 'class 5'},'backgroundColor': 'red','color': 'white'}, {'if': {'row_index': 1,'column_id': 'class 5'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 2, 'column_id': 'class 5'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 3,'column_id': 'class 5'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 4, 'column_id': 'class 5'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 5,'column_id': 'class 5'},'backgroundColor': 'red','color': 'white'},
-
-                                        {'if': {'row_index': 0, 'column_id': 'class 6'},'backgroundColor': 'red','color': 'white'}, {'if': {'row_index': 1,'column_id': 'class 6'},'backgroundColor': 'blue','color': 'white'},
-                                        {'if': {'row_index': 2, 'column_id': 'class 6'},'backgroundColor': 'blue','color': 'white'}, {'if': {'row_index': 3,'column_id': 'class 6'},'backgroundColor': 'red','color': 'white'},
-                                        {'if': {'row_index': 4, 'column_id': 'class 6'},'backgroundColor': 'red','color': 'white'}, {'if': {'row_index': 5,'column_id': 'class 6'},'backgroundColor': 'blue','color': 'white'}]
     if color == 'POK':
         lst_communities = [
                                         {'if': {'row_index': 0,'column_id': 'class 1'},'backgroundColor': 'yellow','color': 'black'},{'if': {'row_index': 1,'column_id': 'class 1'},'backgroundColor': 'white','color': 'black'},

@@ -1,33 +1,28 @@
 import pandas as pd
 import numpy as np
-from ast import literal_eval
-import matplotlib.pyplot as plt
-
 import networkx as nx
 import plotly.express as px
-
-import sys
 import warnings
-
 warnings.filterwarnings("ignore")
-
-import seaborn as sns
-
-
 
 #this file creates the heatmap visualizing the similarties between different networks.
 
 
-
 def jaccard_similarity(g, h):
+    """
+    This function computes the jaccard similarity of two graphs (g, h) as input
+    """
     if len(g) == 0 and len(h) == 0:
         return 0
     i = set(g).intersection(h)
     return round(len(i) / (len(g) + len(h) - len(i)),3)
 
 def create_data(interval, treshold):
-    #interval -> the time interval for networks to be analyzes (e.g. one hour or 30 minutes)
-    #treshold -> the maximum number of receivers for one specific mail (e.g. to left out mails send to whole company)
+    """
+    This function produces the data used for the heatmap.
+    interval -> the time interval for networks to be analyzes (e.g. one hour or 30 minutes)
+    treshold -> the maximum number of receivers for one specific mail (e.g. to left out mails send to whole company)
+    """
     df = pd.read_csv('data/email headers.csv', encoding='cp1252')
     df.Date = pd.to_datetime(df.Date)
     df.head()
@@ -70,7 +65,6 @@ def create_data(interval, treshold):
                 dicdat[day] = [row]
     
     dic = {}
-
     for key in dicdat.keys():
         lst = dicdat[key]
         lh = []
@@ -81,17 +75,19 @@ def create_data(interval, treshold):
         dic[key] = lh
 
     l = []
-
     for k,v in dic.items():
         l.append([k,v])
 
     return(pd.DataFrame(l, columns=['Day', 'Network']))
 
 def create_heap(interval, treshold):
+    """
+    This function creates the actual heatmap.
+    interval -> the time interval for networks to be analyzes (e.g. one hour or 30 minutes)
+    treshold -> the maximum number of receivers for one specific mail (e.g. to left out mails send to whole company)
+    """
     df = create_data(interval, treshold).set_index('Day')
-
     pok_names = ['Loreto Bodrogi', 'Hennie Osvaldo', 'Isia Vann', 'Edvard Vann', 'Minke Mies', 'Ruscella Mies', 'Sten Sanjorge Jr (tethys)', 'Sten Sanjorge Jr']
-
     dates = df.index
 
     dic = {}
@@ -103,26 +99,18 @@ def create_heap(interval, treshold):
                 newl.append([row[0], row[1]])
 
         dic[day] = newl
-        
-        
     dic_similarities = {}
-
     for day in dates:
         siml = []
         l1 = dic[day]
-
         for day2 in dates:
-
             if day == day2:
                 siml.append(1)
             else:
                 l2 = dic[day2]
-
                 G = nx.from_edgelist(l1)
                 H = nx.from_edgelist(l2)
-
                 siml.append(jaccard_similarity(G.edges(), H.edges()))
-
         dic_similarities[day] = siml
         
     df = pd.DataFrame(list(dic_similarities.values()),columns=dates)

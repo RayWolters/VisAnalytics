@@ -1,12 +1,9 @@
 from matplotlib import markers
-import nltk #pip install
+import nltk
 import glob, os
 import re
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from wordcloud import WordCloud #pip install
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import RegexpTokenizer
 import string
@@ -14,14 +11,11 @@ from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-from spellchecker import SpellChecker #pip install
 import matplotlib.pyplot as plt
 from nltk.text import Text
-
 import plotly.graph_objects as go
 import plotly.express as px
 
-#pip install pyspellchecker
 nltk.download('vader_lexicon')
 nltk.download('stopwords')
 
@@ -29,22 +23,27 @@ tokenizer = RegexpTokenizer(r'\w+')
 sia = SentimentIntensityAnalyzer()
 stop_words = set(stopwords.words('english'))
 
+
+
+#this file will provide the visualizations for page 1. The most important function is create_visualizations_page1(). 
+#the rest are helper functions for preprocessing
+
+#removes spaces
 def remove_whitespace(text):
     return  " ".join(text.split())
 
+#lemitizing
 def lemmatization(text): 
     result=[]
     wordnet = WordNetLemmatizer()
     for token,tag in pos_tag(text):
         pos=tag[0].lower()
-        
         if pos not in ['a', 'r', 'n', 'v']:
-            pos='n'
-            
+            pos='n'    
         result.append(wordnet.lemmatize(token,pos))
-    
     return result
 
+#reduce words to their stem version
 def stemming(text):
     porter = PorterStemmer()
     result=[]
@@ -52,6 +51,7 @@ def stemming(text):
         result.append(porter.stem(word))
     return result
 
+#sort file names on alphanumeric 
 def sorted_alphanumeric(data):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
@@ -72,11 +72,8 @@ def tok_prepro_docs(docs):
             i = i.replace(x, '')
         i = i.translate(str.maketrans('', '', string.punctuation))  
         i = tokenizer.tokenize(i)
-       # i = spell_check(i)
         newd_sw.append(i)
         newi = [w for w in i if not w.lower() in stop_words]
-#         newi = lemmatization(newi)
-#         newi = stemming(newi)
         newd.append(newi)
     return newd
 
@@ -96,6 +93,7 @@ def no_tok_prepro_docs(docs):
         texts.append(i)
     return texts
 
+#sentiment analysis
 def SIA(docs, flatten=False):
     if flatten:
         finaldoc = make_flat(docs)
@@ -125,12 +123,12 @@ def SIA(docs, flatten=False):
 
 
 #visualizations
-
 def make_pie(docs):
+    #make the pie chart.
     labels = 'Positive', 'Negative', 'Neutral'
     sizes, _, _, _ = SIA(docs)
     
-    colors = ['green', 'red', 'lightgrey']
+    colors = ['blue', 'orange', 'lightgrey']
     layout = go.Layout(
         margin = go.layout.Margin(
             l=0,
@@ -142,7 +140,6 @@ def make_pie(docs):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
     )
-
     fig = go.Figure(data=[go.Pie(labels=['Positive', 'Negative', 'Neutral'],
                                  values=sizes)], layout=layout)
     fig.update_traces(hoverinfo='label+value', textinfo='percent', textfont_size=15,
@@ -150,41 +147,30 @@ def make_pie(docs):
     return fig
     
 def make_bar(docs, indicator, size=20, flatten=True):
+    #make bar chart
     if flatten:
         freq = nltk.FreqDist(make_flat(docs))
     else:
         freq = nltk.FreqDist(docs)
     testcloud = freq.most_common(size)
     freqdf = pd.DataFrame(testcloud, columns=['Word', 'Frequency'])
+    freqdf['category'] = ['negative' if i in ['died', 'death'] else 'neutral' for i in freqdf.Word]
     if indicator:
-        fig = px.bar(freqdf, x="Frequency", y="Word", orientation='h', color_discrete_sequence=['red']*len(freqdf) )
+        fig = px.bar(freqdf, x="Frequency", y="Word", orientation='h', color_discrete_sequence=['orange']*len(freqdf) )
     else:
-        col_l = (['lightgrey']*6) + ['red', 'red'] + ((['lightgrey']*12))
-        # print(col_l)
-        fig = px.bar(freqdf, x="Frequency", y="Word", orientation='h', color_discrete_sequence=col_l)
+
+        fig = px.bar(freqdf, x="Frequency", y="Word", color='category', orientation='h', color_discrete_map={'negative': 'orange','neutral': 'lightgrey'}, category_orders={'Word': freqdf.Word[::-1]})
     return fig
 
-def make_wc(docs, size=20, flatten=True):
-    if flatten:
-        freq = nltk.FreqDist(make_flat(docs))
-    else:
-        freq = nltk.FreqDist(docs)
-    testcloud = freq.most_common(size)
-    freqdf = pd.DataFrame(testcloud, columns=['Word', 'Frequency'])
-    dataa = freqdf.set_index('Word').to_dict()['Frequency']
-    wc = WordCloud(background_color='white', width=800, height=400, max_words=200).generate_from_frequencies(dataa)
-    plt.figure(figsize=(12,12))
-    plt.imshow(wc, interpolation='bilinear')
-    plt.axis('off')
-    plt.show()
 
+
+#makes a flat list of a nested one
 def make_flat(docs):
     doclist = tok_prepro_docs(docs)
-    
     flat_list = [item for sublist in doclist for item in sublist]
-    
     return flat_list
 
+#read file
 def read_text_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
         read = f.read()
@@ -192,6 +178,11 @@ def read_text_file(file_path):
 
 
 def create_visualizations_page1(plot, filter):
+    """
+    This function creates the visualization of page 1.
+    plot -> the kind of plot (bar/pie)
+    filter -> which articles to use in analyze (all articles or only pok related)
+    """
     ordered_dir = sorted_alphanumeric(os.listdir("data/articles"))
     documents = [open("data/articles/{}".format(f)).read() for f in ordered_dir]
 

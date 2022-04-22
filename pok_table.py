@@ -5,6 +5,8 @@ import numpy as np
 from datetime import datetime
 employee_records_df = pd.read_excel('data/EmployeeRecords.xlsx')
 
+#this file provides the information for page 3.
+
 # n_full = []
 n_middle = []
 n_last = []

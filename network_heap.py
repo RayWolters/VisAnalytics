@@ -1,31 +1,15 @@
-from venv import create
-import dash
 import pandas as pd
-import dash_cytoscape as cyto
-from dash import html
-from dash import dcc
-from pprint import pprint
-from dash.dependencies import Input, Output
-import json
-
-
 from ast import literal_eval
 
-
-def prepare_data_heap_empty():
-    #function just to return empty elements. In this way 2 empty graphs are plotted as default.
-    edges_tuples = tuple([])
-    nodes_tuple = tuple([])
-
-    nodes = [{'data': {'id': short, 'label': label},'classes' : color} for short, label, color in nodes_tuple]
-
-    edges = [{'data': {'source': source, 'target': target}} for source, target in edges_tuples]
-
-    elements =  nodes + edges
-    return elements
+#this file provides the functions needed to create network visualizations based on user input (clicked on heatmap)
 
 def prepare_data_heap(day, inter, only_pok):
-    #prepare the data you want to plot, inputs consist of data obtained from clicking on heatmap.
+    """
+    prepare the data you want to plot, inputs consist of data obtained from clicking on heatmap.
+    day -> specific date selected by user
+    inter -> interval selected by user
+    only_pok -> boolean whether you want to visualize only the network containing POK members or the whole network
+    """
     if len(day) ==16:
         day = day + ':00'
 
@@ -41,9 +25,13 @@ def prepare_data_heap(day, inter, only_pok):
     return create_elements_heap(l, pok_names, only_pok)
 
 def create_elements_heap(l, pok_names, only_pok):
-    #create the elements of the prepared data
-    #in this function the nodes/edges are created with corresponding colors obtained from the dictionary
-    
+    """
+    create the elements of the prepared data
+    in this function the nodes/edges are created with corresponding colors obtained from the dictionary
+    l -> network data
+    pok_names -> names of pok members
+    only_pok -> boolean whether you want to visualize only the network containing POK members or the whole network
+    """  
     dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
     'Lidelse Dedos': 'red', 'Birgitta Frente': 'red', 'Adra Nubarron': 'red', 'Gustav Cazar': 'red', 'Vira Frente': 'red', 'Willem Vasco-Pais': 'green', 'Ingrid Barranco': 'green',
@@ -68,7 +56,6 @@ def create_elements_heap(l, pok_names, only_pok):
             lst.append((row[0], row[1]))
           
     edges_tuples = tuple(lst)
-
     lall_names = list(set(all_names))
     l2 = []
     for row in lall_names:
@@ -81,7 +68,6 @@ def create_elements_heap(l, pok_names, only_pok):
 
     nodes = [
         {'data': {'id': short, 'label': label},'classes' : color} for short, label, color in nodes_tuple]
-
     edges = [{'data': {'source': source, 'target': target}} for source, target in edges_tuples]
 
     elements =  nodes + edges
