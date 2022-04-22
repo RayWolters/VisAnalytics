@@ -20,7 +20,6 @@ def get_subjects_heap(inter, s, t, date):
 
 
     df = pd.DataFrame(lis, columns=['Source', 'Target', 'Subject'])
-    print(len(df))
     dfs = df[df['Source'] == s]
     dft = dfs[dfs['Target'] == t]
     return(list(dft['Subject']))

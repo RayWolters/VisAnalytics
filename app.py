@@ -632,7 +632,6 @@ def update_call(cell):
     if cell:
         row = cell['row']
         col = cell['column']
-        print(cell)
         name = df_communities.iloc[row][col]
         if name in executives.keys():
             return(sunburst_departments_start, sunburst_executive(name, False))
