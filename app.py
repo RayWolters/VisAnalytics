@@ -24,7 +24,7 @@ from views.communities import communities_plot
 from views.heatmap_creater import create_heap
 from dash import Dash, dash_table
 from views.page1 import create_visualizations_page1, print_text_of_words
-from views.page2_tsne import create_pca, plot_tsne_kmeans
+from views.page2_pca import create_pca, plot_pca_kmeans
 
 #dictionary used in coloring the network visualizations on page 4.
 dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
@@ -79,9 +79,9 @@ legend_millitary = pd.DataFrame(['ArmedForcesOf-Kronos','TethanDefense-ForceArmy
 legend_department = pd.DataFrame(['Board', 'Facilities','Engineering','IT','Security'], columns=['Departments'])
 legend_pok = pd.DataFrame(['not involved with POK', 'involved with POK'], columns=['POK'])
 
-#create default TSNE plot.
+#create default PCA plot.
 df_pca  = create_pca()
-pca_fig = plot_tsne_kmeans(10, df_pca)
+pca_fig = plot_pca_kmeans(10, df_pca)
 
 
 
@@ -433,7 +433,7 @@ def update_call(data):
     Input('choose-k', 'value'))
 
 def update_layout(value):
-    return(plot_tsne_kmeans(value, df_pca))
+    return(plot_pca_kmeans(value, df_pca))
 
 #show modal
 @app.callback(

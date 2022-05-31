@@ -28,7 +28,7 @@ def create_pca():
     df = pca.fit_transform(tfidf.todense())
     return df
 
-def plot_tsne_kmeans(k, df):
+def plot_pca_kmeans(k, df):
     """
     This function will take the pca's as input and convert it to a k-means plot
     k  -> number of means (clusters)
