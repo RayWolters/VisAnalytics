@@ -79,11 +79,15 @@ legend_millitary = pd.DataFrame(['ArmedForcesOf-Kronos','TethanDefense-ForceArmy
 legend_department = pd.DataFrame(['Board', 'Facilities','Engineering','IT','Security'], columns=['Departments'])
 legend_pok = pd.DataFrame(['not involved with POK', 'involved with POK'], columns=['POK'])
 
+
+
 #create default PCA plot.
-df_pca  = create_pca()
-pca_fig = plot_pca_kmeans(10, df_pca)
+path_articles = 'data/articles/'
+path_resumes = 'data/resumes/txt versions/'
+path_docs = 'data/HistoricalDocuments/txt versions/'
 
-
+df_pca  = create_pca([path_articles, path_resumes, path_docs])
+pca_fig = plot_pca_kmeans(8, df_pca, [path_articles, path_resumes, path_docs])
 
 
 #create the layout used throughout the entire DASH, including multiple pages.
@@ -127,13 +131,21 @@ def switch_page(page):
                             html.H5('Choose a different K to obtain different K-means clusters:'),
                             dbc.Row(dcc.Dropdown(
                             id='choose-k',
-                            value=10,
+                            value=8,
                             clearable=False,
                             options=[
                                 {'label': name, 'value': name}
                                 for name in [1,2,3,4,5,6,7,8,9,10]
-                            ], className = ""))],[
-
+                            ], className = "")),
+                            html.H5('Choose which kind of data you want to include in the PCA'),
+                            dbc.Row(dcc.Dropdown(id = 'input_plot', options=[
+                                    {'label': 'Articles', 'value': path_articles},
+                                    {'label': 'Resumes', 'value': path_resumes},
+                                    {'label': 'Historical Documents', 'value': path_docs},
+                                ],
+                                value= [path_articles, path_resumes, path_docs],
+                                multi=True)),
+                            ],[
                 # add a container where articles can be printed.
                 dbc.Container([
                     html.Ul(children = [html.Li(x) for x in article1], id='print_article',),
@@ -422,7 +434,7 @@ def switch_page(page):
              Input('pca-fig', 'clickData'))
 def update_call(data):
     if data:
-        article_num = str(data['points'][0]['customdata'][0])
+        article_num = str(data['points'][0]['customdata'][0]).split(' ')[1]
         strline = 'ARTICLE {}:'.format(article_num)
         lst = [strline, [open("data/articles/{}.txt".format(article_num)).read()]]
         return [html.Li(x) for x in lst]
@@ -430,10 +442,13 @@ def update_call(data):
 #update K-means clustering
 @app.callback(
     Output("pca-fig", "figure"),
-    Input('choose-k', 'value'))
+    Input('choose-k', 'value'),
+    Input('input_plot', 'value'))
 
-def update_layout(value):
-    return(plot_pca_kmeans(value, df_pca))
+def update_layout(value, lst):
+    # print(lst)
+    df_pca = create_pca(lst)
+    return(plot_pca_kmeans(value, df_pca, lst))
 
 #show modal
 @app.callback(
