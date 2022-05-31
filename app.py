@@ -24,7 +24,7 @@ from views.communities import communities_plot
 from views.heatmap_creater import create_heap
 from dash import Dash, dash_table
 from views.page1 import create_visualizations_page1, print_text_of_words
-from views.page2_tsne import create_pca, plot_tsne_kmeans
+from views.page2_tsne import create_tsne, plot_tsne_kmeans
 
 #dictionary used in coloring the network visualizations on page 4.
 dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
@@ -38,7 +38,7 @@ dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black'
 
 #describe goals epr page:
 goal_page1 = "The goal of this page is to obtain insights into the sentiment analysis of the articles. "
-goal_page2 = "The goal of this page consists of finding articles that are similar based on a PCA analysis."
+goal_page2 = "The goal of this page consists of finding articles that are similar based on a TSNE analysis."
 goal_page5 = "The goal of this page consists of obtaining insights into possible subgroups within the email communication network. The columns of the table consist of the found subgroups, with the dropdown menu you can change color details."
 
 #create teh visualizations used in page 1
@@ -80,8 +80,8 @@ legend_department = pd.DataFrame(['Board', 'Facilities','Engineering','IT','Secu
 legend_pok = pd.DataFrame(['not involved with POK', 'involved with POK'], columns=['POK'])
 
 #create default TSNE plot.
-df_pca  = create_pca()
-pca_fig = plot_tsne_kmeans(10, df_pca)
+df_tsne  = create_tsne()
+tsne_fig = plot_tsne_kmeans(10, df_tsne)
 
 
 
@@ -120,8 +120,8 @@ app.layout = html.Div(
     [Input("pagination", "active_page")],
 )
 def switch_page(page):
-    if page == 2:#add pca plot
-        return [dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100") ],[
+    if page == 2:#add tsne plot
+        return [dcc.Graph(id='tsne-fig',figure=tsne_fig, className = "h-100") ],[
                             html.H5(goal_page2, className="border bg-white mb-0"),
                             html.H5("Change the analysis:", className="bg-dark text-white text-center"),
                             html.H5('Choose a different K to obtain different K-means clusters:'),
@@ -419,7 +419,7 @@ def switch_page(page):
 
 #update sunburst based on cells of dataframe at page 2
 @app.callback(Output('print_article', 'children'),
-             Input('pca-fig', 'clickData'))
+             Input('tsne-fig', 'clickData'))
 def update_call(data):
     if data:
         article_num = str(data['points'][0]['customdata'][0])
@@ -429,11 +429,11 @@ def update_call(data):
 
 #update K-means clustering
 @app.callback(
-    Output("pca-fig", "figure"),
+    Output("tsne-fig", "figure"),
     Input('choose-k', 'value'))
 
 def update_layout(value):
-    return(plot_tsne_kmeans(value, df_pca))
+    return(plot_tsne_kmeans(value, df_tsne))
 
 #show modal
 @app.callback(
