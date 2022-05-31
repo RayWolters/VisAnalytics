@@ -12,19 +12,19 @@ import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
 from dash_bootstrap_components._components.Container import Container
-from sunburst import sunburst_departments, sunburst_executive
+from views.sunburst import sunburst_departments, sunburst_executive
 app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 import dash_cytoscape as cyto
 from dash.dependencies import Input, Output, State
-from network_heap import prepare_data_heap
-from subjects import get_subjects_heap
-from pok_table import search_on_names
-from communities import communities_plot
-from heatmap_creater import create_heap
+from views.network_heap import prepare_data_heap
+from views.subjects import get_subjects_heap
+from views.pok_table import search_on_names
+from views.communities import communities_plot
+from views.heatmap_creater import create_heap
 from dash import Dash, dash_table
-from page1 import create_visualizations_page1, print_text_of_words
-from page2_tsne import create_pca, plot_tsne_kmeans
+from views.page1 import create_visualizations_page1, print_text_of_words
+from views.page2_tsne import create_pca, plot_tsne_kmeans
 
 #dictionary used in coloring the network visualizations on page 4.
 dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
