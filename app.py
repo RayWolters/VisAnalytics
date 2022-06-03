@@ -86,9 +86,14 @@ path_articles = 'data/articles/'
 path_resumes = 'data/resumes/txt versions/'
 path_docs = 'data/HistoricalDocuments/txt versions/'
 
-df_pca  = create_pca([path_articles, path_resumes, path_docs])
-pca_fig = plot_pca_kmeans(8, df_pca, [path_articles, path_resumes, path_docs])
+df_pca, documents  = create_pca([path_articles, path_resumes, path_docs])
+pca_fig = plot_pca_kmeans(8, df_pca, [path_articles, path_resumes, path_docs], documents)
 
+
+wc = px.imshow(np.array(Image.open(f"wcs/Picture1.png")))
+wc.update_layout(coloraxis_showscale=False)
+wc.update_xaxes(showticklabels=False)
+wc.update_yaxes(showticklabels=False)
 
 #create the layout used throughout the entire DASH, including multiple pages.
 app.layout = html.Div(
@@ -123,9 +128,17 @@ app.layout = html.Div(
     Output("side-div2", "children"),
     [Input("pagination", "active_page")],
 )
+
+
+
+
 def switch_page(page):
     if page == 2:#add pca plot
-        return [dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100") ],[
+        return [dbc.Row(dcc.Graph(id='pca-fig',figure=pca_fig, className = "h-100"), className="customHeight8"),
+                dbc.Row(dcc.Graph(id='wc-figs',figure=wc, className = "h-100"), className="customHeight8")
+            
+            
+             ],[
                             html.H5(goal_page2, className="border bg-white mb-0"),
                             html.H5("Change the analysis:", className="bg-dark text-white text-center"),
                             html.H5('Choose a different K to obtain different K-means clusters:'),
@@ -441,14 +454,30 @@ def update_call(data):
 
 #update K-means clustering
 @app.callback(
+    Output("wc-figs", "figure"),
+    Input('pca-fig', 'hoverData'))
+
+def update_layout(data):
+    num = int(data['points'][0]['marker.color'])
+    str = "wcs/wc_class_{}.png".format(num)
+    wcfigure = px.imshow(np.array(Image.open(str)))
+    wcfigure.update_layout(coloraxis_showscale=False)
+    wcfigure.update_xaxes(showticklabels=False)
+    wcfigure.update_yaxes(showticklabels=False)
+
+    return(wcfigure)
+
+
+#update K-means clustering
+@app.callback(
     Output("pca-fig", "figure"),
     Input('choose-k', 'value'),
     Input('input_plot', 'value'))
 
 def update_layout(value, lst):
     # print(lst)
-    df_pca = create_pca(lst)
-    return(plot_pca_kmeans(value, df_pca, lst))
+    df_pca, documents = create_pca(lst)
+    return(plot_pca_kmeans(value, df_pca, lst, documents))
 
 #show modal
 @app.callback(
