@@ -351,3 +351,30 @@ def create_wordcloud(input_docs, names, filename):
     wordcloud.generate_from_frequencies(frequencies=dic)
 
     wordcloud.to_file(filename)
+
+def concor(word, docdict, width=80, max_lines=25):
+    tokenizer2 = RegexpTokenizer('\s+', gaps=True)
+    l = []
+    for key, value in docdict.items():
+        i = tokenizer2.tokenize(value)
+        yo = Text(i)
+        listy = yo.concordance_list(word, width=width, lines=200)
+        if listy:
+            l.append('\nArticle {j}.txt, {z} result(s) found, shown below:'.format(z=len(listy), j=key))
+            for x in range(min(len(listy), max_lines)):
+                l.append(([f'Result {x+1}: ', listy[x].line.encode('ascii','ignore').decode('unicode_escape')]))
+    return(l)
+
+def makeDocDict(docs):
+    testdict = {}
+    for index, item in enumerate(docs):
+        item = remove_whitespace(item)
+        i = item.lower()
+        testdict[index] = item
+    return testdict
+
+def print_text_of_words(word_val, width=80):
+    ordered_dir = sorted_alphanumeric(os.listdir("data/articles"))
+    documents = [open("data/articles/{}".format(f)).read() for f in ordered_dir]
+
+    return concor(word_val, makeDocDict(documents), width)

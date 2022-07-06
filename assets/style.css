@@ -47,9 +47,29 @@ body {
 }
 
 .customHeight9 {
-    height: 28%;
+    height: 20%;
 }
 
 .customHeight10 {
     height: 44%;
+}
+
+.customHeight11 {
+    height: 30%;
+}
+
+.customHeight12 {
+    height: 20%;
+}
+
+.customHeight13 {
+    height: 10%;
+}
+
+.customHeight14 {
+    height: 90%;
+}
+
+.customWidth {
+    width: 95%;
 }

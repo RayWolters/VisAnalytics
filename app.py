@@ -1,3 +1,4 @@
+from typing import Dict
 import dash
 from dash import dcc
 import dash_bootstrap_components as dbc
@@ -21,12 +22,11 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True, external_stylesheet
 import dash_cytoscape as cyto
 from dash.dependencies import Input, Output, State
 from dash import Dash, dash_table
-# from views.page1 import create_visualizations_page1, print_text_of_words
 from views.tsne import *
 from views.heap_isiavann import create_heap
 import re
 import ast
-
+import plotly.graph_objects as go
 #dictionary used in coloring the network visualizations on page 4.
 dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black', 'Linda Lagos': 'orange', 'Carla Forluniau': 'black', 'Cornelia Lais': 'black',
     'Marin Onda': 'red', 'Isande Borrasca': 'red', 'Axel Calzas': 'red', 'Kare Orilla': 'red', 'Elsa Orilla': 'red', 'Brand Tempestad': 'red', 'Lars Azada': 'red', 'Felix Balas': 'red',
@@ -82,6 +82,7 @@ wc = px.imshow(np.array(Image.open(f"wordclouds/default_wc.png")))
 wc.update_layout(coloraxis_showscale=False)
 wc.update_xaxes(showticklabels=False)
 wc.update_yaxes(showticklabels=False)
+
 
 styles = {
     'pre': {
@@ -169,20 +170,29 @@ def switch_page(page):
     return [html.H3('Select a group of articles with the Lasso Select function to generate wordclouds'),
             dcc.Graph(id='tsne-fig',figure=fig_tsne, className = "h-100"),
             ], [dbc.Row(dcc.Graph(id='wc-figs',figure=wc, className = "h-100"), className="customHeight8"),
-            
-            html.H5('Choose which kind of data you want to include in the TSNE'),
-                            dbc.Row(dcc.Dropdown(id = 'input_plot', options=[
+            html.H5('Choose which kind of data you want to include in the TSNE and the similarity distance'),   
+            dbc.Row([
+                dbc.Col([
+                 dbc.Row(dcc.Dropdown(id = 'input_plot', options=[
                                     {'label': 'Articles', 'value': path_articles},
                                     {'label': 'Resumes', 'value': path_resumes},
                                     {'label': 'Historical Documents', 'value': path_docs},
                                 ],
                                 value= [path_articles, path_resumes, path_docs],
-                                multi=True)),
-            html.H5('Choose your similarity distance:'),
-            dcc.Dropdown(['Cosine distance','Euclidean distance'], 'Cosine distance', id='demo-dropdown'),
-            html.H5('Circle:   article'),
-            html.H5('Diamond:  diamond'),
-            html.H5('Triangle: historical document'),]
+                                multi=True))], width={'size': 8}),
+                dbc.Col([
+                    dcc.Dropdown(['Cosine distance','Euclidean distance'], 'Cosine distance', id='demo-dropdown'),
+                ], width={'size': 4}),
+            ]),
+            html.H5('Circle:   article', 'Diamond:  resume', 'Triangle: historical document'),
+            dcc.Input(
+                id="word", placeholder="word"
+            ),
+            dbc.Row( 
+                dbc.Container([
+                    html.Ul(id='id1',   ),
+                    ],style={"display": "flex", "overflow":"hidden", "overflow-y":"scroll"}, className="h-100 border",
+                    ), className = "customHeight9 g-0")]
             
 
 @app.callback(
@@ -318,5 +328,11 @@ def update_call(cell):
     else:
         return (sunburst_departments('', True),  sunburst_executive('', True))
 
+
+@app.callback(Output('id1', 'children'),
+            Input('word', 'value'))
+def context(word):
+    if word:
+        return [html.Li(x) for x in print_text_of_words(str(word))]
 if __name__ == "__main__":
     app.run_server(debug=True)
