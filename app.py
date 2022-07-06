@@ -176,7 +176,10 @@ def switch_page(page):
                                 value= [path_articles, path_resumes, path_docs],
                                 multi=True)),
             html.H5('Choose your similarity distance:'),
-            dcc.Dropdown(['Cosine distance','Euclidean distance'], 'Cosine distance', id='demo-dropdown'),]
+            dcc.Dropdown(['Cosine distance','Euclidean distance'], 'Cosine distance', id='demo-dropdown'),
+            html.H5('Circle:   article'),
+            html.H5('Diamond:  diamond'),
+            html.H5('Triangle: historical document'),]
             
 
 @app.callback(
@@ -202,6 +205,8 @@ def display_selected_data(selectedData):
         file_name = "wordclouds/wc_{}.png".format(art_nums[0])
         input_docs = []
         
+
+        #add the files to the input_docs file which will be used for making the wordclouds
         for art in art_nums:
             if art == "5 year report clean.txt" or art == "10 year historical document clean.txt":
                 file = open((path_docs + art), encoding="utf8").read()
@@ -213,7 +218,6 @@ def display_selected_data(selectedData):
                 for word in docie:
                     input_docs.append(word)
             else:
-                print('neem')
                 file = open((path_resumes + art), encoding="utf8").read()
                 doci = tok_prepro_docs(file)
                 for word in doci:
