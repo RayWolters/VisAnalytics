@@ -21,7 +21,7 @@ def executive_preprocessing(input_name):
     # List of labels for the executive department
     labelsb = ['GAStech Board', 'Sangorge JR. (CEO)', 'Bramar', 'Vasco-Pais (ESA)', 'Barranco (CFO)', 'Ribera', 'Strum (COO)', 'L.Lagos', 'Campo-Corrente (CIO)', 'Pantanal']
     # List of parents for the executive department
-    parentsb= ['', 'GAStech Board', 'Sangorge JR. (CEO)', 'Sangorge JR. (CEO)', 'Sangorge JR. (CEO)','Barranco (CFO)', 'Sangorge JR. (CEO)','Strum (COO)','Sangorge JR. (CEO)']
+    parentsb= ['', 'GAStech Board', 'Sangorge JR. (CEO)', 'Sangorge JR. (CEO)', 'Sangorge JR. (CEO)','Barranco (CFO)', 'Sangorge JR. (CEO)','Strum (COO)','Sangorge JR. (CEO)', 'Campo-Corrente (CIO)']
     # Members of the Executive department who have an assistant
     labels_board = ['Sangorge JR. (CEO)', 'Vasco-Pais (ESA)', 'Barranco (CFO)', 'Strum (COO)',  'Campo-Corrente (CIO)']
     # Assistants of the Executive department
@@ -167,7 +167,7 @@ def sunburst_departments(input_name, first):
     ################################ CREATING PLOT ################################################################### Sunburst 1) Only the executive board
 def sunburst_executive(input_name, first):
     executives = {'Sten Sanjorge Jr.': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr (tethys)': 'Sangorge JR. (CEO)', 'Willem Vasco-Pais': 'Vasco-Pais (ESA)', 'Ingrid Barranco': 'Barranco (CFO)',
-                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos'}
+                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos', "Rachel Pantanal": "Pantanal"}
 	
     if not first:
         name_in = executives[input_name]
