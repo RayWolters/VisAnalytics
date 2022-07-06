@@ -102,7 +102,7 @@ def tok_prepro_docs(docs, nouns=False, stemlem=False):
             newi = [w for w in i if not w.lower() in stop_words]
         if stemlem:
             newi = lemmatization(newi)
-            newi = stemming(newi)
+            # newi = stemming(newi)
         newd.append(newi)
     return newd
 
@@ -128,7 +128,10 @@ def create_heatmap(similarity, cmap = "YlGnBu"):
   fig, ax = plt.subplots(figsize=(50,50))
   sns.heatmap(df, cmap=cmap)
 
-
+def sorted_alphanumeric(path):
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(path, key=alphanum_key)
 
 def create_tsne():
     """
@@ -235,7 +238,49 @@ def tsneDf(tfidf, metric, labs):
     df['y'] = Y[:, 1]
     return df
 
-def function_tsne(docs):
+# def function_tsne(docs, value):
+
+
+#     sentiment_labels = SIA(no_tok_prepro_docs(docs))
+
+#     tfidf = TfidfVectorizer(
+#         analyzer='word',
+#         tokenizer=dummy_fun,
+#         preprocessor=dummy_fun,
+#         token_pattern=None)
+
+#     tfdoc = tfidf.fit_transform(tok_prepro_docs(docs, stemlem=True))
+
+#     if value == "Cosine distance":
+#         tdf = tsneDf(tfdoc, cosine_distances, sentiment_labels)
+#     else:
+#         tdf = tsneDf(tfdoc, euclidean_distances, sentiment_labels)
+#     tdf.labels = tdf.labels.astype(str)
+
+
+#     tdf = tdf.reset_index()
+
+#     return tdf
+
+path_articles = 'data/articles/'
+path_resumes = 'data/resumes/txt versions/'
+path_docs = 'data/HistoricalDocuments/txt versions/'
+
+def function_tsne(lst_input, value):
+
+    documents = []
+
+    if path_articles in lst_input:
+        for i in sorted_alphanumeric(os.listdir(path_articles)):
+            documents.append(open(path_articles + i).read())
+    if path_resumes in lst_input:              
+        for i in sorted_alphanumeric(os.listdir(path_resumes)):
+            documents.append(open(path_resumes + i).read())
+    if path_docs in lst_input:
+        for i in sorted_alphanumeric(os.listdir(path_docs)):
+            documents.append(open(path_docs + i, encoding="utf8").read())
+
+    docs = documents
     sentiment_labels = SIA(no_tok_prepro_docs(docs))
 
     tfidf = TfidfVectorizer(
@@ -246,23 +291,43 @@ def function_tsne(docs):
 
     tfdoc = tfidf.fit_transform(tok_prepro_docs(docs, stemlem=True))
 
-    tdf = tsneDf(tfdoc, euclidean_distances, sentiment_labels)
-
+    if value == "Cosine distance":
+        tdf = tsneDf(tfdoc, cosine_distances, sentiment_labels)
+    else:
+        tdf = tsneDf(tfdoc, euclidean_distances, sentiment_labels)
     tdf.labels = tdf.labels.astype(str)
 
 
     tdf = tdf.reset_index()
 
     return tdf
-#ModuleNotFoundError: No module named 'nltk'
 
-# def plot_tsne(tdf):
-#     return px.scatter(tdf, x="x", y="y", hover_data = ["index"], color=tdf.labels.tolist(), color_discrete_map={"-1": 'red', "0": 'blue', "1": 'green'})#.set(title="T-SNE") 
+def plot_tsne(df, lst_input):
+    article_list, symbol_lst_article = [], []
+    resumes_list, symbol_lst_resumes = [], []
+    docs_list, symbol_lst_docs       = [], []
+    
+    if path_articles in lst_input:
+        article_list =  ["article " + str(i) for i in range(845)]    
+        symbol_lst_article = ['circle' for i in range(845)]
+        
+    if path_resumes in lst_input:
+        resumes_list = sorted_alphanumeric(os.listdir(path_resumes))
+        symbol_lst_resumes = ['diamond-cross' for i in range(35)]
+        
+    if path_docs in lst_input:
+        docs_list = sorted_alphanumeric(os.listdir(path_docs))
+        symbol_lst_docs = ['triangle-up' for i in range(2)]
+
+    lst = article_list + resumes_list + docs_list    
+    symbol_lst = symbol_lst_article + symbol_lst_resumes + symbol_lst_docs
+
+    df['name'] = lst
+    df['symbol'] = symbol_lst
+    return df, px.scatter(df, x='x', y='y', color="labels", color_discrete_map={"-1": 'red', "0": 'blue', "1": 'green'}, hover_data=['name'], symbol='symbol')
 
 
-def plot_tsne(df):
-    return df, px.scatter(df, x='x', y='y', color="labels", color_discrete_map={"-1": 'red', "0": 'blue', "1": 'green'}, hover_data=['index'])
-
+#treshold on number of occurences
 treshold = 2
 
 def create_wordcloud(input_docs, names, filename):
@@ -273,11 +338,10 @@ def create_wordcloud(input_docs, names, filename):
     dic = {}
 
     for k, v in d.items():
-        if v > treshold:
-            if k in names:
+        if k in names:
                 dic[k] = maximum
-            else:
-                dic[k]  = v
+        elif v > treshold:
+            dic[k]  = v
 
     wordcloud = WordCloud(background_color='white', width = 1000, height = 500)
     wordcloud.generate_from_frequencies(frequencies=dic)

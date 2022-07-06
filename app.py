@@ -37,10 +37,6 @@ dic = {'Mat Bramar': 'black', 'Anda Ribera': 'black', 'Rachel Pantanal': 'black'
     'Isia Vann': 'orange', 'Edvard Vann': 'orange', 'Felix Resumir': 'orange', 'Loreto Bodrogi': 'orange', 'Hideki Cocinaro': 'orange', 'Inga Ferro': 'orange', 'Ruscella Mies': 'black',
     'Sten Sanjorge Jr': 'green', 'Sten Sanjorge Jr (tethys)': 'black', 'Henk Mies': 'purple', 'Dylan Scozzese': 'purple', 'Minke Mies': 'orange'}
 
-#describe goals epr page:
-goal_page1 = "The goal of this page is to obtain insights into the sentiment analysis of the articles. "
-goal_page2 = "The goal of this page consists of finding articles that are similar based on a PCA analysis."
-goal_page5 = "The goal of this page consists of obtaining insights into possible subgroups within the email communication network. The columns of the table consist of the found subgroups, with the dropdown menu you can change color details."
 
 # #create default article to print
 article1 = [open("data/articles/{}".format("0.txt")).read()]
@@ -49,7 +45,7 @@ article1 = [open("data/articles/{}".format("0.txt")).read()]
 sunburst_executive_start = sunburst_executive('', True)
 sunburst_departments_start = sunburst_departments('', True)
 
-
+#load isia vann network data for page 2
 df_isia_vann = pd.read_csv("data/networks_isiavann.csv").drop("Unnamed: 0", axis=1).set_index('time')
 list_times = df_isia_vann.index
 elements0 = create_heap(df_isia_vann, list_times[0])
@@ -60,24 +56,26 @@ def sorted_alphanumeric(path):
     return sorted(path, key=alphanum_key)
 
 path_articles = 'data/articles/'
-
+path_resumes = 'data/resumes/txt versions/'
+path_docs = 'data/HistoricalDocuments/txt versions/'
 
 documents = []
 for i in sorted_alphanumeric(os.listdir(path_articles)):
     documents.append(open(path_articles + i).read())
-
 documents2 = tok_prepro_docs(documents)
 
+#load names used for checking whether appearing in a document
 dfnames = pd.read_excel('data/EmployeeRecords.xlsx')
 names = []
 for name in dfnames.LastName:
     names.append(name.lower())
 
+#load tsne plots
+df_tsne  = function_tsne([path_articles, path_resumes, path_docs], 'Cosine distance')
+df, fig_tsne = plot_tsne(df_tsne, [path_articles, path_resumes, path_docs])
 
-df_tsne  = function_tsne(documents)
-df, fig_tsne = plot_tsne(df_tsne)
-
-wc = px.imshow(np.array(Image.open(f"wordclouds/wc_1.png")))
+#load default wc
+wc = px.imshow(np.array(Image.open(f"wordclouds/default_wc.png")))
 wc.update_layout(coloraxis_showscale=False)
 wc.update_xaxes(showticklabels=False)
 wc.update_yaxes(showticklabels=False)
@@ -165,10 +163,30 @@ def switch_page(page):
                     dcc.Graph(id='sunburst_exc_page3', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0"),  
                     
             ],
-    return [dcc.Graph(id='pca-fig',figure=fig_tsne, className = "h-100"),
+    return [html.H3('Select a group of articles with the Lasso Select function to generate wordclouds'),
+            dcc.Graph(id='pca-fig',figure=fig_tsne, className = "h-100"),
             ], [dbc.Row(dcc.Graph(id='wc-figs',figure=wc, className = "h-100"), className="customHeight8"),
-            html.P('Select a group of articles with the Lasso Select function to generate Wordclouds'),]
             
+            html.H5('Choose which kind of data you want to include in the TSNE'),
+                            dbc.Row(dcc.Dropdown(id = 'input_plot', options=[
+                                    {'label': 'Articles', 'value': path_articles},
+                                    {'label': 'Resumes', 'value': path_resumes},
+                                    {'label': 'Historical Documents', 'value': path_docs},
+                                ],
+                                value= [path_articles, path_resumes, path_docs],
+                                multi=True)),
+            html.H5('Choose your similarity distance:'),
+            dcc.Dropdown(['Cosine distance','Euclidean distance'], 'Cosine distance', id='demo-dropdown'),]
+            
+
+@app.callback(
+    Output("pca-fig", "figure"),
+    Input('demo-dropdown', 'value'),
+    Input('input_plot', 'value'))
+def figupdate(value, lst):
+    df_tsne  = function_tsne(lst, value)
+    df, fig_tsne = plot_tsne(df_tsne, lst)
+    return fig_tsne
 
 @app.callback(
     Output("wc-figs", "figure"),
@@ -177,18 +195,29 @@ def display_selected_data(selectedData):
     d = selectedData
 
     if d:
-        
         art_nums = []
         for row in d['points']:
             art_nums.append(row['customdata'][0])
 
-        file_name = "wc/wc_{}.png".format(art_nums[0])
+        file_name = "wordclouds/wc_{}.png".format(art_nums[0])
         input_docs = []
         
-        for i in art_nums:
-            docie = documents2[i]
-            for word in docie:
-                input_docs.append(word)
+        for art in art_nums:
+            if art == "5 year report clean.txt" or art == "10 year historical document clean.txt":
+                file = open((path_docs + art), encoding="utf8").read()
+                doci = tok_prepro_docs(file)
+                for word in doci:
+                    input_docs.append(word)
+            elif art[:7] == 'article':
+                docie = documents2[int(art.split(' ')[1])]
+                for word in docie:
+                    input_docs.append(word)
+            else:
+                print('neem')
+                file = open((path_resumes + art), encoding="utf8").read()
+                doci = tok_prepro_docs(file)
+                for word in doci:
+                    input_docs.append(word)
 
         create_wordcloud(input_docs, names, file_name)
 
