@@ -268,39 +268,43 @@ path_docs = 'data/HistoricalDocuments/txt versions/'
 
 def function_tsne(lst_input, value):
 
-    documents = []
+    if  lst_input:
 
-    if path_articles in lst_input:
-        for i in sorted_alphanumeric(os.listdir(path_articles)):
-            documents.append(open(path_articles + i).read())
-    if path_resumes in lst_input:              
-        for i in sorted_alphanumeric(os.listdir(path_resumes)):
-            documents.append(open(path_resumes + i).read())
-    if path_docs in lst_input:
-        for i in sorted_alphanumeric(os.listdir(path_docs)):
-            documents.append(open(path_docs + i, encoding="utf8").read())
+        documents = []
 
-    docs = documents
-    sentiment_labels = SIA(no_tok_prepro_docs(docs))
+        if path_articles in lst_input:
+            for i in sorted_alphanumeric(os.listdir(path_articles)):
+                documents.append(open(path_articles + i).read())
+        if path_resumes in lst_input:              
+            for i in sorted_alphanumeric(os.listdir(path_resumes)):
+                documents.append(open(path_resumes + i).read())
+        if path_docs in lst_input:
+            for i in sorted_alphanumeric(os.listdir(path_docs)):
+                documents.append(open(path_docs + i, encoding="utf8").read())
 
-    tfidf = TfidfVectorizer(
-        analyzer='word',
-        tokenizer=dummy_fun,
-        preprocessor=dummy_fun,
-        token_pattern=None)
+        docs = documents
+        sentiment_labels = SIA(no_tok_prepro_docs(docs))
 
-    tfdoc = tfidf.fit_transform(tok_prepro_docs(docs, stemlem=True))
+        tfidf = TfidfVectorizer(
+            analyzer='word',
+            tokenizer=dummy_fun,
+            preprocessor=dummy_fun,
+            token_pattern=None)
 
-    if value == "Cosine distance":
-        tdf = tsneDf(tfdoc, cosine_distances, sentiment_labels)
+        tfdoc = tfidf.fit_transform(tok_prepro_docs(docs, stemlem=True))
+
+        if value == "Cosine distance":
+            tdf = tsneDf(tfdoc, cosine_distances, sentiment_labels)
+        else:
+            tdf = tsneDf(tfdoc, euclidean_distances, sentiment_labels)
+        tdf.labels = tdf.labels.astype(str)
+
+
+        tdf = tdf.reset_index()
+
+        return tdf
     else:
-        tdf = tsneDf(tfdoc, euclidean_distances, sentiment_labels)
-    tdf.labels = tdf.labels.astype(str)
-
-
-    tdf = tdf.reset_index()
-
-    return tdf
+        return {}
 
 def plot_tsne(df, lst_input):
     article_list, symbol_lst_article = [], []

@@ -10,7 +10,7 @@ import os
 # import glob, os
 from dash import html
 from matplotlib.pyplot import pie
-from numpy import unicode_
+from numpy import empty, unicode_
 import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
@@ -59,10 +59,13 @@ path_articles = 'data/articles/'
 path_resumes = 'data/resumes/txt versions/'
 path_docs = 'data/HistoricalDocuments/txt versions/'
 
-documents = []
+articles = []
 for i in sorted_alphanumeric(os.listdir(path_articles)):
-    documents.append(open(path_articles + i).read())
-documents2 = tok_prepro_docs(documents)
+    articles.append(open(path_articles + i).read())
+documents2 = tok_prepro_docs(articles)
+
+historicalDocs = {i :  tok_prepro_docs([open(path_docs + i, encoding='utf-8').read()]) for i in sorted_alphanumeric(os.listdir(path_docs))}
+resumes = {i :  tok_prepro_docs([open(path_resumes + i).read()]) for i in sorted_alphanumeric(os.listdir(path_resumes))}
 
 #load names used for checking whether appearing in a document
 dfnames = pd.read_excel('data/EmployeeRecords.xlsx')
@@ -164,7 +167,7 @@ def switch_page(page):
                     
             ],
     return [html.H3('Select a group of articles with the Lasso Select function to generate wordclouds'),
-            dcc.Graph(id='pca-fig',figure=fig_tsne, className = "h-100"),
+            dcc.Graph(id='tsne-fig',figure=fig_tsne, className = "h-100"),
             ], [dbc.Row(dcc.Graph(id='wc-figs',figure=wc, className = "h-100"), className="customHeight8"),
             
             html.H5('Choose which kind of data you want to include in the TSNE'),
@@ -183,20 +186,22 @@ def switch_page(page):
             
 
 @app.callback(
-    Output("pca-fig", "figure"),
+    Output("tsne-fig", "figure"),
     Input('demo-dropdown', 'value'),
     Input('input_plot', 'value'))
 def figupdate(value, lst):
-    df_tsne  = function_tsne(lst, value)
-    df, fig_tsne = plot_tsne(df_tsne, lst)
-    return fig_tsne
+    if lst:
+        df_tsne  = function_tsne(lst, value)
+        df, fig_tsne = plot_tsne(df_tsne, lst)
+        return fig_tsne
+    else:
+        return {}
 
 @app.callback(
     Output("wc-figs", "figure"),
-    Input('pca-fig', 'selectedData'))
+    Input('tsne-fig', 'selectedData'))
 def display_selected_data(selectedData):
     d = selectedData
-
     if d:
         art_nums = []
         for row in d['points']:
@@ -209,20 +214,15 @@ def display_selected_data(selectedData):
         #add the files to the input_docs file which will be used for making the wordclouds
         for art in art_nums:
             if art == "5 year report clean.txt" or art == "10 year historical document clean.txt":
-                file = open((path_docs + art), encoding="utf8").read()
-                doci = tok_prepro_docs(file)
-                for word in doci:
+                for word in historicalDocs[art][0]:
                     input_docs.append(word)
             elif art[:7] == 'article':
                 docie = documents2[int(art.split(' ')[1])]
                 for word in docie:
                     input_docs.append(word)
             else:
-                file = open((path_resumes + art), encoding="utf8").read()
-                doci = tok_prepro_docs(file)
-                for word in doci:
+                for word in resumes[art][0]:
                     input_docs.append(word)
-
         create_wordcloud(input_docs, names, file_name)
 
         with Image.open(file_name) as im:
@@ -230,7 +230,9 @@ def display_selected_data(selectedData):
             wcfig.update_layout(coloraxis_showscale=False)
             wcfig.update_xaxes(showticklabels=False)
             wcfig.update_yaxes(showticklabels=False)
-    return wcfig
+        return wcfig
+    else:
+        return {}
 
 
 #update both networks by new data obtained from heatmap
