@@ -155,7 +155,6 @@ def switch_page(page):
                             id='my-slider',
                             marks=None,
                             ),
-
             ], ),]),
             ], [
         dbc.Row(
