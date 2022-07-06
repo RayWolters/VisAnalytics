@@ -184,7 +184,7 @@ def switch_page(page):
                     dcc.Dropdown(['Cosine distance','Euclidean distance'], 'Cosine distance', id='demo-dropdown'),
                 ], width={'size': 4}),
             ]),
-            html.H5('Circle:   article', 'Diamond:  resume', 'Triangle: historical document'),
+            html.H5('Circle: article, Diamond: resume, Triangle: historical document'),
             dcc.Input(
                 id="word", placeholder="word"
             ),
