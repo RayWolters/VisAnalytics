@@ -100,14 +100,14 @@ app.layout = html.Div(
                         dbc.Row(dbc.Col(html.H2("Disappearance at GAStech", className="m-0 bg-dark text-white text-center")), className="g-0"),
                         dbc.Row(dbc.Col(id="page-contents", className="h-100 m-2"), className="g-0 customHeight4 mb-4"),
                         dbc.Row(dbc.Col(dbc.Pagination(id="pagination", className="justify-content-center m-0", max_value=2, previous_next=True)), className="g-0"),
-                    ], width={"size": 5}, className = 'h-75 bg-light p-0',
+                    ], width={"size": 5}, className = 'h-100 bg-light p-0',
                 
                 ),
                 dbc.Col(
                     [
                         dbc.Row(dbc.Col(html.H2("Group 30", className="bg-dark text-white text-center")), className="g-0"),
                         dbc.Row(dbc.Col(id="side-div2", className="h-100 mt-0 m-2"), className="g-0 customHeight"),         
-                    ], width={"size": 5}, className="h-75 bg-light p-0 border bl border-bottom-0 border-top-0"),
+                    ], width={"size": 5}, className="h-100 bg-light p-0 border bl border-bottom-0 border-top-0"),
             ], className="vh-100 align-items-center justify-content-center",
         ),
     ],
@@ -167,10 +167,10 @@ def switch_page(page):
                     dcc.Graph(id='sunburst_exc_page3', figure=sunburst_executive_start, className = "h-100")), className="customHeight3 g-0"),  
                     
             ],
-    return [html.H3('Select a group of articles with the Lasso Select function to generate wordclouds'),
-            dcc.Graph(id='tsne-fig',figure=fig_tsne, className = "h-100"),
-            ], [dbc.Row(dcc.Graph(id='wc-figs',figure=wc, className = "h-100"), className="customHeight8"),
-            html.H5('Choose which kind of data you want to include in the TSNE and the similarity distance'),   
+    return [html.H5('Select a group of articles with the Lasso Select function to generate wordclouds'),
+            dcc.Graph(id='tsne-fig',figure=fig_tsne, className = "customHeight8"),
+            dbc.Row(dcc.Graph(id='wc-figs',figure=wc, className = "h-100"), className="customHeight16")
+            ], [html.H5('Choose which kind of data you want to include in the TSNE and the similarity distance'),   
             dbc.Row([
                 dbc.Col([
                  dbc.Row(dcc.Dropdown(id = 'input_plot', options=[
@@ -184,7 +184,7 @@ def switch_page(page):
                     dcc.Dropdown(['Cosine distance','Euclidean distance'], 'Cosine distance', id='demo-dropdown'),
                 ], width={'size': 4}),
             ]),
-            html.H5('Circle: article, Diamond: resume, Triangle: historical document. Type a word below to get the concordance.'),
+            html.H5('Type a word below to get the concordance.'),
             dcc.Input(
                 id="word", placeholder="word"
             ),
@@ -237,6 +237,7 @@ def display_selected_data(selectedData):
 
         with Image.open(file_name) as im:
             wcfig = px.imshow(np.array(im))
+            wcfig.update_layout(margin=dict(l=0, r=0, b=0, t=0, pad=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',)
             wcfig.update_layout(coloraxis_showscale=False)
             wcfig.update_xaxes(showticklabels=False)
             wcfig.update_yaxes(showticklabels=False)

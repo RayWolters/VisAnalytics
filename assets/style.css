@@ -19,7 +19,7 @@ body {
 }
 
 .customHeight {
-    height: 93.5%;
+    height: 89.5%;
 }
 
 .customHeight3 {
@@ -43,11 +43,11 @@ body {
 }
 
 .customHeight8 {
-    height: 65%;
+    height: 55%;
 }
 
 .customHeight9 {
-    height: 18%;
+    height: 80%;
 }
 
 .customHeight10 {
@@ -72,4 +72,12 @@ body {
 
 .customWidth {
     width: 95%;
+}
+
+.customHeight15 {
+    height: 60%;
+}
+
+.customHeight16 {
+    height: 40%;
 }

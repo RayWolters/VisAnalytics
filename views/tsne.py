@@ -313,22 +313,25 @@ def plot_tsne(df, lst_input):
     
     if path_articles in lst_input:
         article_list =  ["article " + str(i) for i in range(845)]    
-        symbol_lst_article = ['circle' for i in range(845)]
+        symbol_lst_article = ['article' for i in range(845)]
         
     if path_resumes in lst_input:
         resumes_list = sorted_alphanumeric(os.listdir(path_resumes))
-        symbol_lst_resumes = ['diamond-cross' for i in range(35)]
+        symbol_lst_resumes = ['resume' for i in range(35)]
         
     if path_docs in lst_input:
         docs_list = sorted_alphanumeric(os.listdir(path_docs))
-        symbol_lst_docs = ['triangle-up' for i in range(2)]
+        symbol_lst_docs = ['historical doc' for i in range(2)]
 
     lst = article_list + resumes_list + docs_list    
     symbol_lst = symbol_lst_article + symbol_lst_resumes + symbol_lst_docs
 
     df['name'] = lst
     df['symbol'] = symbol_lst
-    return df, px.scatter(df, x='x', y='y', color="labels", color_discrete_map={"-1": 'red', "0": 'blue', "1": 'green'}, hover_data=['name'], symbol='symbol')
+    scatter = px.scatter(df, x='x', y='y', color="labels", color_discrete_map={"-1": 'red', "0": 'blue', "1": 'green'}, hover_data=['name'], symbol='symbol')
+    scatter.update_layout(margin=dict(l=0, r=0, b=0, t=0, pad=0), paper_bgcolor='rgba(0,0,0,0)')
+    scatter.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12, color="black")))
+    return df, scatter
 
 
 #treshold on number of occurences
