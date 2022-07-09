@@ -352,29 +352,57 @@ def create_wordcloud(input_docs, names, filename):
 
     wordcloud.to_file(filename)
 
-def concor(word, docdict, width=80, max_lines=25):
-    tokenizer2 = RegexpTokenizer('\s+', gaps=True)
-    l = []
-    for key, value in docdict.items():
-        i = tokenizer2.tokenize(value)
-        yo = Text(i)
-        listy = yo.concordance_list(word, width=width, lines=200)
-        if listy:
-            l.append('\nArticle {j}.txt, {z} result(s) found, shown below:'.format(z=len(listy), j=key))
-            for x in range(min(len(listy), max_lines)):
-                l.append(([f'Result {x+1}: ', listy[x].line.encode('ascii','ignore').decode('unicode_escape')]))
-    return(l)
+# create dictionary for each type of document with as key file name, and value the corresponding document
+def makeDocDict():
+    ordered_dir = sorted_alphanumeric(os.listdir("data/HistoricalDocuments/txt versions"))
+    ordered_dir2 = sorted_alphanumeric(os.listdir("data/articles"))
+    ordered_dir3 = sorted_alphanumeric(os.listdir("data/resumes/txt versions"))
+    hist = {f : [open("data/HistoricalDocuments/txt versions/{}".format(f), encoding="utf-8").read()] for f in ordered_dir}
+    art = {f : [open("data/articles/{}".format(f), encoding="latin-1").read()] for f in ordered_dir2}
+    resumes = {f : [open("data/resumes/txt versions/{}".format(f), encoding="utf-8").read()] for f in ordered_dir3}
 
-def makeDocDict(docs):
-    testdict = {}
-    for index, item in enumerate(docs):
-        item = remove_whitespace(item)
-        i = item.lower()
-        testdict[index] = item
-    return testdict
+    art = dict((k, remove_whitespace(str(v).lower()).rstrip().replace('\\n','')) for k,v in art.items())
+    hist = dict((k, str(v).lower().rstrip().replace('\\n','')) for k,v in hist.items())
+    resumes = dict((k, remove_whitespace(str(v).lower()).rstrip().replace('\\n','')) for k,v in resumes.items())
+    return hist, art, resumes
 
-def print_text_of_words(word_val, width=80):
-    ordered_dir = sorted_alphanumeric(os.listdir("data/articles"))
-    documents = [open("data/articles/{}".format(f)).read() for f in ordered_dir]
+# get concordance of word and search in all documents
+def concor(word, docArt, docHist, docResumes, width=700, max_lines=350):
+    if docArt:
+        tokenizer2 = RegexpTokenizer('\s+', gaps=True)
+        l = []
+        for key, value in docArt.items():
+            i = tokenizer2.tokenize(value)
+            yo = Text(i)
+            listy = yo.concordance_list(word, width=width, lines=max_lines)
+            if listy:
+                l.append('\n{j}, {z} result(s) found, shown below:'.format(z=len(listy), j=key))
+                for x in range(min(len(listy), max_lines)):
+                    l.append(([f'Result {x+1}: ', listy[x].line.encode('ascii','ignore').decode('unicode_escape')]))
+    if docHist:
+        s = []
+        for key, value in docHist.items():
+            i2 = tokenizer2.tokenize(value)
+            yo2 = Text(i2)
+            listz = yo2.concordance_list(word, width=width, lines=max_lines)
+            if listz:
+                s.append('\n{j}, {z} result(s) found, shown below:'.format(z=len(listz), j=key))
+                for x in range(min(len(listz), max_lines)):
+                    s.append(([f'Result {x+1}: ', listz[x].line.encode('utf-8','ignore').decode('utf-8')]))
+    if docResumes:
+        t = []
+        for key, value in docResumes.items():
+            i3 = tokenizer2.tokenize(value)
+            yo3 = Text(i3)
+            lista = yo3.concordance_list(word, width=width, lines=max_lines)
+            if lista:
+                t.append('\n{j}, {z} result(s) found, shown below:'.format(z=len(lista), j=key))
+                for x in range(min(len(lista), max_lines)):
+                    t.append(([f'Result {x+1}: ', lista[x].line.encode('ascii','ignore').decode('unicode_escape')]))
+    return l, s, t
 
-    return concor(word_val, makeDocDict(documents), width)
+# calling the methods for concordance
+def print_text_of_words(word_val):
+    hist, art, resumes = makeDocDict()
+    # flatten list of lists
+    return [i for e in concor("vann", art, hist, resumes) for i in e]
