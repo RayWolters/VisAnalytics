@@ -408,4 +408,4 @@ def concor(word, docArt, docHist, docResumes, width=700, max_lines=350):
 def print_text_of_words(word_val):
     hist, art, resumes = makeDocDict()
     # flatten list of lists
-    return [i for e in concor("vann", art, hist, resumes) for i in e]
+    return [i for e in concor(word_val, art, hist, resumes) for i in e]
