@@ -22,35 +22,22 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from collections import Counter
-
 # from gensim.parsing.preprocessing import remove_stopwords
 pd. set_option('display.max_rows', None)
-
 # from yellowbrick.text import TSNEVisualizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
-
-
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances, cosine_distances
 from sklearn import manifold
-
-
 import plotly.express as px
-
-
 
 #pip installs
 #pip install -U gensim
-
 tokenizer = RegexpTokenizer(r'\w+')
 sia = SentimentIntensityAnalyzer()
 stop_words = set(stopwords.words('english'))
-
-
-
 
 def remove_whitespace(text):
     return  " ".join(text.split())
@@ -122,12 +109,6 @@ def no_tok_prepro_docs(docs):
         texts.append(i)
     return texts
 
-
-def create_heatmap(similarity, cmap = "YlGnBu"):
-  df = pd.DataFrame(similarity)
-  fig, ax = plt.subplots(figsize=(50,50))
-  sns.heatmap(df, cmap=cmap)
-
 def sorted_alphanumeric(path):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
@@ -143,32 +124,6 @@ def create_tsne():
     pca = PCA(n_components=2)
     df = pca.fit_transform(tfidf.todense())
     return df
-
-def plot_tsne_kmeans(k, df):
-    """
-    This function will take the pca's as input and convert it to a k-means plot
-    k  -> number of means (clusters)
-    df -> dataframe containing pca values 
-    """
-    kmeans = KMeans(n_clusters= k)
-    label = kmeans.fit_predict(df)
-    dff = pd.DataFrame(df, columns=['tsne1', 'tsne2'])
-    dff['label'] = [str(i) for i in label]
-    dff['label2']= label
-    dff['article'] = [i for i in range(845)]
-    df = dff.sort_values(by='label2')
-    df = df[['tsne1', 'tsne2', 'label', 'article']]
-    return px.scatter(df, x='tsne1', y='tsne2', color="label", hover_data=['article']), df
- 
-def make_bar(docs, size=20, flatten=True):
-    if flatten:
-        freq = nltk.FreqDist(make_flat(docs))
-    else:
-        freq = nltk.FreqDist(docs)
-    testcloud = freq.most_common(size)
-    freqdf = pd.DataFrame(testcloud, columns=['Word', 'Frequency'])
-    sns.set(rc={'figure.figsize':(16,11)})
-    sns.barplot(x='Frequency',y='Word', data=freqdf)
 
 def make_wc(docs, size=20, flatten=True):
     if flatten:
@@ -225,9 +180,6 @@ def SIA(docs, flatten=False):
 def dummy_fun(doc):
     return doc
 
-
-
-
 def tsneDf(tfidf, metric, labs):
     X = metric(tfidf, tfidf)
     model = manifold.TSNE(random_state=0)
@@ -237,30 +189,6 @@ def tsneDf(tfidf, metric, labs):
     df['x'] = Y[:, 0]
     df['y'] = Y[:, 1]
     return df
-
-# def function_tsne(docs, value):
-
-
-#     sentiment_labels = SIA(no_tok_prepro_docs(docs))
-
-#     tfidf = TfidfVectorizer(
-#         analyzer='word',
-#         tokenizer=dummy_fun,
-#         preprocessor=dummy_fun,
-#         token_pattern=None)
-
-#     tfdoc = tfidf.fit_transform(tok_prepro_docs(docs, stemlem=True))
-
-#     if value == "Cosine distance":
-#         tdf = tsneDf(tfdoc, cosine_distances, sentiment_labels)
-#     else:
-#         tdf = tsneDf(tfdoc, euclidean_distances, sentiment_labels)
-#     tdf.labels = tdf.labels.astype(str)
-
-
-#     tdf = tdf.reset_index()
-
-#     return tdf
 
 path_articles = 'data/articles/'
 path_resumes = 'data/resumes/txt versions/'

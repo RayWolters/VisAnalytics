@@ -294,41 +294,6 @@ def update_call(data):
     else:
         return (sunburst_departments('', True),  sunburst_executive('', True))
 
-#update sunburst based on cells of dataframe at page 2
-@app.callback(Output('sunburst_network_page2', 'figure'),
-             Output('sunburst_exc_page2', 'figure'),
-             Input('dash-table', 'active_cell'))
-def update_call(cell):
-    executives = {'Sten Sanjorge Jr.': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr (tethys)': 'Sangorge JR. (CEO)', 'Willem Vasco-Pais': 'Vasco-Pais (ESA)', 'Ingrid Barranco': 'Barranco (CFO)',
-                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos'}
-    if cell:
-        row = cell['row']
-        name = df_info_associated_employees.iloc[row][1]
-        if name in executives.keys():
-            return(sunburst_departments_start, sunburst_executive(name, False))
-        else:
-            return(sunburst_departments(name, False), sunburst_executive_start)
-    else:
-        return (sunburst_departments('', True),  sunburst_executive('', True))
-
-#update sunburst based on cells of dataframe at page 2
-@app.callback(Output('sunburst_network_page4', 'figure'),
-             Output('sunburst_exc_page4', 'figure'),
-             Input('dash-table4', 'active_cell'))
-def update_call(cell):
-    executives = {'Sten Sanjorge Jr.': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr': 'Sangorge JR. (CEO)', 'Sten Sanjorge Jr (tethys)': 'Sangorge JR. (CEO)', 'Willem Vasco-Pais': 'Vasco-Pais (ESA)', 'Ingrid Barranco': 'Barranco (CFO)',
-                  'Ada Campo-Corrente': 'Campo-Corrente (CIO)', 'Orhan Strum': 'Strum (COO)', 'Mat Bramar': 'Bramar', 'Anda Ribera': 'Ribera','Linda Lagos': 'L.Lagos'}
-    if cell:
-        row = cell['row']
-        col = cell['column']
-        name = df_communities.iloc[row][col]
-        if name in executives.keys():
-            return(sunburst_departments_start, sunburst_executive(name, False))
-        else:
-            return(sunburst_departments(name, False), sunburst_executive_start)
-    else:
-        return (sunburst_departments('', True),  sunburst_executive('', True))
-
 
 @app.callback(Output('id1', 'children'),
             Input('word', 'value'))

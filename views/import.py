@@ -19,5 +19,4 @@ for i in sorted_alphanumeric(os.listdir(path_articles)):
     documents.append(open(path_articles + i).read())
 
 tfd = function_tsne(documents)
-print('done')
 
